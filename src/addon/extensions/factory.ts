@@ -19,9 +19,6 @@ import autoContinueExtension from "./hooks/auto-continue.js";
 import autoCompact85Extension from "./hooks/auto-compact-85.js";
 import contextLoggerExtension from "./context-logger.js";
 
-// Import master-tool extension
-import { registerMasterTool } from "./master-tool/index.js";
-
 // Import built-in tools override extension (disabled - overrides default built-in tools)
 // import registerBuiltinsExtension from "./buildin-tools/index.js";
 import multiAgentToolExtension from "./multi-agent-tool/index.js";
@@ -110,13 +107,7 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   // Register Context Logger Extension
   contextLoggerExtension(api);
 
-  // Register master-tool extension
-  try {
-    registerMasterTool(api);
-    console.log(`[Extensions] Registered master-tool extension`);
-  } catch (err) {
-    console.error('[Extensions] Failed to register master-tool:', err);
-  }
+  // Master-tool extension removed (not efficient)
 
   // Return an empty object to satisfy extension discovery requirements
   return {};
