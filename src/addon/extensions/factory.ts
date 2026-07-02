@@ -22,6 +22,12 @@ import contextLoggerExtension from "./context-logger.js";
 // Import master-tool extension
 import { registerMasterTool } from "./master-tool/index.js";
 
+// Import built-in tools override extension (disabled - overrides default built-in tools)
+// import registerBuiltinsExtension from "./buildin-tools/index.js";
+import multiAgentToolExtension from "./multi-agent-tool/index.js";
+import sessionToolExtension from "./session-tool/index.js";
+import skillsToolExtension from "./skills-tool/index.js";
+
 
 import piclawHeader from "./piclaw-header.js";
 import { registerTodosRenderer } from "./renderers/todos-renderer.js";
@@ -58,6 +64,18 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   registerTeamTool(api);
   registerToolTemplate(api);
   registerSkillReaderExtension(api);
+
+  // // Register built-in tools override (same name, uses createXTool(ctx.cwd))
+  // registerBuiltinsExtension(api);
+  
+  // Register multi-agent tool
+  multiAgentToolExtension(api);
+  
+  // Register session tool
+  sessionToolExtension(api);
+  
+  // Register skills tool
+  skillsToolExtension(api);
 
   // Register universal tool
   registerUniversalTool(api);
