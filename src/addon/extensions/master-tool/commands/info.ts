@@ -12,7 +12,7 @@ import * as os from "node:os";
 import { Text } from "@earendil-works/pi-tui";
 
 export const metadata = {
-  name: "system.info",
+  name: "info",
   category: "system",
   description: "Display basic system information (OS, CPU, memory, Node.js)",
   longDescription: `
@@ -23,8 +23,8 @@ Collects system information:
 - Node.js: version, uptime
   `.trim(),
   examples: [
-    "master_tool({ command: 'system.info', args: {} })",
-    "master_tool({ command: 'system.info', args: { detailed: true } })"
+    "master_tool({ command: 'info', args: {} })",
+    "master_tool({ command: 'info', args: { detailed: true } })"
   ],
   tags: ["system", "monitoring"],
   permissions: []
