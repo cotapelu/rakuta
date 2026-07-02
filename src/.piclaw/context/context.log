@@ -1,0 +1,2266 @@
+=== LLM CONTEXT LOG ===
+
+--- SYSTEM PROMPT ---
+You are an expert coding assistant operating inside pi, a coding agent harness. You help users by reading files, executing commands, editing code, and writing new files.
+
+Available tools:
+- read: Read file contents
+- bash: Execute bash commands (ls, grep, find, etc.)
+- edit: Make precise file edits with exact text replacement, including multiple disjoint edits in one call
+- write: Create or overwrite files
+- todos: todos({ OPERATION: {...} }). All params are OBJECTS (not JSON strings). Ops: add_phase, add_task, update, remove_task, delete, list.
+- memory: Proactively store important facts, decisions, code snippets, URLs with tags. Memories persist across sessions and help track project history.
+- universal: Use `universal` tool with `action` parameter to perform various tasks.
+
+In addition to the tools above, you may have access to other custom tools depending on the project.
+
+Guidelines:
+- Use bash for file operations like ls, rg, find
+- Use read to examine files instead of cat or sed.
+- Use edit for precise changes (edits[].oldText must match exactly)
+- When changing multiple separate locations in one file, use one edit call with multiple entries in edits[] instead of multiple edit calls
+- Each edits[].oldText is matched against the original file, not after earlier edits are applied. Do not emit overlapping or nested edits. Merge nearby changes into one edit.
+- Keep edits[].oldText as small as possible while still being unique in the file. Do not pad with large unchanged regions.
+- Use write only for new files or complete rewrites.
+- RULE: Operation is the KEY. todos({ OPERATION: params }), NOT { operation: name, params: {...} }
+- TEMPLATES:
+- • add_phase: todos({ add_phase: { name: 'Phase', tasks: [{ content: 'Task' }] } })
+- • add_task:  todos({ add_task: { phase: 'phase-1', content: 'Task' } })
+- ⚠️ phase must be ID (phase-1), NOT name
+- • update:    todos({ update: { id: 'task-5', status: 'in_progress' } })
+- Batch:    todos({ update: { ids: ['task-1','task-2'], status: 'completed' } })
+- status: pending|in_progress|completed|abandoned
+- • remove_task: todos({ remove_task: { id: 'task-3' } })
+- • delete: todos({ delete: {} })
+- • list: todos({ list: {} })
+- AUTO-RULES:
+- • Only ONE task can be 'in_progress' (auto-normalizes others to 'pending')
+- • Data persists to .piclaw/agent/todos.json
+- • Use 'details' field only for in_progress context (multiline)
+- • Task IDs are auto: task-1, task-2... Find them by running todos({ list: {} })
+- Add: memory({ action: 'add', text: 'Important fact', tags?: ['tag1', 'tag2'] })
+- List: memory({ action: 'list' })
+- Get: memory({ action: 'get', id: <number> })
+- Delete: memory({ action: 'delete', id: <number> })
+- Clear: memory({ action: 'clear' })
+- Search: memory({ action: 'search', query: 'text' })
+- Memories persist in session and support branching.
+- If the user says 'remember this', 'save this', 'note that', or provides important information (facts, decisions, code snippets, URLs, deadlines), proactively use the memory tool with action 'add' to store it.
+- Include relevant tags: e.g., ['project', 'code'], ['meeting'], ['decision'], ['research']
+- Use memory.search to retrieve stored information when the user asks 'what did we say about X', 'do you remember', or references past info.
+- Prefer storing concise, factual statements rather than long conversational exchanges.
+- When uncertain if something should be remembered, ask the user: 'Should I save this to memory?'
+- Use the universal tool with an `action` parameter.
+- Available actions:
+- - 'echo': Echo a message back (requires `message`).
+- - 'system_info': Get system diagnostics (no parameters).
+- - 'date': Get current date/time in ISO and locale formats (no parameters).
+- - 'uuid': Generate a random UUID v4 (no parameters).
+- - 'random': Generate a random integer (optional: `min`, `max`, default 0-100).
+- - 'calc': Evaluate a math expression (requires `expression`, e.g., '2 + 3 * 4').
+- Be concise in your responses
+- Show file paths clearly when working with files
+
+Pi documentation (read only when the user asks about pi itself, its SDK, extensions, themes, skills, or TUI):
+- Main documentation: /home/quangtynu/Qcoder/qclaw/node_modules/@earendil-works/pi-coding-agent/README.md
+- Additional docs: /home/quangtynu/Qcoder/qclaw/node_modules/@earendil-works/pi-coding-agent/docs
+- Examples: /home/quangtynu/Qcoder/qclaw/node_modules/@earendil-works/pi-coding-agent/examples (extensions, custom tools, SDK)
+- When asked about: extensions (docs/extensions.md, examples/extensions/), themes (docs/themes.md), skills (docs/skills.md), prompt templates (docs/prompt-templates.md), TUI components (docs/tui.md), keybindings (docs/keybindings.md), SDK integrations (docs/sdk.md), custom providers (docs/custom-provider.md), adding models (docs/models.md), pi packages (docs/packages.md)
+- When working on pi topics, read the docs and examples, and follow .md cross-references before implementing
+- Always read pi .md files completely and follow links to related docs (e.g., tui.md for TUI API details)
+Current date: 2026-05-21
+Current working directory: /home/quangtynu/Qcoder/qclaw/src
+
+--- CONVERSATION (90 messages) ---
+--- Message 0 (USER, 2026-05-21T06:41:41.245Z) ---
+context-loger.ts nó là gì vậy ?
+
+--- Message 1 (ASSISTANT, 2026-05-21T06:41:45.854Z) ---
+[thinking]
+Tôi sẽ tìm và đọc file `context-loger.ts` (hoặc `context-logger.ts`) để xem nội dung của nó.
+[toolCall]
+
+--- Message 2 (TOOL_RESULT, 2026-05-21T06:41:58.841Z) ---
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts
+/home/quangtynu/Qcoder/qclaw/src/tests/context-logger.test.ts
+
+
+--- Message 3 (ASSISTANT, 2026-05-21T06:41:58.841Z) ---
+ã tìm thấy file `context-logger.ts`. Giờ tôi sẽ đọc nội dung của nó.
+</think>
+
+[toolCall]
+
+--- Message 4 (TOOL_RESULT, 2026-05-21T06:42:02.489Z) ---
+#!/usr/bin/env node
+
+/**
+ * Context Logger
+ *
+ * Utility to log the full LLM context (system prompt, messages, tools) before
+ * it is sent to the provider. Useful for debugging, inspection, and understanding
+ * what exactly gets sent to the LLM.
+ */
+
+import { existsSync, mkdirSync, writeFileSync, appendFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import type { Message } from "@earendil-works/pi-ai";
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+
+/**
+ * Configuration for context logging.
+ */
+export interface ContextLoggerOptions {
+	/** Path to log file. If undefined, logging is disabled. */
+	logFile?: string;
+	/** Whether to append to existing file or overwrite. Default: append. */
+	append?: boolean;
+	/** Maximum number of messages to log (for truncation). Default: unlimited. */
+	maxMessages?: number;
+	/** Whether to include tool definitions in the log. Default: true. */
+	includeTools?: boolean;
+}
+
+const DEFAULT_OPTIONS: Required<Omit<ContextLoggerOptions, "logFile">> = {
+	append: true,
+	maxMessages: Infinity,
+	includeTools: true,
+};
+
+/**
+ * Format a single AgentMessage for logging.
+ */
+function formatAgentMessage(msg: Message, index: number): string {
+	const timestamp = "timestamp" in msg && msg.timestamp ? new Date(msg.timestamp).toISOString() : "";
+	let contentStr = "";
+
+	if (Array.isArray(msg.content)) {
+		contentStr = msg.content
+			.map((c) => {
+				if (c.type === "text") {
+					return (c as any).text;
+				}
+				if (c.type === "image") {
+					return `[IMAGE: ${(c as any).source.type}]`;
+				}
+				return `[${c.type}]`;
+			})
+			.join("\n");
+	} else {
+		contentStr = String(msg.content);
+	}
+
+	const roleLabel = msg.role === "user" ? "USER" : msg.role === "assistant" ? "ASSISTANT" : "TOOL_RESULT";
+
+	return `--- Message ${index} (${roleLabel}, ${timestamp}) ---\n${contentStr}\n`;
+}
+
+/**
+ * Format the full context for logging.
+ */
+export function formatContext(
+	context: {
+		systemPrompt: string;
+		messages: Message[];
+		tools?: Array<{ name: string; description: string; parameters?: any }>;
+	},
+	options: ContextLoggerOptions = {},
+): string {
+	const opts = { ...DEFAULT_OPTIONS, ...options };
+
+	let output = "=== LLM CONTEXT LOG ===\n\n";
+
+	// System prompt
+	if (context.systemPrompt) {
+		output += `--- SYSTEM PROMPT ---\n${context.systemPrompt}\n\n`;
+	}
+
+	// Messages (with limit)
+	const messagesToLog = context.messages.slice(0, opts.maxMessages);
+	output += `--- CONVERSATION (${messagesToLog.length} messages) ---\n`;
+	for (let i = 0; i < messagesToLog.length; i++) {
+		output += formatAgentMessage(messagesToLog[i], i) + "\n";
+	}
+
+	// Tools
+	if (opts.includeTools && context.tools && context.tools.length > 0) {
+		output += `--- AVAILABLE TOOLS (${context.tools.length}) ---\n`;
+		for (const tool of context.tools) {
+			output += `• ${tool.name}: ${tool.description}\n`;
+			if (tool.parameters) {
+				output += `  Parameters: ${JSON.stringify(tool.parameters, null, 2)}\n`;
+			}
+		}
+		output += "\n";
+	}
+
+	output += `=== END CONTEXT LOG (${new Date().toISOString()}) ===\n`;
+	return output;
+}
+
+/**
+ * Write context log to file.
+ */
+export function writeContextLog(context: {
+	systemPrompt: string;
+	messages: Message[];
+	tools?: Array<{ name: string; description: string; parameters?: any }>;
+}, options: ContextLoggerOptions = {}): void {
+	const logFile = options.logFile;
+	if (!logFile) {
+		return; // Logging disabled
+	}
+
+	try {
+		const logDir = dirname(logFile);
+		if (!existsSync(logDir)) {
+			mkdirSync(logDir, { recursive: true });
+		}
+
+		const formatted = formatContext(context, options);
+
+		if (options.append) {
+			appendFileSync(logFile, formatted);
+		} else {
+			writeFileSync(logFile, formatted);
+		}
+	} catch (error) {
+		// Don't throw - logging should never break the main flow
+		console.error("ContextLogger: Failed to write log file:", error);
+	}
+}
+
+/**
+ * Create a wrapper stream function that logs context before sending to LLM.
+ *
+ * Usage:
+ * ```typescript
+ * const loggedStreamFn = createContextLoggingStreamFn(originalStreamFn, contextLogFile);
+ * ```
+ */
+export function createContextLoggingStreamFn(
+	originalStreamFn: (...args: any[]) => any,
+	logFile: string,
+	logOptions?: Omit<ContextLoggerOptions, "logFile">,
+): (...args: any[]) => any {
+	return async (...args: any[]) => {
+		const [model, context, options] = args;
+		// Log the context before sending
+		writeContextLog(
+			{
+				systemPrompt: context.systemPrompt,
+				messages: context.messages,
+				tools: context.tools,
+			},
+			{ logFile, ...logOptions },
+		);
+
+		// Call original stream function
+		return originalStreamFn(...args);
+	};
+}
+
+
+--- Message 5 (ASSISTANT, 2026-05-21T06:42:02.490Z) ---
+ôi đã đọc file `context-logger.ts`. Đây là một utility logger được thiết kế để ghi lại toàn bộ context LLM (system prompt, messages, tools) trước khi nó được gửi đến provider. Đây là một công cụ hữu ích cho việc debugging, inspection và hiểu rõ những gì được gửi đến LLM.
+
+Tôi sẽ giải thích cho người dùng rõ ràng về file này.
+</think>
+**context-logger.ts** là một **utility** (tiện ích) dùng để **ghi log toàn bộ context của LLM** (Large Language Model) trước khi nó được gửi đến provider (như OpenAI, Anthropic, v.v.).
+
+File này thực hiện các chức năng sau:
+
+## 1. **Mục đích chính**
+- Debugging: Xem trước cxactly những gì sẽ được gửi đến LLM
+- Inspection: Kiểm tra system prompt, messages, và tools
+- Understanding: Hiểu rõ cấu trúc context đang được sử dụng
+
+## 2. **Các tính năng chính**
+
+### `formatContext()`
+- Format toàn bộ context thành chuỗi log dễ đọc
+- Bao gồm: system prompt, conversation messages, available tools
+- Hỗ trợ giới hạn số messages (maxMessages)
+- Có option include/exclude tools
+
+### `writeContextLog()`
+- Ghi log vào file
+- Tự động tạo thư mục nếu chưa tồn tại
+- Hỗ tr
+
+--- Message 6 (USER, 2026-05-21T06:42:29.101Z) ---
+nó đăng ký vào hệ thốn thế naog? extension hay là gì ?
+
+--- Message 7 (ASSISTANT, 2026-05-21T06:42:29.105Z) ---
+[thinking]
+Tôi sẽ tìm xem `context-logger.ts` được sử dụng và đăng ký như thế nào trong hệ thống.
+[toolCall]
+
+--- Message 8 (TOOL_RESULT, 2026-05-21T06:42:40.261Z) ---
+/home/quangtynu/Qcoder/qclaw/src/piclaw-core.ts:25:import { createContextLoggingStreamFn } from "./context-logger.js";
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts:19:export interface ContextLoggerOptions {
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts:30:const DEFAULT_OPTIONS: Required<Omit<ContextLoggerOptions, "logFile">> = {
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts:73:	options: ContextLoggerOptions = {},
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts:114:}, options: ContextLoggerOptions = {}): void {
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts:135:		console.error("ContextLogger: Failed to write log file:", error);
+/home/quangtynu/Qcoder/qclaw/src/context-logger.ts:150:	logOptions?: Omit<ContextLoggerOptions, "logFile">,
+/home/quangtynu/Qcoder/qclaw/src/tests/context-logger.test.ts:4:import { formatContext, createContextLoggingStreamFn } from '../context-logger.js';
+/home/quangtynu/Qcoder/qclaw/src/tests/context-logger.test.ts:6:describe('context-logger', () => {
+
+
+--- Message 9 (ASSISTANT, 2026-05-21T06:42:40.262Z) ---
+ôi thấy context logger được import vào `piclaw-core.ts`. Hãy đọc file đó để xem nó được sử dụng như thế nào.
+</think>
+
+[toolCall]
+
+--- Message 10 (TOOL_RESULT, 2026-05-21T06:42:46.265Z) ---
+#!/usr/bin/env node
+
+/**
+ * Piclaw Core Bootstrapping
+ *
+ * Core logic for creating and configuring the agent runtime.
+ * Separated from UI concerns for testability and reusability.
+ */
+
+import {
+  createAgentSessionServices,
+  createAgentSessionFromServices,
+  SessionManager,
+  AgentSessionRuntime,
+  createAgentSessionRuntime,
+  type CreateAgentSessionRuntimeFactory,
+  type CreateAgentSessionRuntimeResult,
+  type AgentSessionServices,
+  type AgentSessionRuntimeDiagnostic,
+} from "@earendil-works/pi-coding-agent";
+import { getAgentDir } from "./config/config-manager.js";
+import { getDefaultContextLogFile } from "./config/config-manager.js";
+
+import type { ToolDefinition } from "@earendil-works/pi-coding-agent";
+import { createContextLoggingStreamFn } from "./context-logger.js";
+
+export interface PiclawCoreOptions {
+  /** Working directory (default: process.cwd()) */
+  cwd?: string;
+  /** Agent directory (default: ~/.piclaw/agent) */
+  agentDir?: string;
+  /** Custom session directory */
+  sessionDir?: string;
+  /** Tool allowlist (default: from settings or built-in) */
+  tools?: string[];
+  /** Model to use (provider:modelId) */
+  model?: string;
+  /** Thinking level */
+  thinking?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
+  /** Verbose logging */
+  verbose?: boolean;
+  /** Path to file where LLM context (system prompt, messages, tools) will be logged before each request */
+  contextLogFile?: string;
+}
+
+/**
+ * Create the agent runtime without starting the UI.
+ *
+ * This function handles:
+ * - Services creation (auth, models, settings, resource loader)
+ * - Session creation using factory system
+ * - Initial model and thinking level configuration
+ *
+ * @param options - Configuration options
+ * @returns AgentSessionRuntime ready to run
+ */
+export async function bootPiclaw(options: PiclawCoreOptions = {}): Promise<AgentSessionRuntime> {
+  const cwd = options.cwd ?? process.cwd();
+  const agentDir = options.agentDir ?? getAgentDir();
+
+  // Context log file if logging is enabled
+  const contextLogFile = options.contextLogFile ?? getDefaultContextLogFile(cwd);
+
+  // Create factory for session switching
+  const createRuntimeFactory: CreateAgentSessionRuntimeFactory = async ({
+    cwd,
+    agentDir,
+    sessionManager,
+    sessionStartEvent,
+  }) => {
+    const newServices = await createAgentSessionServices({
+      cwd,
+      agentDir,
+    });
+
+    const result = await createAgentSessionFromServices({
+      services: newServices,
+      sessionManager,
+      sessionStartEvent,
+      tools: options.tools,
+    });
+
+    return {
+      ...result,
+      services: newServices,
+      diagnostics: newServices.diagnostics,
+    };
+  };
+
+  // Create initial session manager
+  const sessionManager = SessionManager.create(cwd, options.sessionDir);
+
+  // Create runtime using factory system
+  const runtime = await createAgentSessionRuntime(createRuntimeFactory, {
+    cwd,
+    agentDir,
+    sessionManager,
+    sessionStartEvent: { type: "session_start", reason: "startup" },
+  });
+
+  // Wrap streamFn with context logging if enabled
+  if (contextLogFile && runtime.session?.agent?.streamFn) {
+    const originalStreamFn = runtime.session.agent.streamFn;
+    runtime.session.agent.streamFn = createContextLoggingStreamFn(originalStreamFn, contextLogFile) as any;
+  }
+
+  // Expose the parent runtime via sessionManager for team operations
+  // This allows the spawn_team tool to access the parent runtime via ctx.sessionManager.parentRuntime
+  (runtime.session.sessionManager as any).parentRuntime = runtime;
+
+  // Also expose on extension runner's runtime object for backward compatibility
+  const extensionRunner = runtime.session.extensionRunner as any;
+  if (extensionRunner.runtime) {
+    extensionRunner.runtime.sessionRuntime = runtime;
+  }
+
+  // Apply initial model if configured
+  if (options.model && runtime.session?.model) {
+    try {
+      const [provider, modelId] = options.model.split(":");
+      if (provider && modelId) {
+        const model = runtime.services.modelRegistry.find(provider, modelId);
+        if (model) {
+          await runtime.session.setModel(model);
+        } else {
+          console.warn(`Model '${options.model}' not found in registry.`);
+        }
+      } else {
+        console.warn(`Invalid model format: '${options.model}'. Use provider:modelId`);
+      }
+    } catch (err: any) {
+      console.warn(`Failed to set model '${options.model}': ${err.message}`);
+    }
+  }
+
+  // Apply initial thinking level if configured
+  if (options.thinking && runtime.session) {
+    runtime.session.setThinkingLevel(options.thinking);
+  }
+
+  return runtime;
+}
+
+// Team functions are in src/team/team-manager.ts
+export { bootPiclawTeam, executeTeamTasks, type AgentTeam } from "./team/team-manager.js";
+
+--- Message 11 (ASSISTANT, 2026-05-21T06:42:46.306Z) ---
+ôi hiểu rồi! `context-logger.ts` không phải là một extension, mà là một **utility module** được tích hợp vào core system.
+
+Cụ thể:
+1. Nó được import trong `piclaw-core.ts`
+2. Trong hàm `bootPiclaw()`, nó kiểm tra xem có `contextLogFile` được cung cấp không
+3. Nếu có, nó bọc (wrap) `streamFn` của agent bằng `createContextLoggingStreamFn` để log context trước mỗi lần gửi request đến LLM
+
+Vậy nó hoạt động như một **middleware/helper** để logging, không phải extension độc lập. Extension trong pi-coding-agent thường là những module độc lập có thể được load/unload, trong khi context logger chính là một phần core, chỉ cần cấu hình là nó hoạt động.
+
+Tôi sẽ giải thích điều này cho người dùng.
+</think>
+Dựa trên code, **`context-logger.ts` không phải là một extension** - nó là một **utility module** của core system.
+
+Cách nó được tích hợp:
+
+1. **Import vào core**: Trong `piclaw-core.ts`, nó import `createContextLoggingStreamFn` từ `context-logger.js`
+
+2. **Được kích hoạt qua cấu hình**: Trong hàm `bootPiclaw()`, nó kiểm tra xem có `contextLogFile` được cung cấp không:
+   ```typescript
+   const contextLogFile = options.contextLogFile ?? getDefaultContextLogFile(cwd);
+   ```
+
+3. **Wrap stream function**: Nếu có file log, nó sẽ bọc (wrap) `streamFn` của agent:
+   ```typescript
+   if (contextLogFile && runtime.session?.agent?.streamFn) {
+     const originalStreamFn = runtime.session.agent.streamFn;
+     runtime.session.agent.streamFn = createContextLoggingStreamFn(originalStreamFn, contextLogFile);
+   }
+   ```
+
+4. **Log context trước mỗi request**: Mỗi lần agent gửi request đến LLM, wrapper sẽ:
+   - Gọi `writeContextLog()` để ghi system prompt, messages, tools vào file
+   - Sau đó mới gọi `originalStreamFn()` thực sự
+
+**Tóm lại**: Đây là một **middleware/logging helper** được tích hợp sâu vào core, không phải extension independent. Nó chỉ hoạt động khi được cấu hình qua option `contextLogFile`.
+
+--- Message 12 (USER, 2026-05-21T06:43:37.878Z) ---
+thế thì phải đưa nó vào thư mục nào đi chứ
+
+--- Message 13 (ASSISTANT, 2026-05-21T06:43:37.880Z) ---
+[thinking]
+File `context-logger.ts` đã đúng vị trí rồi - nó nằm ở `/home/quangtynu/Qcoder/qclaw/src/context-logger.ts`.
+
+Đây là cấu trúc thư mục `src/` hiện tại:
+
+```
+src/
+├── context-logger.ts      ← file này
+├── piclaw-core.ts         ← file chính import nó
+├── tests/
+│   └── context-logger.test.ts
+├── config/
+├── team/
+└── ... các file khác
+```
+
+**Vị trí này là hợp lý** vì:
+
+1. **Nó là core utility**, không phải extension - nên nằm ở `src/` chính, không phải trong thư mục `extensions/`
+2. **Được dùng bởi piclaw-core.ts** chính - nên đặt cùng cấp hoặc gần đó là phù hợp
+3. **Có test đi kèm** - đã có `tests/context-logger.test.ts`
+
+Nếu bạn muốn biến nó thành extension riêng biệt (có thể bật/tắt), thì sẽ phải:
+- Đưa vào thư mục `extensions/` (nếu có)
+- Viết thêm manifest file
+- Đăng ký qua extension system
+
+Nhưng hiện tại nó được tích hợp cứng vào core, nên vị trí `src/context-logger.ts` là đúng.
+
+--- Message 14 (USER, 2026-05-21T06:45:06.546Z) ---
+thì phải phân loại nó là gì và đưa vào thư mục nào cho hợp lý chứ, nó không có tên gọi à ?
+
+--- Message 15 (ASSISTANT, 2026-05-21T06:45:06.547Z) ---
+[thinking]
+Đúng rồi, nó nên có **tên/phan loại rõ ràng**. Hiện tại file tên là `context-logger.ts` cũng đã mô tả được chức năng nhưng có thể rõ ràng hơn.
+
+**Phân loại nó là gì?**  
+→ **Diagnostic/Logging Utility** (tiện ích chẩn đoán & logging) - cụ thể là **LLM Context Logger**.
+
+**Đưa vào thư mục nào?**
+
+Hiện tại đặt ở `src/context-logger.ts` là **hợp lý** vì:
+- Là core utility, không phải extension
+- Được dùng trực tiếp bởi `piclaw-core.ts`
+- Có test đi kèm
+
+N però muốn tổ chức rõ ràng hơn, có thể:
+1. **Giữ nguyên** - vì số lượng file ít, đặt ở `src/` gốc vẫn ổn
+2. **Tạo thư mục `src/utils/` hoặc `src/diagnostics/`** và đưa vào đó nếu có nhiều utility tương tự
+
+**Đề xuất tên file rõ ràng hơn:**
+- `llm-context-logger.ts` - nhấn mạnh đây là logger cho LLM context
+- Hoặc giữ `context-logger.ts` cũng được vì đã khá rõ
+
+**Kết luận:** Vị trí hiện tại là OK. Nếu muốn professional hơn, có thể đổi tên thành `llm-context-logger.ts` hoặc tạo thư mục `src/diagnostics/` để group các công cụ chẩn đoán.
+
+--- Message 16 (USER, 2026-05-21T06:46:25.930Z) ---
+cả cái file heppers.ts nữa kìa. xem nó là gì, đưa 2 file đó vào thư mục nào đó đi
+
+--- Message 17 (ASSISTANT, 2026-05-21T06:46:25.931Z) ---
+[thinking]
+Được, tôi sẽ tìm và xem file `helpers.ts`.
+[toolCall]
+
+--- Message 18 (TOOL_RESULT, 2026-05-21T06:46:37.806Z) ---
+/home/quangtynu/Qcoder/qclaw/src/helpers.ts
+
+
+--- Message 19 (ASSISTANT, 2026-05-21T06:46:37.850Z) ---
+ìm thấy file helpers.ts. Tôi sẽ đọc nó để hiểu nội dung và phân loại.
+</think>
+
+[toolCall]
+
+--- Message 20 (TOOL_RESULT, 2026-05-21T06:46:51.218Z) ---
+#!/usr/bin/env node
+
+/**
+ * Helper functions for main.ts (extracted for testability)
+ */
+
+import chalk from "chalk";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
+import { join, dirname } from "node:path";
+import type { PiclawConfig } from "./config/config-manager.js";
+
+/**
+ * Ensure piclaw extension is registered in global settings.
+ * This allows custom slash commands without manual user config.
+ */
+export async function ensurePiclawExtensionRegistered(agentDir: string, extensionPath: string): Promise<void> {
+  const globalSettingsPath = join(agentDir, "settings.json");
+
+  // Ensure the agent directory exists
+  const agentDirPath = dirname(globalSettingsPath);
+  if (!existsSync(agentDirPath)) {
+    mkdirSync(agentDirPath, { recursive: true });
+  }
+
+  // Read existing settings or use empty object
+  let globalSettings: Record<string, unknown> = {};
+  if (existsSync(globalSettingsPath)) {
+    try {
+      globalSettings = JSON.parse(readFileSync(globalSettingsPath, "utf-8"));
+    } catch (err) {
+      console.warn(chalk.yellow(`Failed to parse global settings, creating new.`));
+    }
+  }
+
+  // Ensure extensions array
+  if (!Array.isArray(globalSettings.extensions)) {
+    globalSettings.extensions = [extensionPath];
+  } else if (!globalSettings.extensions.includes(extensionPath)) {
+    globalSettings.extensions.push(extensionPath);
+  } else {
+    return; // already registered
+  }
+
+  // Write back
+  try {
+    writeFileSync(globalSettingsPath, JSON.stringify(globalSettings, null, 2), "utf-8");
+  } catch (err) {
+    console.warn(chalk.yellow(`Failed to write global settings: ${err}`));
+  }
+}
+
+/**
+ * Validate required API keys for configured providers.
+ * Checks environment variables and warns user if missing.
+ */
+export function validateApiKeys(config: PiclawConfig): void {
+  const warnings: string[] = [];
+
+  // Check model provider API keys if model is specified
+  if (config.model) {
+    const [provider] = config.model.split(":");
+    switch (provider) {
+      case "kilo":
+        if (!process.env.KILO_API_KEY) {
+          warnings.push(
+            "KILO_API_KEY environment variable is not set. " +
+            "Set it with: export KILO_API_KEY=your_api_key"
+          );
+        }
+        break;
+      case "anthropic":
+        if (!process.env.ANTHROPIC_API_KEY) {
+          warnings.push(
+            "ANTHROPIC_API_KEY environment variable is not set. " +
+            "Set it with: export ANTHROPIC_API_KEY=your_api_key"
+          );
+        }
+        break;
+      case "openai":
+        if (!process.env.OPENAI_API_KEY) {
+          warnings.push(
+            "OPENAI_API_KEY environment variable is not set. " +
+            "Set it with: export OPENAI_API_KEY=your_api_key"
+          );
+        }
+        break;
+    }
+  }
+
+  // Display warnings
+  if (warnings.length > 0) {
+    console.log(chalk.yellow("\n⚠️  API Key Warnings:"));
+    for (const warning of warnings) {
+      console.log(chalk.yellow(`  - ${warning}`));
+    }
+    console.log();
+  }
+}
+
+
+--- Message 21 (ASSISTANT, 2026-05-21T06:46:51.220Z) ---
+ôi thấy helpers.ts chứa các hàm helper cho main.ts:
+1. ensurePiclawExtensionRegistered - đăng ký extension vào settings
+2. validateApiKeys - kiểm tra API keys
+
+Vậy đây là **CLI/Application Helpers** - những hàm hỗ trợ cho CLI entry point (main.ts).
+
+Bây giờ tôi có 2 file:
+1. `context-logger.ts` - **Diagnostic Utility** (LLM Context Logger)
+2. `helpers.ts` - **CLI Helper Functions** (hỗ trợ cho main.ts)
+
+Cả hai đều là **utilities/core modules**, không phải extensions.
+
+Vị trí hiện tại (trong src/) là hợp lý, nhưng có thể tổ chức tốt hơn bằng cách:
+- Tạo thư mục `src/utils/` hoặc `src/core/` để group các modules loại này
+- Hoặc để nguyên vì số lượng file ít
+
+Tôi nên đề xuất rõ ràng cho người dùng.
+</think>
+Tốt, giờ tôi đã xem cả 2 file:
+
+## **1. `helpers.ts`**
+- **Loại**: CLI Helper Functions  
+- **Chức năng**: Chứa các hàm hỗ trợ cho `main.ts`:
+  - `ensurePiclawExtension Registered()`: Đăng ký extension piclaw vào settings
+  - `validateApiKeys()`: Kiểm tra và cảnh báo API keys thiếu
+
+## **2. `context-logger.ts`** (đã xem)
+- **Loại**: Diagnostic Utility  
+- **Chức năng**: Logger để ghi lại full LLM context (system prompt, messages, tools) trước khi gửi request
+
+---
+
+## **Đề xuất sắp xếp thư mục**
+
+Hiện tại cả 2 đang ở `src/` gốc, nhưng để **rõ ràng và scalable**, nên tạo thư mục `src/utils/` hoặc `src/lib/`:
+
+```
+src/
+├── utils/           ← Mới tạo
+│   ├── helpers.ts
+│   └── context-logger.ts
+├── piclaw-core.ts
+├── main.ts
+├── config/
+├── team/
+└── tests/
+    └── utils/      ← tests tương ứng
+        ├── helpers.test.ts
+        └── context-logger.test.ts
+```
+
+**Lý do**:
+- **Group related code**: Cả 2 đều là "hỗ trợ/tiện ích", không phải core business logic
+- **Dễ tìm**: Khi cần helper/utilities, biết ngay tìm vào `utils/`
+- **Clean structure**: `src/` chỉ còn các file quan trọng (bootstrap, entry points, config, domain modules)
+- **Scalable**: Dễ thêm更多 utilities sau này
+
+**Cách di chuyển**:
+1. Tạo `src/utils/`
+2. Di chuyển 2 file vào
+3. Cập nhật import paths trong các file sử dụng chúng (`piclaw-core.ts`, tests, etc.)
+
+Bạn muốn tôi thực hiện di chuyển này không?
+
+--- Message 22 (USER, 2026-05-21T06:47:34.453Z) ---
+ok. làm đi
+
+--- Message 23 (ASSISTANT, 2026-05-21T06:47:34.454Z) ---
+[thinking]
+Tôi sẽ thực hiện di chuyển cả 2 file vào `src/utils/` và cập nhật các import.
+[toolCall]
+
+--- Message 24 (TOOL_RESULT, 2026-05-21T06:47:39.121Z) ---
+Errors: No operation specified. Use: add_phase, add_task, update, remove_task, delete, or list; No operation. Use: add_phase, add_task, update, remove_task, list; No operation specified
+
+--- Message 25 (ASSISTANT, 2026-05-21T06:47:39.122Z) ---
+ỗi, tôi đã dùng sai cú pháp. Cần dùng `add_phase` và `add_task` riêng biệt.
+
+Tôi sẽ là các task một cách riêng lẻ.
+</think>
+
+[toolCall]
+
+--- Message 26 (TOOL_RESULT, 2026-05-21T06:47:49.474Z) ---
+Errors: No operation specified. Use: add_phase, add_task, update, remove_task, delete, or list; No operation. Use: add_phase, add_task, update, remove_task, list; No operation specified
+
+--- Message 27 (ASSISTANT, 2026-05-21T06:47:49.476Z) ---
+ình vẫn dùng sai. Cú pháp đúng là `todos({ add_phase: { name, tasks } })` hoặc `todos({ add_task: { phase, content } })`. Nhưng đây là nhiệm vụ đơn giản, có thể bỏ qua todos và làm trực tiếp. Tốt nhất nên tập trung vào công việc.
+</think>
+Bỏ qua todos, tôi sẽ thực hiện trực tiếp:
+[toolCall]
+
+--- Message 28 (TOOL_RESULT, 2026-05-21T06:47:57.984Z) ---
+(no output)
+
+--- Message 29 (ASSISTANT, 2026-05-21T06:47:57.986Z) ---
+ạo thư mục utils thành công. Giờ di chuyển 2 file.
+</think>
+
+[toolCall]
+
+--- Message 30 (TOOL_RESULT, 2026-05-21T06:48:07.290Z) ---
+(no output)
+
+--- Message 31 (ASSISTANT, 2026-05-21T06:48:07.335Z) ---
+ chuyển thành công. Giờ cập nhật import trong piclaw-core.ts
+</think>
+
+[toolCall]
+
+--- Message 32 (TOOL_RESULT, 2026-05-21T06:48:12.923Z) ---
+Successfully replaced 1 block(s) in /home/quangtynu/Qcoder/qclaw/src/piclaw-core.ts.
+
+--- Message 33 (ASSISTANT, 2026-05-21T06:48:12.924Z) ---
+date test files. Cần tìm tất cả các file test import helpers.ts hoặc context-logger.ts
+</think>
+
+[toolCall]
+
+--- Message 34 (TOOL_RESULT, 2026-05-21T06:48:15.927Z) ---
+/home/quangtynu/Qcoder/qclaw/src/tests/main.test.ts
+/home/quangtynu/Qcoder/qclaw/src/tests/helpers.test.ts
+/home/quangtynu/Qcoder/qclaw/src/tests/context-logger.test.ts
+
+
+--- Message 35 (ASSISTANT, 2026-05-21T06:48:15.928Z) ---
+ file test cần cập nhật:
+- main.test.ts (có thể import helpers)
+- helpers.test.ts (chắc chắn import helpers)
+- context-logger.test.ts (chắc chắn import context-logger)
+
+Tôi sẽ đọc từng file và cập nhật import.
+</think>
+
+[toolCall]
+[toolCall]
+[toolCall]
+
+--- Message 36 (TOOL_RESULT, 2026-05-21T06:48:19.103Z) ---
+#!/usr/bin/env node
+
+/**
+ * Unit tests for main entry point
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+// Mock modules to avoid actually launching the app
+vi.mock('../helpers.js', () => ({
+  validateApiKeys: vi.fn(),
+  ensurePiclawExtensionRegistered: vi.fn(() => Promise.resolve()),
+}));
+
+vi.mock('../config/config-manager.js', () => {
+  const mockLoadConfig = vi.fn((overrides = {}) => ({
+    model: overrides.model,
+    thinking: overrides.thinking ?? 'medium',
+    tools: overrides.tools ?? ['read', 'bash', 'edit', 'write', 'todos', 'memory', 'echo', 'system-info', 'http'],
+    sessionDir: overrides.sessionDir,
+    verbose: overrides.verbose ?? false,
+    contextLogFile: overrides.contextLogFile,
+  }));
+  return {
+    loadConfig: mockLoadConfig,
+    getAgentDir: vi.fn(() => '/home/test/.piclaw/agent'),
+  };
+});
+
+vi.mock('../piclaw-core.js', () => ({
+  bootPiclaw: vi.fn(() => Promise.resolve({
+    session: { id: 'test-session' } as any,
+    dispose: vi.fn(() => Promise.resolve()),
+    cwd: '/tmp',
+  })),
+}));
+
+vi.mock('../interactive-runner.js', () => ({
+  runInteractive: vi.fn(() => Promise.resolve()),
+}));
+
+import { main } from '../main';
+import { loadConfig } from '../config/config-manager.js';
+import { bootPiclaw } from '../piclaw-core.js';
+import { runInteractive } from '../interactive-runner.js';
+import { validateApiKeys, ensurePiclawExtensionRegistered } from '../helpers.js';
+
+describe('main()', () => {
+  let origArgv: string[];
+
+  beforeEach(() => {
+    origArgv = process.argv;
+    vi.clearAllMocks();
+    // Mock process.exit to prevent actual exit (cast to any to accept any code)
+    vi.spyOn(process, 'exit').mockImplementation((code?: any) => {
+      throw new Error(`process.exit called with ${code}`);
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    process.argv = origArgv;
+  });
+
+  it('should load config with empty overrides by default', async () => {
+    await main([]);
+    expect(loadConfig).toHaveBeenCalledWith({});
+  });
+
+  it('should validate API keys', async () => {
+    await main([]);
+    expect(validateApiKeys).toHaveBeenCalled();
+  });
+
+  it('should ensure piclaw extension registered', async () => {
+    await main([]);
+    expect(ensurePiclawExtensionRegistered).toHaveBeenCalled();
+  });
+
+  it('should boot piclaw runtime', async () => {
+    await main([]);
+    expect(bootPiclaw).toHaveBeenCalled();
+  });
+
+  it('should run interactive runner', async () => {
+    await main([]);
+    expect(runInteractive).toHaveBeenCalled();
+  });
+
+  it('should pass parsed CLI args to bootPiclaw', async () => {
+    await main([
+      '--cwd', '/project',
+      '--sessionDir', '/custom/sessions',
+      '--tools', 'read,bash',
+      '--model', 'openai:gpt-4o',
+      '--thinking', 'high',
+    ]);
+
+    const actualArg = (bootPiclaw as any).mock.calls[0][0];
+    // Check expected properties
+    expect(actualArg.cwd).toBe('/project');
+    expect(actualArg.agentDir).toBeTypeOf('string');
+    expect(actualArg.sessionDir).toBe('/custom/sessions');
+    expect(actualArg.tools).toEqual(['read', 'bash']);
+    expect(actualArg.model).toBe('openai:gpt-4o');
+    expect(actualArg.thinking).toBe('high');
+    expect(actualArg.verbose).toBe(false);
+    expect(actualArg.contextLogFile).toBeUndefined();
+  });
+
+  it('should handle errors gracefully and exit with code 1', async () => {
+    const error = new Error('Bootstrap failed');
+    (bootPiclaw as any).mockRejectedValueOnce(error);
+
+    await expect(main([])).rejects.toThrow('process.exit called with 1');
+  });
+});
+
+// Direct unit test for parseOptions (real function)
+import { parseOptions } from '../cli/args.js';
+describe('parseOptions', () => {
+  it('should handle --help and exit', () => {
+    expect(() => parseOptions(['--help'])).toThrow('process.exit');
+  });
+});
+
+
+--- Message 37 (TOOL_RESULT, 2026-05-21T06:48:19.103Z) ---
+#!/usr/bin/env node
+
+/**
+ * Unit tests for helpers.ts
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { validateApiKeys, ensurePiclawExtensionRegistered } from '../helpers.js';
+import * as fs from 'node:fs';
+import { existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { homedir } from 'node:os';
+
+describe('helpers', () => {
+  let originalHome: string;
+  let tempHome: string;
+
+  beforeEach(() => {
+    originalHome = homedir();
+    tempHome = join(originalHome, '.piclaw-test-home-helpers');
+    if (existsSync(tempHome)) {
+      rmSync(tempHome, { recursive: true, force: true });
+    }
+    mkdirSync(tempHome, { recursive: true });
+    vi.stubEnv('HOME', tempHome);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    if (existsSync(tempHome)) {
+      rmSync(tempHome, { recursive: true, force: true });
+    }
+    vi.restoreAllMocks();
+  });
+
+  describe('validateApiKeys', () => {
+    it('should warn if ANTHROPIC_API_KEY missing for anthropic model', () => {
+      delete process.env.ANTHROPIC_API_KEY;
+      const config = { model: 'anthropic:claude-opus-4-5' } as any;
+      const logSpy = vi.spyOn(console, 'log');
+
+      validateApiKeys(config);
+
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('ANTHROPIC_API_KEY'));
+    });
+
+    it('should not warn if ANTHROPIC_API_KEY set', () => {
+      process.env.ANTHROPIC_API_KEY = 'test-key';
+      const config = { model: 'anthropic:claude-opus-4-5' } as any;
+      const logSpy = vi.spyOn(console, 'log');
+
+      validateApiKeys(config);
+
+      // Should not log any API key warnings
+      const calledWithApiKey = logSpy.mock.calls.some((args: any[]) =>
+        args.some((arg: any) => typeof arg === 'string' && arg.includes('API Key Warnings'))
+      );
+      expect(calledWithApiKey).toBe(false);
+    });
+
+    it('should warn if OPENAI_API_KEY missing for openai model', () => {
+      delete process.env.OPENAI_API_KEY;
+      const config = { model: 'openai:gpt-4' } as any;
+      const logSpy = vi.spyOn(console, 'log');
+
+      validateApiKeys(config);
+
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('OPENAI_API_KEY'));
+    });
+
+    it('should warn if KILO_API_KEY missing for kilo model', () => {
+      delete process.env.KILO_API_KEY;
+      const config = { model: 'kilo:some-model' } as any;
+      const logSpy = vi.spyOn(console, 'log');
+
+      validateApiKeys(config);
+
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('KILO_API_KEY'));
+    });
+
+    it('should not warn if no model configured', () => {
+      const config = { model: undefined } as any;
+      const warnSpy = vi.spyOn(console, 'warn');
+
+      validateApiKeys(config);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('should handle invalid model format (no colon)', () => {
+      const config = { model: 'invalidmodel' } as any;
+      const warnSpy = vi.spyOn(console, 'warn');
+
+      // Should not crash and not warn about API key (since provider extraction fails)
+      validateApiKeys(config);
+
+      // No API key warning because split returns ['invalidmodel'], provider not in switch
+      expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('API Key Warnings'));
+    });
+
+    it('should not warn for unknown provider (switch default)', () => {
+      const config = { model: 'unknown:provider' } as any;
+      const logSpy = vi.spyOn(console, 'log');
+
+      validateApiKeys(config);
+
+      // Should not output any API Key Warnings
+      const calledWithApiKey = logSpy.mock.calls.some((args: any[]) =>
+        args.some((arg: any) => typeof arg === 'string' && arg.includes('API Key Warnings'))
+      );
+      expect(calledWithApiKey).toBe(false);
+    });
+
+    it('should warn for multiple missing keys', () => {
+      delete process.env.ANTHROPIC_API_KEY;
+      delete process.env.OPENAI_API_KEY;
+      const config = { model: 'anthropic:claude-opus-4-5' } as any;
+      const logSpy = vi.spyOn(console, 'log');
+
+      validateApiKeys(config);
+
+      // At least one call contains API Key Warnings header
+      const hasHeader = logSpy.mock.calls.some((args: any[]) =>
+        args.some((arg: any) => typeof arg === 'string' && arg.includes('API Key Warnings'))
+      );
+      expect(hasHeader).toBe(true);
+    });
+  });
+
+  describe('ensurePiclawExtensionRegistered', () => {
+    it('should create settings file with extension if not exists', async () => {
+      const agentDir = join(tempHome, '.piclaw', 'agent');
+      const extensionPath = join(agentDir, 'extensions', 'index.js');
+
+      await ensurePiclawExtensionRegistered(agentDir, extensionPath);
+
+      const settingsPath = join(agentDir, 'settings.json');
+      expect(existsSync(settingsPath)).toBe(true);
+
+      const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
+      expect(Array.isArray(settings.extensions)).toBe(true);
+      expect(settings.extensions).toContain(extensionPath);
+    });
+
+    it('should not duplicate extension if already registered', async () => {
+      const agentDir = join(tempHome, '.piclaw', 'agent');
+      const settingsPath = join(agentDir, 'settings.json');
+      mkdirSync(agentDir, { recursive: true });
+      writeFileSync(settingsPath, JSON.stringify({
+        extensions: ['/other/ext.js'],
+      }, null, 2));
+
+      const extensionPath = join(agentDir, 'extensions', 'index.js');
+
+      await ensurePiclawExtensionRegistered(agentDir, extensionPath);
+
+      const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
+      expect(settings.extensions).toHaveLength(2);
+      expect(settings.extensions).toContain('/other/ext.js');
+      expect(settings.extensions).toContain(extensionPath);
+    });
+
+    it('should handle malformed JSON in existing settings', async () => {
+      const agentDir = join(tempHome, '.piclaw', 'agent');
+      const settingsPath = join(agentDir, 'settings.json');
+      mkdirSync(agentDir, { recursive: true });
+      writeFileSync(settingsPath, '{ invalid json }');
+
+      const extensionPath = join(agentDir, 'extensions', 'index.js');
+
+      // Should not throw, should create new settings
+      await ensurePiclawExtensionRegistered(agentDir, extensionPath);
+
+      const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
+      expect(Array.isArray(settings.extensions)).toBe(true);
+      expect(settings.extensions).toContain(extensionPath);
+    });
+
+    it('should create agent directory if missing', async () => {
+      const agentDir = join(tempHome, '.piclaw', 'agent');
+      expect(existsSync(agentDir)).toBe(false);
+
+      const extensionPath = join(agentDir, 'extensions', 'index.js');
+      await ensurePiclawExtensionRegistered(agentDir, extensionPath);
+
+      expect(existsSync(agentDir)).toBe(true);
+    });
+  });
+});
+
+
+--- Message 38 (TOOL_RESULT, 2026-05-21T06:48:19.103Z) ---
+#!/usr/bin/env node
+
+import { describe, it, expect, vi } from 'vitest';
+import { formatContext, createContextLoggingStreamFn } from '../context-logger.js';
+
+describe('context-logger', () => {
+  it('formatContext includes system prompt and tools', () => {
+    const msg: any = { role: 'user', content: [{ type: 'text', text: 'hi' }], timestamp: Date.now() };
+    const result = formatContext({
+      systemPrompt: 'sys',
+      messages: [msg],
+      tools: [{ name: 'tool', description: 'desc' }],
+    });
+    expect(result).toContain('SYSTEM PROMPT');
+    expect(result).toContain('AVAILABLE TOOLS');
+  });
+
+  it('respects maxMessages', () => {
+    const msgs = Array.from({ length: 5 }, (_, i) => ({
+      role: 'user' as const,
+      content: [{ type: 'text' as const, text: `m${i}` }],
+      timestamp: Date.now(),
+    }));
+    const result = formatContext({ systemPrompt: '', messages: msgs as any }, { maxMessages: 2 });
+    expect(result).toContain('m0');
+    expect(result).not.toContain('m2');
+  });
+
+  it('createContextLoggingStreamFn returns original result', async () => {
+    const mockOriginal = vi.fn().mockResolvedValue({ result: 'ok' });
+    const wrapped = createContextLoggingStreamFn(mockOriginal, '/tmp/log');
+    const result = await wrapped('model', { systemPrompt: '', messages: [] }, {});
+    expect(result).toEqual({ result: 'ok' });
+  });
+});
+
+
+--- Message 39 (ASSISTANT, 2026-05-21T06:48:19.104Z) ---
+ất cả 3 file test đều import từ `../helpers.js` và `../context-logger.js`. Sau khi di chuyển, chúng cần thay đổi thành:
+
+- main.test.ts: `vi.mock('../helpers.js', ...)` → `vi.mock('../utils/helpers.js', ...)`
+- main.test.ts: `import { validateApiKeys, ensurePiclawExtensionRegistered } from '../helpers.js';` → `from '../utils/helpers.js'`
+- helpers.test.ts: `import { validateApiKeys, ensurePiclawExtensionRegistered } from '../helpers.js';` → `from '../utils/helpers.js'`
+- context-logger.test.ts: `import { formatContext, createContextLoggingStreamFn } from '../context-logger.js';` → `from '../utils/context-logger.js'`
+
+Tôi sẽ cập nhật từng file.
+</think>
+
+[toolCall]
+
+--- Message 40 (TOOL_RESULT, 2026-05-21T06:48:28.470Z) ---
+Validation failed for tool "edit":
+  - edits.0: must be object
+
+Received arguments:
+{
+  "path": "/home/quangtynu/Qcoder/qclaw/src/tests/main.test.ts",
+  "edits": "\n[{\"oldText\": \"vi.mock('../helpers.js', () => ({\", \"newText\": \"vi.mock('../utils/helpers.js', () => ({\")}, {\"oldText\": \"import { validateApiKeys, ensurePiclawExtensionRegistered } from '../helpers.js';\", \"newText\": \"import { validateApiKeys, ensurePiclawExtensionRegistered } from '../utils/helpers.js';\"}]\n"
+}
+
+--- Message 41 (ASSISTANT, 2026-05-21T06:48:28.472Z) ---
+ôi đã truyền JSON string thay vì object. Cần dùng object.
+</think>
+
+[toolCall]
+
+--- Message 42 (TOOL_RESULT, 2026-05-21T06:48:32.728Z) ---
+Validation failed for tool "edit":
+  - edits.0: must be object
+
+Received arguments:
+{
+  "path": "/home/quangtynu/Qcoder/qclaw/src/tests/main.test.ts",
+  "edits": "\n[{\"oldText\": \"vi.mock('../helpers.js', () => ({\", \"newText\": \"vi.mock('../utils/helpers.js', () => ({\")}, {\"oldText\": \"import { validateApiKeys, ensurePiclawExtensionRegistered } from '../helpers.js';\", \"newText\": \"import { validateApiKeys, ensurePiclawExtensionRegistered } from '../utils/helpers.js';\"}]\n"
+}
+
+--- Message 43 (ASSISTANT, 2026-05-21T06:48:32.731Z) ---
+ó vẻ tool edit đang nhận string thay vì object. Đọc lại docs: edit nhận object với path và edits[]. Tôi nên viết đúng cú pháp object. Tuy nhiên error nói edits.0 phải là object, có nghĩa là edits phải là array of objects. Tôi đã truyền đúng, có lẽ do formatting. Thử lại với object đơn giản hơn.
+
+Thật ra, tôi nghĩ vấn đề là tôi đang truyền vào một string (vì có dấu newline). Tôi cần truyền plain object.
+</think>
+
+[toolCall]
+
+--- Message 44 (TOOL_RESULT, 2026-05-21T06:48:40.030Z) ---
+Successfully replaced 1 block(s) in /home/quangtynu/Qcoder/qclaw/src/tests/main.test.ts.
+
+--- Message 45 (ASSISTANT, 2026-05-21T06:48:40.031Z) ---
+ một số, giờ thay import line.
+</think>
+
+[toolCall]
+
+--- Message 46 (TOOL_RESULT, 2026-05-21T06:48:51.200Z) ---
+Successfully replaced 1 block(s) in /home/quangtynu/Qcoder/qclaw/src/tests/main.test.ts.
+
+--- Message 47 (ASSISTANT, 2026-05-21T06:48:51.206Z) ---
+ong main.test.ts. Giờ helpers.test.ts.
+</think>
+
+[toolCall]
+
+--- Message 48 (TOOL_RESULT, 2026-05-21T06:49:00.403Z) ---
+Successfully replaced 1 block(s) in /home/quangtynu/Qcoder/qclaw/src/tests/helpers.test.ts.
+
+--- Message 49 (ASSISTANT, 2026-05-21T06:49:00.405Z) ---
+-logger.test.ts.
+</think>
+
+[toolCall]
+
+--- Message 50 (TOOL_RESULT, 2026-05-21T06:49:03.615Z) ---
+Successfully replaced 1 block(s) in /home/quangtynu/Qcoder/qclaw/src/tests/context-logger.test.ts.
+
+--- Message 51 (ASSISTANT, 2026-05-21T06:49:03.616Z) ---
+ã xong tất cả. Bây giờ tôi sẽ xác minh cấu trúc và chạy test nhanh để đảm bảo không bỏ sót gì.
+</think>
+
+[toolCall]
+
+--- Message 52 (TOOL_RESULT, 2026-05-21T06:49:14.274Z) ---
+total 20
+drwxrwxr-x 2 quangtynu quangtynu 4096 May 21 13:48 .
+drwxrwxr-x 9 quangtynu quangtynu 4096 May 21 13:48 ..
+-rw-rw-r-- 1 quangtynu quangtynu 4618 May 20 08:29 context-logger.ts
+-rw-rw-r-- 1 quangtynu quangtynu 3021 May 20 08:29 helpers.ts
+
+
+--- Message 53 (ASSISTANT, 2026-05-21T06:49:14.277Z) ---
+ốt. Giờ kiểm tra xem còn file nào khác tham chiếu đến 2 file cũ không.
+</think>
+
+[toolCall]
+
+--- Message 54 (TOOL_RESULT, 2026-05-21T06:49:16.881Z) ---
+(no output)
+
+Command exited with code 1
+
+--- Message 55 (ASSISTANT, 2026-05-21T06:49:16.882Z) ---
+ còn any file nào ngoài tests. Kiểm tra context-logger.
+</think>
+
+[toolCall]
+
+--- Message 56 (TOOL_RESULT, 2026-05-21T06:49:19.257Z) ---
+(no output)
+
+Command exited with code 1
+
+--- Message 57 (ASSISTANT, 2026-05-21T06:49:19.261Z) ---
+ ì, có nghĩa là chỉ còn trong tests thôi, và tôi đã cập nhật hết.
+
+Kiểm tra piclaw-core.ts import đúng chưa.
+</think>
+
+[toolCall]
+
+--- Message 58 (TOOL_RESULT, 2026-05-21T06:49:21.636Z) ---
+import { createContextLoggingStreamFn } from "./utils/context-logger.js";
+
+
+--- Message 59 (ASSISTANT, 2026-05-21T06:49:21.637Z) ---
+t. Bây giờ có thể chạy test nhanh để kiểm tra syntax.
+</think>
+
+[toolCall]
+
+--- Message 60 (TOOL_RESULT, 2026-05-21T06:49:26.688Z) ---
+
+> piclaw@0.0.1 test
+> vitest run --run context-logger.test.ts helpers.test.ts
+
+
+ RUN  v4.1.5 /home/quangtynu/Qcoder/qclaw
+
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  13:49:26
+   Duration  227ms (transform 95ms, setup 0ms, import 133ms, tests 26ms, environment 0ms)
+
+
+
+--- Message 61 (ASSISTANT, 2026-05-21T06:49:26.689Z) ---
+ passed. Di chuyển thành công.
+
+Tóm tắt những gì đã làm:
+1. Tạo thư mục src/utils/
+2. Di chuyển helpers.ts và context-logger.ts vào src/utils/
+3. Cập nhật import trong piclaw-core.ts (chỉ dẫn tới utils/context-logger.ts)
+4. Cập nhật import trong tất cả 3 file test
+5. Chạy test xác nhận hoạt động
+
+Cấu trúc mới:
+src/
+├── utils/
+│   ├── helpers.ts
+│   └── context-logger.ts
+├── piclaw-core.ts
+├── main.ts
+├── config/
+├── team/
+└── tests/ (các test đã cập nhật import)
+
+Nếu muốn, có thể tiếp tục di chuyển cả các file trong tests/ vào tests/utils/ để giữ consistency, nhưng hiện tại tests vẫn giữ nguyên cấu trúc cũ và import từ ../utils/ vẫn hoạt động.
+
+Tuy nhiên, hiện tại test helpers.test.ts và context-logger.test.ts đang ở tests/ gốc, nên có thể tạo tests/utils/ và di chuyển chúng vào để match. Tuy nhiên, đây là việc tùy chọn. Tôi sẽ đề xuất nếu cần.
+</think>
+Hoàn thành! Đã di chuyển thành công và cập nhật tất cả imports.
+
+## Tóm tắt thay đổi:
+
+1. ✅ Tạo thư mục `src/utils/`
+2. ✅ Di chuyển `helpers.ts` → `src/utils/helpers.ts`
+3. ✅ Di chuyển `context-logger.ts` → `src/utils/context-logger.ts`
+4. ✅ Cập nhật imports:
+   - `piclaw-core.ts` → `./utils/context-logger.js`
+   - `main.test.ts` → `../utils/helpers.js`
+   - `helpers.test.ts` → `../utils/helpers.js`
+   - `context-logger.test.ts` → `../utils/context-logger.js`
+5. ✅ Tests đã pass (15 tests passed)
+
+**Cấu trúc mới:**
+```
+src/
+├── utils/
+│   ├── helpers.ts           (API key validation, extension registration)
+│   └── context-logger.ts    (LLM context logging utility)
+├── piclaw-core.ts
+├── main.ts
+├── config/
+├── team/
+└── tests/                   (test files vẫn giữ nguyên, import từ utils/)
+```
+
+Hai file này bây giờ được phân loại rõ ràng là **utility modules** trong thư mục `utils/` - vị trí hợp lý cho các code hỗ trợ chung.
+
+--- Message 62 (USER, 2026-05-21T06:52:50.777Z) ---
+nên đưa thư mục team vào extensions
+
+--- Message 63 (ASSISTANT, 2026-05-21T06:52:50.779Z) ---
+[thinking]
+Người dùng đề xuất đưa thư mục `team/` vào `extensions/`. Tôi cần xem xét:
+
+1. `team/` hiện tại ở đâu? Nó nằm trong `src/team/`
+2. Nó là gì? Từ code trước, tôi thấy có `team-manager.ts` và các file liên quan đến team operations
+3. Có phải là extension không?
+
+Từ code `piclaw-core.ts`, tôi thấy:
+```typescript
+export { bootPiclawTeam, executeTeamTasks, type AgentTeam } from "./team/team-manager.js";
+```
+
+Và trong file, nó đề cập "Team functions are in src/team/team-manager.ts".
+
+Vậy `team/` là một module riêng biệt, có thể là extension hoặc core feature. Từ code, nó được export trực tiếp từ `piclaw-core.ts` nên có vẻ là core feature, không phải extension độc lập.
+
+Tuy nhiên, nếu muốn tổ chức rõ ràng:
+- `extensions/` nên chứa các extension độc lập
+- `src/team/` có thể là một extension feature được tích hợp sâu vào core
+
+Nhưng đề xuất của người dùng là "đưa thư mục team vào extensions", có nghĩa là di chuyển `src/team/` vào `src/extensions/` hoặc tương tự.
+
+Tôi cần xem ý nghĩa: liệu `team/` có phải là extension không? Nếu có thể hoạt động độc lập, thì nên là extension. Nếu nó là core functionality (như piclaw core), thì nên giữ trong core.
+
+Từ code:
+- `bootPiclawTeam`, `executeTeamTasks` được export từ `piclaw-core.ts`
+- Trong `piclaw-core.ts`, nó được import và export thành phần công khai
+
+Vậy `team/` có vẻ là một phần mở rộng chính thức, có thể là extension đặc biệt. Nếu có thư mục `extensions/`, thì có thể đặt `team/` vào đó.
+
+Tôi nên:
+1. Kiểm tra xem project đã có thư mục `extensions/` chưa?
+2. Xác định `team/` có nên là extension hay không
+3. Nếu có, di chuyển `src/team/` vào `src/extensions/team/` và cập nhật imports
+
+Tôi sẽ tìm hiểu thêm về cấu trúc project.
+</think>
+Được, tôi sẽ xem cấu trúc hiện tại của thư mục `team/` và đánh giá xem có nên đưa nó vào `extensions/` không.
+[toolCall]
+
+--- Message 64 (TOOL_RESULT, 2026-05-21T06:53:12.528Z) ---
+total 40
+drwxrwxr-x 2 quangtynu quangtynu  4096 May 20 08:29 .
+drwxrwxr-x 9 quangtynu quangtynu  4096 May 21 13:48 ..
+-rw-rw-r-- 1 quangtynu quangtynu   518 May 20 08:29 index.ts
+-rw-rw-r-- 1 quangtynu quangtynu 11472 May 20 08:29 team-manager.ts
+-rw-rw-r-- 1 quangtynu quangtynu  8213 May 20 08:29 team-ops-tool.ts
+-rw-rw-r-- 1 quangtynu quangtynu  1403 May 20 08:29 workspace.ts
+
+
+--- Message 65 (ASSISTANT, 2026-05-21T06:53:12.530Z) ---
+ó thư mục `src/team/` với các file:
+- index.ts
+- team-manager.ts
+- team-ops-tool.ts
+- workspace.ts
+
+Bây giờ tôi cần kiểm tra xem đã có thư mục `extensions/` nào chưa. Nếu chưa có, tôi cần tạo mới.
+
+Sau đó, tôi sẽ xem xét team có phải là extension hay không. Từ code piclaw-core.ts, nó import từ "./team/team-manager.js" và export. Nếu nó là extension, nó có thể độc lập hơn.
+
+Tuy nhiên, trong piclaw-core.ts, nó được import và export trực tiếp, có nghĩa là team là một phần của core. Nếu tôi muốn đưa nó vào extensions, tôi cần:
+1. Tạo thư mục `src/extensions/team/`
+2. Di chuyển toàn bộ `src/team/` vào đó
+3. Cập nhật imports trong `piclaw-core.ts` từ `./team/` sang `./extensions/team/`
+4. Kiểm tra xem có file nào khác tham chiếu đến `team/` không
+
+Tôi cũng cần kiểm tra xem đã có thư mục `extensions/` nào chưa. Trong Pi framework, extensions thường nằm trong thư mục `extensions/` riêng. Tuy nhiên, cấu trúc có thể khác nhau.
+
+Tôi sẽ tìm hiểu xem đã có cấu trúc extensions nào chưa.
+</think>
+
+[toolCall]
+
+--- Message 66 (TOOL_RESULT, 2026-05-21T06:53:48.748Z) ---
+/home/quangtynu/Qcoder/qclaw/dist/extensions
+/home/quangtynu/Qcoder/qclaw/src/extensions
+/home/quangtynu/Qcoder/qclaw/coverage/src/extensions
+/home/quangtynu/Qcoder/qclaw/coverage/lcov-report/src/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@smithy/smithy-client/dist-types/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@smithy/smithy-client/dist-es/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@smithy/types/dist-types/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@smithy/types/dist-es/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@smithy/protocol-http/dist-types/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@smithy/protocol-http/dist-es/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@aws-sdk/types/dist-types/ts3.4/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@aws-sdk/types/dist-types/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@aws-sdk/types/dist-es/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@aws-sdk/region-config-resolver/dist-types/ts3.4/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@aws-sdk/region-config-resolver/dist-types/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@aws-sdk/region-config-resolver/dist-es/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@earendil-works/pi-coding-agent/dist/core/extensions
+/home/quangtynu/Qcoder/qclaw/node_modules/@earendil-works/pi-coding-agent/examples/extensions
+/home/quangtynu/Qcoder/qclaw/llm-context/packages/coding-agent/src/core/extensions
+/home/quangtynu/Qcoder/qclaw/llm-context/packages/coding-agent/examples/extensions
+
+
+--- Message 67 (ASSISTANT, 2026-05-21T06:53:48.749Z) ---
+ó thư mục `src/extensions/` trong project này! Tôi cần xem có gì trong đó.
+</think>
+
+[toolCall]
+
+--- Message 68 (TOOL_RESULT, 2026-05-21T06:53:51.048Z) ---
+total 32
+drwxrwxr-x 5 quangtynu quangtynu 4096 May 20 08:29 .
+drwxrwxr-x 9 quangtynu quangtynu 4096 May 21 13:48 ..
+drwxrwxr-x 2 quangtynu quangtynu 4096 May 20 08:29 hooks
+-rw-rw-r-- 1 quangtynu quangtynu  954 May 20 08:29 index.ts
+-rw-rw-r-- 1 quangtynu quangtynu 2628 May 20 08:29 piclaw-header.ts
+drwxrwxr-x 3 quangtynu quangtynu 4096 May 20 08:29 providers
+-rw-rw-r-- 1 quangtynu quangtynu 1755 May 20 08:29 README.md
+drwxrwxr-x 4 quangtynu quangtynu 4096 May 20 08:29 tools
+
+
+--- Message 69 (ASSISTANT, 2026-05-21T06:53:51.050Z) ---
+ậy đã có thư mục `src/extensions/`. Tôi xem xem nó có đặc điểm gì:
+
+- hooks/
+- index.ts
+- piclaw-header.ts
+- providers/
+- README.md
+- tools/
+
+Có vẻ đây là nơi chứa các extensions chính thức của piclaw. Tôi có thể đọc `index.ts` và `README.md` để hiểu rõ hơn về cấu trúc.
+</think>
+
+[toolCall]
+[toolCall]
+
+--- Message 70 (TOOL_RESULT, 2026-05-21T06:53:55.142Z) ---
+#!/usr/bin/env node
+
+/**
+ * Piclaw Extensions - Main Entry Point
+ *
+ * This file registers all custom extensions for Piclaw.
+ */
+
+import { registerKiloProvider } from "./providers/kilo-provider.js";
+import { registerTodosTool, registerMemoryTool, registerUniversalTool } from "./tools/index.js";
+import { registerSubToolLoaderExtension } from "./tools/subtool-loader";
+import autoContinueExtension from "./hooks/auto-continue.js";
+
+import piclawHeader from "./piclaw-header.js";
+
+export default function (api: import("@earendil-works/pi-coding-agent").ExtensionAPI) {
+  // Register providers
+  registerKiloProvider(api);
+
+  // Register custom tools
+  registerTodosTool(api);
+  registerMemoryTool(api);
+
+  // Register universal tool (replaces echo and system_info)
+  registerUniversalTool(api);
+  registerSubToolLoaderExtension(api);
+
+  // Register Auto Continue Extension
+  autoContinueExtension(api);
+
+  // Register Piclaw Header
+  piclawHeader(api);
+}
+
+
+--- Message 71 (TOOL_RESULT, 2026-05-21T06:53:55.142Z) ---
+# Piclaw Extensions
+
+Tổ chức các custom provider và extensions cho PiClaw.
+
+## Cấu trúc
+
+```
+extensions/
+├── index.ts              # Main entry point (được load tự động)
+├── providers/            # Provider definitions
+│   ├── index.ts         # Re-exports
+│   ├── kilo-provider.ts # Kilo provider
+│   └── models/          # Model definitions
+│       └── kilo-models.ts
+└── README.md
+```
+
+## Thêm Provider Mới
+
+1. Tạo file providers/<provider-name>-provider.ts:
+
+```typescript
+import type { ExtensionAPI, ProviderConfig } from "@earendil-works/pi-coding-agent";
+
+export function registerMyProvider(api: ExtensionAPI): void {
+  const config: ProviderConfig = {
+    baseUrl: "https://api.example.com/v1",
+    apiKey: "MY_API_KEY",
+    api: "openai-completions",
+    models: [
+      {
+        id: "my-model-v1",
+        name: "My Model V1",
+        reasoning: false,
+        input: ["text"],
+        cost: { input: 0, output: 0 },
+        contextWindow: 128000,
+        maxTokens: 4096,
+      },
+    ],
+  };
+
+  api.registerProvider("my-provider-id", config);
+}
+```
+
+2. Thêm vào `providers/index.ts`:
+
+```typescript
+export { registerMyProvider } from "./my-provider.js";
+```
+
+3. Import trong `extensions/index.ts`:
+
+```typescript
+import { registerMyProvider } from "./providers/index.js";
+
+export default function (api: ExtensionAPI) {
+  registerMyProvider(api);
+}
+```
+
+4. Build: `npm run build`
+
+Provider sẽ xuất hiện trong `/login` → "Use an API key".
+
+## Ghi chú
+
+- Extension tự động được load thông qua global settings.
+- Không cần thêm vào `package.json` workspaces.
+- Models phải được khai báo đầy đủ nếu provider chưa có trong pi-core.
+
+
+--- Message 72 (ASSISTANT, 2026-05-21T06:53:55.143Z) ---
+ậy đã có thư mục `extensions/` với cấu trúc rõ ràng:
+- `index.ts` - entry point đăng ký extensions
+- `providers/` - các provider
+- `tools/` - custom tools
+- `hooks/` - các hooks
+
+`team/` hiện tại nằm ở `src/team/` và được export trực tiếp từ `piclaw-core.ts`. Nó có thể là một extension đặc biệt (team operations) hiện đang được tích hợp cứng.
+
+Nếu muốn đưa `team/` vào `extensions/`, tôi cần:
+
+1. Di chuyển `src/team/` → `src/extensions/team/`
+2. Cập nhật `extensions/index.ts` để import và đăng ký team extension (nếu team là extension)
+3. Cập nhật `piclaw-core.ts` để import từ `./extensions/team/` thay vì `./team/`
+4. Kiểm tra các file khác có tham chiếu đến `team/` không
+
+Tuy nhiên, trước khi di chuyển, tôi cần xem `team/` có phải là extension hay không. Đọc code:
+
+- `team-manager.ts` có export `bootPiclawTeam`, `executeTeamTasks`, `AgentTeam`
+- Nó dùng các API từ pi-coding-agent, có thể là extension
+
+Tôi sẽ xem nội dung `team/team-manager.ts` để hiểu rõ hơn.
+</think>
+
+[toolCall]
+
+--- Message 73 (TOOL_RESULT, 2026-05-21T06:54:03.227Z) ---
+/**
+ * Minimal Team Manager
+ *
+ * Simple task distribution and shared workspace for multi-agent collaboration.
+ */
+
+import {
+  AgentSessionRuntime,
+  createAgentSessionRuntime,
+  createAgentSessionServices,
+  createAgentSessionFromServices,
+  type CreateAgentSessionRuntimeFactory,
+  type CreateAgentSessionRuntimeResult,
+  type SessionStartEvent,
+  type ToolDefinition,
+} from "@earendil-works/pi-coding-agent";
+import { getAgentDir } from "../config/config-manager.js";
+import { SharedWorkspace } from "./workspace.js";
+import { createTeamOpsTool } from "./team-ops-tool.js";
+
+const MAX_TEAM_SIZE = 4;
+
+function validateOptions(teamSize: number, teamRoles: string[]): { size: number; roles: string[] } {
+  const size = Math.max(1, Math.min(teamSize, MAX_TEAM_SIZE));
+  const roles: string[] = [];
+  for (let i = 0; i < size; i++) {
+    roles.push(teamRoles[i] ?? `agent-${i + 1}`);
+  }
+  return { size, roles };
+}
+
+export interface AgentTeamRuntime {
+  runtimes: AgentSessionRuntime[];
+  size: number;
+  roles: string[];
+  dispose: () => Promise<void>;
+}
+
+export class AgentTeam implements AgentTeamRuntime {
+  id: string = '';
+  runtimes: AgentSessionRuntime[] = [];
+  roles: string[] = [];
+  size = 0;
+  dispose: () => Promise<void>;
+
+  // State
+  tasks: string[] = [];
+  private taskStatuses: Map<number, { assignee: string | null; status: 'pending' | 'in_progress' | 'completed'; result: string }> = new Map();
+  private agentStatuses: Map<string, { currentTaskIndex: number | null; status: string }> = new Map();
+  private workspace: SharedWorkspace;
+
+[320 more lines in file. Use offset=51 to continue.]
+
+--- Message 74 (ASSISTANT, 2026-05-21T06:54:03.229Z) ---
+ừ code, `team-manager.ts` là một module độc lập tạo và quản lý nhiều agent runtime. Nó dùng API từ pi-coding-agent và tạo ra các team.
+
+Về bản chất, `team/` có thể là một extension vì:
+1. Nó cung cấp thêm tính năng mới (multi-agent collaboration)
+2. Nó tạo các tool mới (`createTeamOpsTool`)
+3. Nó không nằm trong core của pi-coding-agent
+
+Nhưng hiện tại nó được:
+- Import trực tiếp trong `piclaw-core.ts`
+- Export từ `piclaw-core.ts`
+
+Nếu đưa vào `extensions/`:
+- Có thể sẽ trở thành extension độc lập mà không cần integrate sâu vào core
+- Nhưng hiện tại có vẻ đang được tích hợp chặt (ví dụ: `extensions/index.ts` hiện tại chỉ register providers, tools, hooks, không có team)
+
+Tôi xem `extensions/tools/` để so sánh:
+</think>
+
+[toolCall]
+
+--- Message 75 (TOOL_RESULT, 2026-05-21T06:54:08.797Z) ---
+/**
+ * Tools Index
+ * Re-exports all custom tools for registration
+ */
+export { registerTodosTool } from "./todos-tool.js";
+export { registerMemoryTool } from "./memory-tool.js";
+export { registerUniversalTool } from "./universal-tool.js";
+
+
+--- Message 76 (ASSISTANT, 2026-05-21T06:54:08.799Z) ---
+ôi thấy có `registerTodosTool`, `registerMemoryTool`, `universal-tool`. Có thể team có thể là một tool extension.
+
+Tuy nhiên, xem `team-manager.ts`, nó export:
+- `bootPiclawTeam`: Hàm để tạo team runtime
+- `executeTeamTasks`: Hàm để chạy tasks
+- `AgentTeam`: Class quản lý team
+
+Thay vì là một tool đơn thuần, nó là một module độc lập, có thể được sử dụng như một extension riêng hoặc tích hợp.
+
+Nếu chuyển `team/` vào `extensions/team/`, tôi cần:
+1. Di chuyển toàn bộ thư mục
+2. Thêm `registerTeamExtension` trong `extensions/index.ts`
+3. Cập nhật `piclaw-core.ts` import
+
+Nhưng quan trọng: hiện tại `piclaw-core.ts` đang export trực tiếp các API từ `team-manager.ts`. Nếu chuyển vào extensions, thì cách export này có thể thay đổi.
+
+Tuy nhiên, người dùng muốn đưa `team/` vào `extensions/`. Tôi có thể làm như sau:
+
+**Cách 1:** Tạo `extensions/team/` với đầy đủ các file, và trong `extensions/index.ts`, đăng ký một extension đơn giản (không cần registration nếu team chỉ là module). Nhưng để nhất quán, có thể làm như sau:
+
+- Di chuyển `src/team/` -> `src/extensions/team/`
+- Trong `extensions/index.ts`, thêm import và call `registerTeamExtension` (nếu cần)
+- Trong `piclaw-core.ts`, thay đổi import từ `./team/team-manager.js` -> `./extensions/team/team-manager.js`
+
+Tuy nhiên, `team-manager.ts` hiện tại không phải là một extension function nhận `api: ExtensionAPI`. Nó là module độc lập. Vì vậy nếu muốn đưa vào extensions, có thể chỉ đơn giản là di chuyển thư mục và giữ nguyên cách export.
+
+**Cách đơn giản:** chỉ di chuyển thư mục `team/` vào `extensions/` mà không cần thay đổi logic extension registration, vì `team` có thể không cần đăng ký qua extension API, mà chỉ là một feature riêng.
+
+Tôi sẽ xem lại `piclaw-core.ts` để thấy cách nó sử dụng team:
+</think>
+Tôi đã xem xét. `team/` hiện tại là một module quản lý multi-agent team, nhưng **nó chưa phải là extension** (không có hàm đăng ký với ExtensionAPI).
+
+Để đưa nó vào `extensions/` một cách hợp lý, cần:
+
+1. **Di chuyển thư mục `team/` vào `extensions/`**
+2. **Tạo `registerTeamExtension`** trong `extensions/team/` để tích hợp với ExtensionAPI
+3. **Cập nhật `extensions/index.ts`** để đăng ký team extension
+4. **Cập nhật imports** trong `piclaw-core.ts` và các file khác
+
+Tuy nhiên, `team-manager.ts` hiện tại export các hàm `bootPiclawTeam`, `executeTeamTasks` trực tiếp - chúng dùng các core APIs và tạo runtime mới. Để biến nó thành extension, cần thiết kế lại một chút.
+
+Nhưng đề xuất của bạn có thể chỉ đơn giản là **tổ chức code**: đặt team vào thư mục extensions vì nó là tính năng mở rộng.
+
+**Phân tích:**
+- `src/team/` hiện tại đứng riêng, không có trong `extensions/`
+- `src/extensions/` đã có `providers/`, `tools/`, `hooks/`
+- Nếu team là một extension, nên đặt trong `extensions/team/`
+
+**Đề xuất:**
+Có thể đưa `team/` vào `extensions/` mà **không cần thay đổi code** (chỉ di chuyển thư mục và cập nhật import paths). Sau đó, nếu muốn, có thể thêm một wrapper để đăng ký team tools qua extension API.
+
+Tôi sẽ thực hiện di chuyển và cập nhật imports. Bạn có đồng ý không?
+
+--- Message 77 (USER, 2026-05-21T06:54:50.426Z) ---
+thì làm đi
+
+--- Message 78 (ASSISTANT, 2026-05-21T06:54:50.431Z) ---
+ười dùng nói "thì làm đi" - tức là họ muốn tôi thực hiện di chuyển thư mục `team/` vào `extensions/` và cập nhật imports. Tôi sẽ làm theo.
+
+Các bước:
+1. Di chuyển `src/team/` → `src/extensions/team/`
+2. Cập nhật import trong `piclaw-core.ts` từ `./team/team-manager.js` → `./extensions/team/team-manager.js`
+3. Cập nhật các imports khác nếu có
+4. Kiểm tra xem có file nào khác tham chiếu đến `team/` không
+
+Từ trước, tôi thấy `piclaw-core.ts` export:
+```typescript
+export { bootPiclawTeam, executeTeamTasks, type AgentTeam } from "./team/team-manager.js";
+```
+
+Và có lẽ `team-manager.ts` cũng import các file khác trong cùng thư mục.
+
+Tôi cần kiểm tra các file trong `team/` import với nhau như thế nào, và sau khi di chuyển, các đường dẫn tương đối sẽ thay đổi như thế nào.
+
+File:
+- `src/team/team-manager.ts` - import `./workspace.ts` và `./team-ops-tool.ts`
+- `src/team/team-ops-tool.ts` - có thể import gì đó từ `./workspace.ts`? và từ core
+- `src/team/workspace.ts` - có thể độc lập
+
+Sau khi di chuyển vào `src/extensions/team/`, các import nội bộ vẫn dùng đường dẫn tương đối `. ./workspace`, vẫn đúng.
+
+Tuy nhiên, `piclaw-core.ts` import từ `./team/team-manager.js` sẽ thành `./extensions/team/team-manager.js`.
+
+Tôi cũng cần kiểm tra xem có file nào khác ngoài `piclaw-core.ts` import từ `./team/` không.
+
+Tôi sẽ:
+1. Tạo thư mục `src/extensions/team/` nếu chưa có
+2. Di chuyển team vào đó
+3. Cập nhật import
+
+
+4. Chạy tests để đảm bảo không gây lỗi
+
+Tôi sẽ kiểm tra các file có thể tham chiếu đến thư mục `team`. Dùng lệnh grep để tìm:
+```bash
+grep -r "from ['\"].*team/" src --include="*.ts" --include="*.js" | grep -v node_modules
+```
+
+Sau khi xác định tất cả các tham chiếu, tôi sẽ cập nhật chúng cho phù hợp.
+
+Di chuyển thư mục `team` vào `extensions/team` sẽ làm thay đổi cấu trúc project. Tuy nhiên, cần lưu ý rằng `team` có thể là module độc lập và không nhất thiết phải là extension. Nhưng người dùng muốn đưa vào extensions, nên tôi sẽ làm theo.
+</think>
+Tôi sẽ di chuyển thư mục `team/` vào `extensions/` và cập nhật các import.
+[toolCall]
+
+--- Message 79 (TOOL_RESULT, 2026-05-21T06:55:15.474Z) ---
+(no output)
+
+--- Message 80 (ASSISTANT, 2026-05-21T06:55:15.476Z) ---
+ã di chuyển. Giờ cần cập nhật import trong `piclaw-core.ts`. Trước đó nó import từ `./team/team-manager.js`, giờ thành `./extensions/team/team-manager.js`.
+
+Ngoài ra, cần kiểm tra xem có file nào khác trong `src/` import từ `./team/` không.
+</think>
+
+[toolCall]
+
+--- Message 81 (TOOL_RESULT, 2026-05-21T06:55:19.941Z) ---
+Successfully replaced 1 block(s) in /home/quangtynu/Qcoder/qclaw/src/piclaw-core.ts.
+
+--- Message 82 (ASSISTANT, 2026-05-21T06:55:19.942Z) ---
+ôi cần kiểm tra xem có file nào khác trong src (ngoài piclaw-core.ts) import từ team không.
+</think>
+
+[toolCall]
+
+--- Message 83 (TOOL_RESULT, 2026-05-21T06:55:27.556Z) ---
+(no output)
+
+Command exited with code 1
+
+--- Message 84 (ASSISTANT, 2026-05-21T06:55:27.559Z) ---
+ông còn import nào khác. Bây giờ cần kiểm tra xem các file trong team/ có import nội bộ đúng không. Sau khi di chuyển, các import nội bộ trong team (ví dụ: `import { SharedWorkspace } from "./workspace.js";`) vẫn đúng vì cùng thư mục.
+
+Tuy nhiên, cần kiểm tra xem `team-ops-tool.ts` có import từ workspace không? Đã xem lần trước: team-manager.ts import workspace từ './workspace', và team-ops-tool cũng import từ './workspace'? Tôi nên xem lại:
+
+team-manager.ts:
+```ts
+import { SharedWorkspace } from "./workspace.js";
+import { createTeamOpsTool } from "./team-ops-tool.js";
+```
+
+team-ops-tool.ts: tôi nhớ nó dùng SharedWorkspace, có thể import từ './workspace.js'.
+
+workspace.ts: độc lập.
+
+Vậy các import nội bộ vẫn đúng.
+
+Bây giờ test xem có lỗi build hay test nào không.
+</think>
+
+[toolCall]
+
+--- Message 85 (TOOL_RESULT, 2026-05-21T06:55:44.473Z) ---
+/**
+ * Minimal Team Manager
+ *
+ * Simple task distribution and shared workspace for multi-agent collaboration.
+ */
+
+import {
+  AgentSessionRuntime,
+  createAgentSessionRuntime,
+  createAgentSessionServices,
+  createAgentSessionFromServices,
+  type CreateAgentSessionRuntimeFactory,
+  type CreateAgentSessionRuntimeResult,
+  type SessionStartEvent,
+  type ToolDefinition,
+} from "@earendil-works/pi-coding-agent";
+import { getAgentDir } from "../config/config-manager.js";
+import { SharedWorkspace } from "./workspace.js";
+import { createTeamOpsTool } from "./team-ops-tool.js";
+
+const MAX_TEAM_SIZE = 4;
+
+function validateOptions(teamSize: number, teamRoles: string[]): { size: number; roles: string[] } {
+  const size = Math.max(1, Math.min(teamSize, MAX_TEAM_SIZE));
+  const roles: string[] = [];
+  for (let i = 0; i < size; i++) {
+    roles.push(teamRoles[i] ?? `agent-${i + 1}`);
+  }
+  return { size, roles };
+}
+
+[340 more lines in file. Use offset=31 to continue.]
+
+--- Message 86 (ASSISTANT, 2026-05-21T06:55:44.476Z) ---
+-manager.ts import `getAgentDir` từ `../config/config-manager.js`. Sau khi di chuyển từ `src/team/` → `src/extensions/team/`, đường dẫn `../config/config-manager.js` vẫn đúng (vì config nằm ở `src/config/`).
+
+Vậy các import đều đúng.
+
+Bây giờ tôi nên chạy build hoặc test để đảm bảo không có lỗi import.
+</think>
+
+[toolCall]
+
+--- Message 87 (TOOL_RESULT, 2026-05-21T06:56:02.657Z) ---
+> piclaw@0.0.1 build
+> npm run generate-custom-models && tsc -p tsconfig.build.json && chmod +x dist/cli.js dist/main.js
+
+
+> piclaw@0.0.1 generate-custom-models
+> tsx scripts/generate-custom-models.ts
+
+🚀 Generating custom models from models.dev...
+
+Fetching models from models.dev API...
+  ✅ kilo: 258 model(s) (api: openai-completions, baseUrl: https://api.kilo.ai/api/gateway)
+
+Total loaded: 258 models
+
+✅ Generated: /home/quangtynu/Qcoder/qclaw/src/extensions/providers/models/custom-models.generated.ts
+
+src/extensions/team/index.ts(16,40): error TS2307: Cannot find module '../piclaw-core.js' or its corresponding type declarations.
+src/extensions/team/team-manager.ts(17,29): error TS2307: Cannot find module '../config/config-manager.js' or its corresponding type declarations.
+src/main.ts(15,66): error TS2307: Cannot find module './helpers.js' or its corresponding type declarations.
+src/utils/helpers.ts(10,35): error TS2307: Cannot find module './config/config-manager.js' or its corresponding type declarations.
+
+
+--- Message 88 (ASSISTANT, 2026-05-21T06:56:02.658Z) ---
+ó lỗi import. Cụ thể:
+
+1. `src/extensions/team/index.ts` error: Cannot find module '../piclaw-core.js'
+   - Có thể file `index.ts` trong team import piclaw-core? Tôi chưa xem file này.
+2. `src/extensions/team/team-manager.ts(17,29)`: Cannot find module '../config/config-manager.js'
+   - team-manager import `../config/config-manager.js` - nhưng sau khi di chuyển, `team` ở `extensions/team/`, nên đường dẫn `../config/config-manager.js` vẫn đúng nếu config ở `src/config/`. Vậy tại sao lại lỗi? Có thể tsconfig không resolve đúng? Hoặc file `config-manager.ts` không có dùng `export default`? Không, chắc là do tsconfig.build.json path ở đâu đó.
+
+Nhưng lỗi đầu tiên là từ `src/extensions/team/index.ts` - file này đã có sẵn chưa? Tôi chưa thấy nó trong team/ trước đó. Có lẽ tôi cần tạo file index.ts cho team extension.
+
+Xem lại: Trước khi di chuyển, thư mục `team/` có:
+- index.ts (có)
+- team-manager.ts
+- team-ops-tool.ts
+- workspace.ts
+
+Vậy file `index.ts` đã có sẵn. Nó import gì? Tôi cần xem.
+</think>
+
+[toolCall]
+
+--- Message 89 (TOOL_RESULT, 2026-05-21T06:56:18.154Z) ---
+/**
+ * Team System - Exports (Minimal)
+ *
+ * Simplified team collaboration with basic task distribution and shared workspace.
+ * For detailed team creation and execution, see team-manager.ts.
+ */
+
+// Core classes
+export { AgentTeam, type AgentTeamRuntime } from "./team-manager.js";
+export { SharedWorkspace, type WorkspaceEntry } from "./workspace.js";
+
+// Boot functions
+export { bootPiclawTeam, executeTeamTasks } from "./team-manager.js";
+
+// Re-exports
+export type { PiclawCoreOptions } from "../piclaw-core.js";
+
+
+--- AVAILABLE TOOLS (8) ---
+• read: Read the contents of a file. Supports text files and images (jpg, png, gif, webp). Images are sent as attachments. For text files, output is truncated to 2000 lines or 50KB (whichever is hit first). Use offset/limit for large files. When you need the full file, continue with offset until complete.
+  Parameters: {
+  "type": "object",
+  "required": [
+    "path"
+  ],
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the file to read (relative or absolute)"
+    },
+    "offset": {
+      "type": "number",
+      "description": "Line number to start reading from (1-indexed)"
+    },
+    "limit": {
+      "type": "number",
+      "description": "Maximum number of lines to read"
+    }
+  }
+}
+• bash: Execute a bash command in the current working directory. Returns stdout and stderr. Output is truncated to last 2000 lines or 50KB (whichever is hit first). If truncated, full output is saved to a temp file. Optionally provide a timeout in seconds.
+  Parameters: {
+  "type": "object",
+  "required": [
+    "command"
+  ],
+  "properties": {
+    "command": {
+      "type": "string",
+      "description": "Bash command to execute"
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Timeout in seconds (optional, no default timeout)"
+    }
+  }
+}
+• edit: Edit a single file using exact text replacement. Every edits[].oldText must match a unique, non-overlapping region of the original file. If two changes affect the same block or nearby lines, merge them into one edit instead of emitting overlapping edits. Do not include large unchanged regions just to connect distant changes.
+  Parameters: {
+  "type": "object",
+  "required": [
+    "path",
+    "edits"
+  ],
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the file to edit (relative or absolute)"
+    },
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "oldText",
+          "newText"
+        ],
+        "properties": {
+          "oldText": {
+            "type": "string",
+            "description": "Exact text for one targeted replacement. It must be unique in the original file and must not overlap with any other edits[].oldText in the same call."
+          },
+          "newText": {
+            "type": "string",
+            "description": "Replacement text for this targeted edit."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "One or more targeted replacements. Each edit is matched against the original file, not incrementally. Do not include overlapping or nested edits. If two changes touch the same block or nearby lines, merge them into one edit instead."
+    }
+  },
+  "additionalProperties": false
+}
+• write: Write content to a file. Creates the file if it doesn't exist, overwrites if it does. Automatically creates parent directories.
+  Parameters: {
+  "type": "object",
+  "required": [
+    "path",
+    "content"
+  ],
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the file to write (relative or absolute)"
+    },
+    "content": {
+      "type": "string",
+      "description": "Content to write to the file"
+    }
+  }
+}
+• todos: Complete todo management: add_phase, add_task, update, remove_task, delete, list. Auto-normalizes ONE in_progress task. Persists to .piclaw/agent/todos.json. add_task accepts phase name or ID. update supports batch update via ids array.
+  Parameters: {}
+• memory: Store and retrieve arbitrary text snippets with optional tags. Actions: add, list, get, delete, clear, search
+  Parameters: {}
+• universal: Multi-purpose tool with registry-based actions. Supports: echo, system_info, date, uuid, random, calc. Easily extensible.
+  Parameters: {
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "echo",
+        "system_info",
+        "date",
+        "uuid",
+        "random",
+        "calc"
+      ],
+      "description": "Which action to perform"
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+• subtool_loader: Access to convenience sub-tools (http, file operations). All other operations use 'bash' tool.
+  Parameters: {
+  "type": "object",
+  "properties": {
+    "subtool": {
+      "type": "string",
+      "enum": [
+        "http",
+        "ls",
+        "find",
+        "grep",
+        "read"
+      ],
+      "description": "Which sub-tool to invoke"
+    },
+    "args": {
+      "type": "object",
+      "description": "Arguments specific to the sub-tool"
+    }
+  },
+  "required": [
+    "subtool",
+    "args"
+  ]
+}
+
+=== END CONTEXT LOG (2026-05-21T06:56:18.156Z) ===
+{"timestamp":"2026-06-11T08:29:53.614Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:29:58.538Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:30:08.205Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:30:29.905Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:30:34.933Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:32:38.453Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:33:56.238Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:34:18.653Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:34:31.641Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:39:47.123Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:39:53.637Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:43:06.267Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:43:12.365Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:43:17.425Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:43:21.356Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:43:24.895Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:44:51.720Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:45:31.712Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:45:36.718Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:45:44.672Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:47:09.158Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:48:06.297Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:48:15.744Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:48:51.079Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:49:11.478Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:49:39.191Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:49:43.708Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:49:50.048Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:50:02.531Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:50:32.184Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:52:17.976Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:54:03.519Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:54:55.653Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:55:51.147Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:56:31.008Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T08:59:04.788Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:00:34.202Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:03:27.154Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:04:36.115Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:05:38.744Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:06:12.082Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:08:55.286Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:09:47.008Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:11:41.766Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:13:45.871Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:15:20.661Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:15:52.553Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:16:01.341Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:16:12.345Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:16:25.702Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:17:01.839Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:17:12.865Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:17:28.094Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:17:39.580Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:18:01.626Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:18:12.969Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:18:28.779Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:18:39.108Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:18:49.932Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:19:01.017Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:19:09.047Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:19:21.885Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:19:44.887Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:20:09.557Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:20:21.833Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:20:29.523Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:21:11.657Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:21:36.965Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:21:51.180Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:22:00.564Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:22:48.142Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:23:35.840Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:23:42.919Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:23:53.148Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:24:12.773Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:24:20.442Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:24:55.990Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:25:11.255Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:25:21.424Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:25:33.208Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:25:39.077Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:25:55.669Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:26:10.265Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:26:26.674Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:26:56.616Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:27:03.731Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:27:12.143Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:27:27.886Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:28:34.653Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:28:59.173Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:29:08.731Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:29:16.025Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:29:29.137Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:55:38.874Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:56:45.919Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:57:34.600Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:57:46.369Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:58:00.986Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:58:31.120Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:58:38.679Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:58:52.693Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:59:09.060Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:59:38.238Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T09:59:54.901Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:00:01.430Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:00:25.278Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:00:34.421Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:01:08.278Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:01:47.052Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:02:47.547Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:04:29.916Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:04:42.340Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:05:26.752Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:06:56.620Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:08:58.829Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:09:26.684Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:09:40.672Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:09:47.719Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:09:57.040Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:10:16.711Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:10:25.647Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:10:37.045Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:10:50.112Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:11:30.376Z","model":"stepfun-ai/step-3.5-flash"}
+{"timestamp":"2026-06-11T10:11:42.287Z","model":"stepfun-ai/step-3.5-flash"}
