@@ -23,7 +23,7 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~8 files (down from 12) after covering plugin-loader, git capabilities, and additional modules.
+- **Zero-coverage files**: ~3 files (down from 8) after covering numerous action tools, dev capabilities, and other modules.
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
 - **Action files**: all covered (including git-actions).
@@ -46,6 +46,11 @@
 - **Capability System Extension**: extensions/capability-system/extension.ts fully covered.
 - **Plugin Loader**: extensions/capability-system/plugin-loader.ts mostly covered (≥95%).
 - **Git capabilities**: plugins/git/capabilities/{pull,push,log} fully covered.
+- **Action tools**: action-tool.ts fully covered; all action modules (file, git, system, process, docker, network, search, package) fully covered.
+- **Dev capabilities**: plugins/dev/capabilities/{audit,format,scripts,test} fully covered.
+- **Memory tool**: extensions/tools/memory-tool.ts fully covered.
+- **Todos tool**: extensions/tools/todos-tool.ts ~83% statements.
+- **Renderer utilities**, **Team widget**, **Multi-agent core**: fully covered.
 - **Tools**: todos-tool.ts covered (>=80%).
 - **Bugs**:
   - Fixed: message-bus.waitForParentMessage.

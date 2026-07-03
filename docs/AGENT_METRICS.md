@@ -351,6 +351,30 @@
   - Functions: +2.47% (79.4% → 81.87%)
   - Lines: +2.69% (77.65% → 80.34%)
 
+### Cycle 20 - 2025-07-02 (Batch: Action Tools and Dev Capabilities)
+
+**Tasks**:
+- [x] tools/action-tool.ts → 5 tests (missing action, unknown action, success merge, error propagation, isError handling).
+- [x] tools/memory-tool.ts → 28 tests for execute covering all actions (add, list, get, delete, clear, search, unknown, JSON parsing, error handling, state reconstruction).
+- [x] tools/actions/system-actions.ts → 12 tests for df and du (flags combination, custom cwd, errors, killed).
+- [x] tools/actions/process-actions.ts → 9 tests for ps and kill (defaults, custom, errors, killed).
+- [x] tools/actions/docker-actions.ts → 12 tests for docker ps/images (flags, errors, killed).
+- [x] tools/actions/network-actions.ts → 12 tests for ping and curl (defaults, options, errors, killed).
+- [x] tools/actions/search-actions.ts → 8 tests for grep and find (pattern, paths, flags, errors, killed).
+- [x] tools/actions/package-actions.ts → 12 tests for npm and apt (install, global, multiple packages, update, errors, killed).
+- [x] plugins/dev/capabilities/audit.ts → 6 tests (audit, fix, error fallback, exception, cwd default).
+- [x] plugins/dev/capabilities/format.ts → 7 tests (format files, missing files, errors).
+- [x] plugins/dev/capabilities/scripts.ts → 6 tests (list, run, missing script, errors).
+- [x] plugins/dev/capabilities/test.ts → 7 tests (default test, files, watch, combined, errors).
+
+**Summary**:
+- Tests added: 98 (total ~1594)
+- Coverage delta:
+  - Statements: +0.10% (80.2% → 80.3%)
+  - Branches: +0.48% (72.67% → 73.15%)
+  - Functions: -0.68% (81.87% → 81.19%)
+  - Lines: +0.19% (80.34% → 80.53%)
+
 ---
 
 ## Health Score Calculation

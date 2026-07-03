@@ -5,7 +5,7 @@
 ## Current Trajectory
 
 - **Health Score**: ~62 (after 14 cycles)
-- **Coverage Trend**: 80.2% statements, 72.7% branches (target ≥80%)
+- **Coverage Trend**: 80.3% statements, 73.15% branches (target ≥80%)
 - **Estimated Cycles to Production-Ready**: ~20-24 batches (assuming ~1.0% avg gain)
 
 ## Upcoming Refactors
@@ -16,14 +16,13 @@
 
 ## Infrastructure Evolution
 
-- **Immediate** (Cycles 10-19):
-  - Completed: plugin-loader, git capabilities (pull, push, log), capability-system extension.
-  - Remaining high-impact 0% modules: memory-tool, action-tool, todos-tool, multi-agent router/parent-tools, various action files.
-  - Target: reduce 0-coverage files to <5; bring branches ≥80%.
+- **Immediate** (Cycles 10-20):
+  - Completed: memory-tool execute coverage, action-tool, all action tools (system, process, docker, network, search, package), all dev capabilities (audit, format, scripts, test), plugin-loader, git capabilities (pull,push,log), capability-system extension.
+  - Remaining high-impact branches: todos-tool (167 branches, 66% covered), plugin-loader (56 branches, 30% covered), capability-system/extension (64 branches, 11% covered), team-manager (75 branches, 71% covered), guideline-generator (61 branches, 57% covered).
+  - Target: branches ≥80%; reduce 0-coverage files to <3.
   - Refactor file-actions lsAction bug (else-if).
-  - Continue splitting large functions (memory-tool, action-tool).
-  - Maintain coverage gain (~0.8% per batch expected).
-  - Covered: all UI renderers, team-widget, multi-agent core (definition, types), runtime, child-worker, guideline-generator, session-tool, capability-system extension, plugin-loader, several git capabilities.
+  - Memory-tool and action-tool have been covered; their large functions exist but are now well-tested.
+  - Next focus: plugin-loader branch coverage (watch mode, error paths), extension branch coverage (debug command, env handling), todos-tool branch coverage (multi-phase op handling).
 
 - **Short-term** (Month 1-2):
   - Coverage target ≥70% overall
