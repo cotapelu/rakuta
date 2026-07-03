@@ -4,9 +4,9 @@
 
 ## Current Trajectory
 
-- **Health Score**: 48.5 (after 2 cycles)
-- **Coverage Trend**: 49.88% statements (target ≥80%)
-- **Estimated Cycles to Production-Ready**: ~18-22 batches (assuming ~1.9% gain per batch recently)
+- **Health Score**: 49.5 (after 3 cycles)
+- **Coverage Trend**: 50.44% statements (target ≥80%)
+- **Estimated Cycles to Production-Ready**: ~20-25 batches (assuming ~1.9% gain per batch recently)
 
 ## Upcoming Refactors
 
@@ -16,10 +16,11 @@
 
 ## Infrastructure Evolution
 
-- **Immediate** (Cycles 3-6):
+- **Immediate** (Cycles 4-6):
   - Continue coverage sprint: add tests for remaining 0-coverage core modules (session operations, tool utilities)
-  - Target: reduce 0-coverage files to <50
-  - Add unit tests for file-actions, git-actions, network-actions (est. 30+ files)
+  - Target: reduce 0-coverage files to <60
+  - Add unit tests for git-actions, process-actions, network-actions (priority action files)
+  - Refactor file-actions bug (combine flags) and other large functions
 
 - **Short-term** (Month 1-2):
   - Coverage target ≥60% overall

@@ -17,11 +17,16 @@
 - **memory-tool.ts**: Large function (registerMemoryTool ~200 lines) - refactor needed.
 - **action-tool.ts**: Long createActionTool function with complex type handling; consider extracting example builder.
 
+## Identified Bugs
+
+- **file-actions.ts**: lsAction uses `else if` for recursive flag, preventing both `all` and `recursive` from being active together. Should be two independent `if` statements.
+
 ## Recurring Debt
 
-- **Zero-coverage files**: ~75 files with 0% statement coverage (down from 81).
+- **Zero-coverage files**: ~72 files with 0% statement coverage (down from 81).
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
+- **Action files**: git-actions, process-actions, network-actions still at 0% coverage; priority for next cycles.
 
 ## Common Testing Gaps
 
