@@ -4,9 +4,9 @@
 
 ## Current Trajectory
 
-- **Health Score**: 55.0 (after 9 cycles)
-- **Coverage Trend**: 58.79% statements (target ≥80%)
-- **Estimated Cycles to Production-Ready**: ~25-30 batches (assuming ~1.0% avg gain per batch)
+- **Health Score**: 56.0 (after 10 cycles)
+- **Coverage Trend**: 60.06% statements (target ≥80%)
+- **Estimated Cycles to Production-Ready**: ~20-24 batches (assuming ~1.2% avg gain)
 
 ## Upcoming Refactors
 

@@ -23,17 +23,17 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~51 files with 0% statement coverage (down from 81).
+- **Zero-coverage files**: ~49 files with 0% statement coverage (down from 81).
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
 - **Action files**: all covered (including git-actions).
 - **Provider modules**: kilo-provider.ts covered.
 - **Utility modules**: logger.ts covered.
-- **Multi-agent modules**: child-tools.ts, message-bus.ts, router.ts covered.
+- **Multi-agent modules**: child-tools.ts, message-bus.ts, router.ts, parent-tools.ts covered.
 - **Commands**: copy-command.ts, team-command.ts, provider-command.ts covered.
 - **Command Utils**: command-args.ts covered.
 - **Provider Models**: models/index.ts covered.
-- **Sub-tools**: http.ts covered; remaining: computer-use.ts.
+- **Sub-tools**: computer-use.ts covered; http.ts already covered.
 - **Hooks**: auto-continue.ts still 0% (high priority).
 - **Capability-System**: many plugins still 0% (priority).
 - **Bugs**:
