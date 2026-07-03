@@ -67,7 +67,7 @@ export async function awaitResult(params: AwaitResultParams): Promise<{ content:
 
 export async function listChildren(params: ListChildrenParams): Promise<{ content: { type: 'text'; text: string }[]; details: ChildInfo[] }> {
   const runtime = getRuntime();
-  const children = runtime.listChildren(params.status);
+  const children = await runtime.listChildren(params.status);
   const text = children.length === 0
     ? 'No children'
     : children.map((c) => `${c.id} (${c.type}) [${c.status}]: ${c.mission}`).join('\n');
