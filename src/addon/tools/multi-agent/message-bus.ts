@@ -95,7 +95,7 @@ export class MessageBus extends EventEmitter {
       }, timeoutMs);
 
       const listener = (envelope: any) => {
-        if (envelope.from === 'child' && envelope.to === 'parent' && envelope.type === type) {
+        if (envelope.from === 'parent' && envelope.to === childId && envelope.type === type) {
           clearTimeout(timer);
           this.off(`child:${childId}`, listener);
           resolve(envelope);

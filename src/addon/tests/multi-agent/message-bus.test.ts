@@ -20,7 +20,7 @@ describe('MessageBus', () => {
       expect(envelope.to).toBe('child1');
       expect(envelope.type).toBe('input');
       expect(envelope.payload).toBeUndefined();
-      expect(envelope.timestamp).toBeInstanceOf(String);
+      expect(typeof envelope.timestamp).toBe('string');
       expect(envelope.correlationId).toMatch(/^\d+-[a-z0-9]+$/);
     });
 
@@ -52,6 +52,7 @@ describe('MessageBus', () => {
       expect(emitSpy).toHaveBeenCalledWith('child:c1', expect.any(Object));
       expect(emitSpy).toHaveBeenCalledWith('message', expect.any(Object));
     });
+
     it('does not include payload when absent', () => {
       const handler = vi.fn();
       bus.onChildMessage('c2', handler);
@@ -125,7 +126,7 @@ describe('MessageBus', () => {
     it('resolves when matching message arrives', async () => {
       const promise = bus.waitForParentMessage('c1', 'result', 1000);
       setTimeout(() => {
-        bus.sendToParent(msg('result', { val: 42 }), 'c1');
+        bus.sendToChild('c1', msg('result', { val: 42 }));
       }, 10);
       const result = await promise;
       expect(result).not.toBeNull();
@@ -172,6 +173,53 @@ describe('MessageBus', () => {
       bus.clearChild('c1');
       expect(bus.parentToChildHandlers.has('c1')).toBe(false);
       expect(bus.childIncomingHandlers.has('c1')).toBe(false);
+    });
+  });
+
+  // Additional tests for branch coverage
+  describe('additional branch coverage', () => {
+    it('onChildMessage supports multiple handlers for same child', () => {
+      const h1 = vi.fn();
+      const h2 = vi.fn();
+      bus.onChildMessage('c1', h1);
+      bus.onChildMessage('c1', h2);
+      bus.sendToChild('c1', msg('ping'));
+      expect(h1).toHaveBeenCalledTimes(1);
+      expect(h2).toHaveBeenCalledTimes(1);
+    });
+
+    it('onIncomingMessage supports multiple handlers for same child', () => {
+      const h1 = vi.fn();
+      const h2 = vi.fn();
+      bus.onIncomingMessage('c1', h1);
+      bus.onIncomingMessage('c1', h2);
+      bus.sendToChild('c1', msg('ping'));
+      expect(h1).toHaveBeenCalledTimes(1);
+      expect(h2).toHaveBeenCalledTimes(1);
+    });
+
+    it('waitForParentMessage ignores non-matching messages', async () => {
+      const promise = bus.waitForParentMessage('c1', 'result', 1000);
+      bus.sendToChild('c1', msg('other'));
+      setTimeout(() => bus.sendToChild('c1', msg('result', { v: 1 })), 5);
+      const result = await promise;
+      expect(result).not.toBeNull();
+      if (result) {
+        expect(result.type).toBe('result');
+        expect(result.payload).toEqual({ v: 1 });
+      }
+    });
+
+    it('waitForIncomingMessage ignores non-matching types', async () => {
+      const promise = bus.waitForIncomingMessage('c1', 'cmd', 1000);
+      bus.sendToChild('c1', msg('data'));
+      setTimeout(() => bus.sendToChild('c1', msg('cmd', { cmd: 'run' })), 5);
+      const result = await promise;
+      expect(result).not.toBeNull();
+      if (result) {
+        expect(result.type).toBe('cmd');
+        expect(result.payload).toEqual({ cmd: 'run' });
+      }
     });
   });
 });
