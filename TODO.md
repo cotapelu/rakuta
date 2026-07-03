@@ -16,6 +16,8 @@ Last Updated: 2026-06-26
 - [x] Add unit tests for multi-agent definition.ts and types.ts (core type guards and tool definition).
 - [x] Add unit tests for multi-agent runtime.ts (core orchestration, 23 tests).
 - [x] Add unit tests for multi-agent/worker/child-worker.ts (child agent lifecycle, 5 tests).
+- [x] Add unit tests for session-tool extension (2 tests).
+- [x] Add unit tests for capability-system/guideline-generator (13 tests) – high coverage.
 - [x] Enhance capability router tool with dynamic capabilities list
   - Tool now auto-discovers and displays all registered capabilities in guidelines
   - LLM sees full list of capabilities with IDs and descriptions

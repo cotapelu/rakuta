@@ -306,6 +306,22 @@
 
 ---
 
+### Cycle 17 - 2025-07-02 (Batch: Guideline Generator & Session Tool)
+
+**Tasks**:
+- [x] capability-system/guideline-generator.ts → 13 tests, full coverage
+- [x] extensions/session-tool → 2 tests, full coverage
+
+**Summary**:
+- Tests added: 15 (total 1463)
+- Coverage delta:
+  - Statements: +2.25% (74.52% → 76.77%)
+  - Branches: +2.19% (68.00% → 70.41%)
+  - Functions: +1.78% (77.19% → 78.97%)
+  - Lines: +2.37% (74.31% → 76.68%)
+
+---
+
 ## Health Score Calculation
 
 ```
