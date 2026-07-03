@@ -23,7 +23,7 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~12 files (down from 81) after covering renderers, team-widget, multi-agent (core, runtime, child-worker), guideline-generator, session-tool, and capability-system extension.
+- **Zero-coverage files**: ~8 files (down from 12) after covering plugin-loader, git capabilities, and additional modules.
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
 - **Action files**: all covered (including git-actions).
@@ -44,6 +44,8 @@
 - **Guideline generator**: capability-system/guideline-generator.ts fully covered.
 - **Session tool**: extensions/session-tool.ts fully covered.
 - **Capability System Extension**: extensions/capability-system/extension.ts fully covered.
+- **Plugin Loader**: extensions/capability-system/plugin-loader.ts mostly covered (≥95%).
+- **Git capabilities**: plugins/git/capabilities/{pull,push,log} fully covered.
 - **Tools**: todos-tool.ts covered (>=80%).
 - **Bugs**:
   - Fixed: message-bus.waitForParentMessage.
