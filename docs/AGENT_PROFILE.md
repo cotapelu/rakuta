@@ -23,7 +23,7 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~40 files with 0% statement coverage (down from 81).
+- **Zero-coverage files**: ~30 files (down from 81) after covering renderers, team-widget, and multi-agent core.
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
 - **Action files**: all covered (including git-actions).
@@ -35,7 +35,10 @@
 - **Provider Models**: models/index.ts covered.
 - **Sub-tools**: computer-use.ts covered; http.ts already covered.
 - **Hooks**: auto-continue.ts covered.
-- **Capability-System**: registry.ts, dev.build, git (status-renderer, status, commit, diff), security.scan covered; others still 0% (priority).
+- **Capability-System**: registry.ts, dev.build, git (status-renderer, status, commit, diff), security.scan covered; remaining 0% prioritized.
+- **UI renderers**: branch-summary, memory, team-ops, todos now fully covered.
+- **Team widget**: team-widget.ts covered.
+- **Multi-agent core**: definition.ts and types.ts fully covered.
 - **Tools**: todos-tool.ts covered (>=80%).
 - **Bugs**:
   - Fixed: message-bus.waitForParentMessage.
@@ -62,5 +65,5 @@
 
 ---
 
-*Last updated: 2025-06-30 23:30*
+*Last updated: 2025-07-02*
 *Next update: After next batch*

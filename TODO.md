@@ -10,6 +10,10 @@ Last Updated: 2026-06-26
   - [x] Make extension async and await plugin loading
   - [x] Update tests to await extension
   - [x] Replace missing mock-api with inline mock
+
+- [x] Add comprehensive unit tests for 4 uncovered UI renderers (branch-summary, memory, team-ops, todos).
+- [x] Add unit tests for team-widget.ts (team widget UI).
+- [x] Add unit tests for multi-agent definition.ts and types.ts (core type guards and tool definition).
 - [x] Enhance capability router tool with dynamic capabilities list
   - Tool now auto-discovers and displays all registered capabilities in guidelines
   - LLM sees full list of capabilities with IDs and descriptions
