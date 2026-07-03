@@ -236,6 +236,27 @@
 
 ---
 
+### Cycle 13 - 2025-07-01 06:00 (Batch 13: Git Capabilities)
+
+**Tasks**:
+- [x] plugins/git/capabilities/status.ts → 100% stmt, 90% branch, 100% func, 100% lines
+- [x] plugins/git/capabilities/commit.ts → 100% stmt, 75% branch, 100% func, 100% lines
+- [x] plugins/git/capabilities/diff.ts → 100% stmt, 82% branch, 100% func, 100% lines
+
+**Summary**:
+- Tests added: 15 (total 1354)
+- Coverage delta:
+  - Statements: +0.86% (68.5% → 69.36%)
+  - Branches: +0.95% (62.73% → 63.68%)
+  - Functions: +0.34% (71.4% → 71.74%)
+  - Lines: +0.91% (67.68% → 68.59%)
+- Quality Gate: All tasks ≥80%
+- Audit: Fixed branch-line parsing bug in git.status; no other issues.
+
+**Health Score**: ~60.5
+
+---
+
 ## Health Score Calculation
 
 ```
