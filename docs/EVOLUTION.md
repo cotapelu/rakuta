@@ -4,9 +4,9 @@
 
 ## Current Trajectory
 
-- **Health Score**: 50.0 (after 4 cycles)
-- **Coverage Trend**: 51.34% statements (target ≥80%)
-- **Estimated Cycles to Production-Ready**: ~22-28 batches (assuming ~1.0% avg gain per batch recently)
+- **Health Score**: 51.0 (after 5 cycles)
+- **Coverage Trend**: 52.45% statements (target ≥80%)
+- **Estimated Cycles to Production-Ready**: ~25-30 batches (assuming ~1.0% avg gain per batch)
 
 ## Upcoming Refactors
 
@@ -16,12 +16,13 @@
 
 ## Infrastructure Evolution
 
-- **Immediate** (Cycles 5-7):
-  - Continue coverage sprint for action files: git-actions, network-actions, search-actions, package-actions, etc.
+- **Immediate** (Cycles 6-8):
+  - Complete remaining action files: git-actions (last 0% action)
+  - Add tests for session operations (registry, manager, router) still at 0%
   - Target: reduce 0-coverage files to <50
-  - Refactor file-actions lsAction bug (convert else-if to independent if)
+  - Refactor file-actions lsAction bug (else-if)
   - Begin splitting large functions (memory-tool, action-tool)
-  - Add tests for session operations (registry, manager) still at 0%
+  - Add missing JSDoc for public APIs (coverage target 80% docs)
 
 - **Short-term** (Month 1-2):
   - Coverage target ≥60% overall
