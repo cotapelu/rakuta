@@ -23,10 +23,11 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~72 files with 0% statement coverage (down from 81).
+- **Zero-coverage files**: ~66 files with 0% statement coverage (down from 81).
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
-- **Action files**: git-actions, process-actions, network-actions still at 0% coverage; priority for next cycles.
+- **Action files**: git-actions, network-actions, search-actions, package-actions still at 0% coverage; priority for next cycles.
+- **Bug**: file-actions.ts lsAction prevents combining all+recursive (else-if); scheduled for refactor.
 
 ## Common Testing Gaps
 
