@@ -4,8 +4,8 @@
 
 ## Current Trajectory
 
-- **Health Score**: 54.0 (after 8 cycles)
-- **Coverage Trend**: 57.31% statements (target ≥80%)
+- **Health Score**: 55.0 (after 9 cycles)
+- **Coverage Trend**: 58.79% statements (target ≥80%)
 - **Estimated Cycles to Production-Ready**: ~25-30 batches (assuming ~1.0% avg gain per batch)
 
 ## Upcoming Refactors
@@ -16,12 +16,11 @@
 
 ## Infrastructure Evolution
 
-- **Immediate** (Cycles 9-11):
-  - High-priority 0% modules: capability-system (plugins, registry, extension), hooks/auto-continue, sub-tools/computer-use, keybinding, piclaw-header, renderers (branch-summary, memory, team-ops, todos), multi-agent (parent-tools, runtime, worker), tools/todos-tool, utils/command-args.
+- **Immediate** (Cycles 10-12):
+  - High-priority 0% modules: capability-system (plugins, registry, extension), hooks/auto-continue, sub-tools/computer-use, keybinding, piclaw-header, renderers (branch-summary, memory, team-ops, todos), multi-agent (parent-tools, runtime, worker), tools/todos-tool.
   - Target: reduce 0-coverage files to <50
   - Refactor file-actions lsAction bug (else-if)
   - Continue splitting large functions (memory-tool, action-tool)
-  - Add missing JSDoc for public APIs
   - Maintain coverage gain (~1.0% per batch expected)
 
 - **Short-term** (Month 1-2):
