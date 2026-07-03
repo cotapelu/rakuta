@@ -23,7 +23,7 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~25 files (down from 81) after covering renderers, team-widget, multi-agent core, and runtime.
+- **Zero-coverage files**: ~15 files (down from 81) after covering renderers, team-widget, multi-agent core, runtime, and child-worker.
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
 - **Action files**: all covered (including git-actions).
@@ -40,6 +40,7 @@
 - **Team widget**: team-widget.ts covered.
 - **Multi-agent core**: definition.ts and types.ts fully covered.
 - **Multi-agent runtime**: runtime.ts fully covered.
+- **Multi-agent child-worker**: worker/child-worker.ts fully covered.
 - **Tools**: todos-tool.ts covered (>=80%).
 - **Bugs**:
   - Fixed: message-bus.waitForParentMessage.
