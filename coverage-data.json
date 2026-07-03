@@ -1,0 +1,96 @@
+c8 report
+
+read V8 coverage data from temp and output report
+
+Reporting options
+  -r, --reporter                   coverage reporter(s) to use [default: "text"]
+  -o, --reports-dir, --report-dir  directory where coverage reports will be
+                                   output to             [default: "./coverage"]
+      --all                        supplying --all will cause c8 to consider all
+                                   src files in the current working directory
+                                   when the determining coverage. Respects
+                                   include/exclude.   [boolean] [default: false]
+      --src                        supplying --src will override cwd as the
+                                   default location where --all looks for src
+                                   files. --src can be supplied multiple times
+                                   and each directory will be included. This
+                                   allows for workspaces spanning multiple
+                                   projects                             [string]
+  -n, --include                    a list of specific files that should be
+                                   covered (glob patterns are supported)
+                                                                   [default: []]
+  -x, --exclude                    a list of specific files and directories that
+                                   should be excluded from coverage (glob
+                                   patterns are supported)             [default:
+  ["coverage/**","packages/*/test{,s}/**","**/*.d.ts","test{,s}/**","test{,-*}.{
+  js,cjs,mjs,ts,tsx,jsx}","**/*{.,-}test.{js,cjs,mjs,ts,tsx,jsx}","**/__tests__/
+  **","**/{ava,babel,nyc}.config.{js,cjs,mjs}","**/jest.config.{js,cjs,mjs,ts}",
+         "**/{karma,rollup,webpack}.config.js","**/.{eslint,mocha}rc.{js,cjs}"]]
+  -e, --extension                  a list of specific file extensions that
+                                   should be covered
+                            [default: [".js",".cjs",".mjs",".ts",".tsx",".jsx"]]
+  -a, --exclude-after-remap        apply exclude logic to files after they are
+                                   remapped by a source-map
+                                                      [boolean] [default: false]
+      --skip-full                  do not show files with 100% statement,
+                                   branch, and function coverage
+                                                      [boolean] [default: false]
+
+Coverage thresholds
+      --check-coverage  check whether coverage is within thresholds provided
+                                                      [boolean] [default: false]
+      --branches        what % of branches must be covered?[number] [default: 0]
+      --functions       what % of functions must be covered?
+                                                           [number] [default: 0]
+      --lines           what % of lines must be covered?  [number] [default: 90]
+      --statements      what % of statements must be covered?
+                                                           [number] [default: 0]
+      --per-file        check thresholds per file     [boolean] [default: false]
+      --100             shortcut for --check-coverage --lines 100 --functions
+                        100 --branches 100 --statements 100
+                                                      [boolean] [default: false]
+
+Options:
+      --help                  Show help                                [boolean]
+      --version               Show version number                      [boolean]
+  -c, --config                path to JSON configuration file
+                                                            [default: (default)]
+      --exclude-node-modules  whether or not to exclude all node_module folders
+                              (i.e. **/node_modules/**) by default
+                                                       [boolean] [default: true]
+      --temp-directory        directory V8 coverage data is written to and read
+                              from
+      --clean                 should temp files be deleted before script
+                              execution                [boolean] [default: true]
+      --resolve               resolve paths to alternate base directory
+                                                                   [default: ""]
+      --wrapper-length        how many bytes is the wrapper prefix on executed
+                              JavaScript                                [number]
+      --omit-relative         omit any paths that are not absolute, e.g.,
+                              internal/net.js          [boolean] [default: true]
+      --allowExternal         supplying --allowExternal will cause c8 to allow
+                              files from outside of your cwd. This applies both
+                              to files discovered in coverage temp files and
+                              also src files discovered if using the --all flag.
+                                                      [boolean] [default: false]
+      --merge-async           supplying --merge-async will merge all v8 coverage
+                              reports asynchronously and incrementally. This is
+                              to avoid OOM issues with Node.js runtime.
+                                                      [boolean] [default: false]
+
+Error: ENOENT: no such file or directory, scandir '/home/quangtynu/Qcoder/tau/coverage/tmp'
+    at readdirSync (node:fs:1569:26)
+    at Report._loadReports (/home/quangtynu/Qcoder/tau/node_modules/c8/lib/report.js:325:24)
+    at Report._getMergedProcessCov (/home/quangtynu/Qcoder/tau/node_modules/c8/lib/report.js:195:37)
+    at Report.getCoverageMapFromAllCoverageFiles (/home/quangtynu/Qcoder/tau/node_modules/c8/lib/report.js:106:27)
+    at Report.run (/home/quangtynu/Qcoder/tau/node_modules/c8/lib/report.js:80:31)
+    at exports.outputReport (/home/quangtynu/Qcoder/tau/node_modules/c8/lib/commands/report.js:40:16)
+    at exports.handler (/home/quangtynu/Qcoder/tau/node_modules/c8/lib/commands/report.js:9:17)
+    at /home/quangtynu/Qcoder/tau/node_modules/yargs/build/index.cjs:1:8993
+    at j (/home/quangtynu/Qcoder/tau/node_modules/yargs/build/index.cjs:1:4956)
+    at _.handleValidationAndGetResult (/home/quangtynu/Qcoder/tau/node_modules/yargs/build/index.cjs:1:8962) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'scandir',
+  path: '/home/quangtynu/Qcoder/tau/coverage/tmp'
+}

@@ -8,7 +8,7 @@
  */
 
 import { registerKiloProvider } from "./providers/kilo-provider.js";
-import { registerTodosTool, registerMemoryTool, registerUniversalTool } from "./tools/index.js";
+import { registerTodosTool, registerMemoryTool, registerActionTool } from "./tools/index.js";
 // Tools moved to plugins: git, test, format, audit, build, metrics, secret-scanner, scripts
 import { registerTeamTool } from "./team/index.js";
 import { registerSubToolLoaderExtension } from "./tools/subtool-loader.js";
@@ -74,8 +74,8 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   // Register skills tool
   skillsToolExtension(api);
 
-  // Register universal tool
-  registerUniversalTool(api);
+  // Register action tool
+  registerActionTool(api);
   // Register sub-tool loader
   registerSubToolLoaderExtension(api);
 

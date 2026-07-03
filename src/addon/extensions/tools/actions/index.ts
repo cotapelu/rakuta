@@ -1,36 +1,42 @@
-/**
- * Actions Index
- *
- * Re-exports all actions and provides the unified actions registry.
- */
-
-export { echoAction } from "./echo-action.js";
-export { systemInfoAction } from "./system-info-action.js";
-export { dateAction } from "./date-action.js";
-export { uuidAction } from "./uuid-action.js";
-export { randomAction } from "./random-action.js";
-export { calcAction } from "./calc-action.js";
-
 import type { Action } from "./types.js";
-import { echoAction } from "./echo-action.js";
-import { systemInfoAction } from "./system-info-action.js";
-import { dateAction } from "./date-action.js";
-import { uuidAction } from "./uuid-action.js";
-import { randomAction } from "./random-action.js";
-import { calcAction } from "./calc-action.js";
 
-/**
- * Registry of all available actions for the universal tool.
- * This object maps action names to their implementations.
- *
- * Add new actions here following the pattern:
- *   newActionName: newActionObject
- */
+// Process
+export { psAction, killAction } from "./process-actions.js";
+// File
+export { lsAction, catAction } from "./file-actions.js";
+// System
+export { dfAction, duAction } from "./system-actions.js";
+// Search
+export { grepAction, findAction } from "./search-actions.js";
+// Network
+export { pingAction, curlAction } from "./network-actions.js";
+// Docker
+export { dockerPsAction, dockerImagesAction } from "./docker-actions.js";
+// Git
+export { gitStatusAction, gitLogAction, gitDiffAction, gitAddAction, gitCommitAction, gitPushAction, gitPullAction } from "./git-actions.js";
+// Package
+export { npmAction, aptAction } from "./package-actions.js";
+
 export const actions: Record<string, Action> = {
-  echo: echoAction,
-  system_info: systemInfoAction,
-  date: dateAction,
-  uuid: uuidAction,
-  random: randomAction,
-  calc: calcAction,
+  ps: (await import("./process-actions.js")).psAction,
+  kill: (await import("./process-actions.js")).killAction,
+  ls: (await import("./file-actions.js")).lsAction,
+  cat: (await import("./file-actions.js")).catAction,
+  df: (await import("./system-actions.js")).dfAction,
+  du: (await import("./system-actions.js")).duAction,
+  grep: (await import("./search-actions.js")).grepAction,
+  find: (await import("./search-actions.js")).findAction,
+  ping: (await import("./network-actions.js")).pingAction,
+  curl: (await import("./network-actions.js")).curlAction,
+  docker_ps: (await import("./docker-actions.js")).dockerPsAction,
+  docker_images: (await import("./docker-actions.js")).dockerImagesAction,
+  git_status: (await import("./git-actions.js")).gitStatusAction,
+  git_log: (await import("./git-actions.js")).gitLogAction,
+  git_diff: (await import("./git-actions.js")).gitDiffAction,
+  git_add: (await import("./git-actions.js")).gitAddAction,
+  git_commit: (await import("./git-actions.js")).gitCommitAction,
+  git_push: (await import("./git-actions.js")).gitPushAction,
+  git_pull: (await import("./git-actions.js")).gitPullAction,
+  npm: (await import("./package-actions.js")).npmAction,
+  apt: (await import("./package-actions.js")).aptAction,
 };
