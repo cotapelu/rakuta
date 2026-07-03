@@ -23,7 +23,7 @@
 
 ## Recurring Debt
 
-- **Zero-coverage files**: ~49 files with 0% statement coverage (down from 81).
+- **Zero-coverage files**: ~43 files with 0% statement coverage (down from 81).
 - **Large functions (>200 lines)**: 2 identified (memory-tool, action-tool).
 - **Complex functions**: Need audit for cyclomatic >10 in some tools.
 - **Action files**: all covered (including git-actions).
@@ -34,8 +34,9 @@
 - **Command Utils**: command-args.ts covered.
 - **Provider Models**: models/index.ts covered.
 - **Sub-tools**: computer-use.ts covered; http.ts already covered.
-- **Hooks**: auto-continue.ts still 0% (high priority).
-- **Capability-System**: many plugins still 0% (priority).
+- **Hooks**: auto-continue.ts covered.
+- **Capability-System**: registry.ts, dev.build, git.status-renderer, security.scan covered; others still 0% (priority).
+- **Tools**: todos-tool.ts covered (>=80%).
 - **Bugs**:
   - Fixed: message-bus.waitForParentMessage.
   - Fixed: performance test threshold adjusted (200→300ms).

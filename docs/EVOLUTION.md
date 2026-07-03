@@ -4,9 +4,9 @@
 
 ## Current Trajectory
 
-- **Health Score**: 56.0 (after 10 cycles)
-- **Coverage Trend**: 60.06% statements (target ≥80%)
-- **Estimated Cycles to Production-Ready**: ~20-24 batches (assuming ~1.2% avg gain)
+- **Health Score**: ~60.0 (after 12 cycles)
+- **Coverage Trend**: 68.5% statements (target ≥80%)
+- **Estimated Cycles to Production-Ready**: ~18-22 batches (assuming ~1.2% avg gain)
 
 ## Upcoming Refactors
 
@@ -17,16 +17,16 @@
 ## Infrastructure Evolution
 
 - **Immediate** (Cycles 10-12):
-  - High-priority 0% modules: capability-system (plugins, registry, extension), hooks/auto-continue, sub-tools/computer-use, keybinding, piclaw-header, renderers (branch-summary, memory, team-ops, todos), multi-agent (parent-tools, runtime, worker), tools/todos-tool.
-  - Target: reduce 0-coverage files to <50
+  - High-priority 0% modules: remaining capability-system plugins (except dev, git, security), other renderers (branch-summary, memory, team-ops, todos), some multi-agent components, keybinding, piclaw-header.
+  - Target: reduce 0-coverage files to <40
   - Refactor file-actions lsAction bug (else-if)
   - Continue splitting large functions (memory-tool, action-tool)
-  - Maintain coverage gain (~1.0% per batch expected)
+  - Maintain coverage gain (~1.2% per batch expected)
 
 - **Short-term** (Month 1-2):
-  - Coverage target ≥60% overall
-  - Set up coverage threshold enforcement in CI (fail if <60%)
-  - Begin refactoring large functions (memory-tool, action-tool)
+  - Coverage target ≥70% overall
+  - Set up coverage threshold enforcement in CI (fail if <70%)
+  - Refactor large functions (memory-tool, action-tool)
   - Add missing JSDoc for public APIs (target 80% coverage)
 
 - **Medium-term** (Months 2-3):

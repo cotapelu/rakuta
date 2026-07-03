@@ -728,13 +728,13 @@ export class TodoState {
 
 // BACKUP: formatTodoLine function (adapted for pi-tui Text)
 // formatTodoLineExtension unused - removed
-function renderTodosCall(args: any, theme: any): Text {
+export function renderTodosCall(args: any, theme: any): Text {
   const op = args.delete !== undefined ? "delete" : args.add_phase ? "add_phase" : args.add_task ? "add_task" : args.update ? "update" : args.remove_task ? "remove_task" : args.list ? "list" : "todo";
   const text = `${theme.fg("toolTitle", theme.bold("todos"))} ${theme.fg("muted", op)}`;
   return new Text(text, 0, 0);
 }
 
-function renderTodosResult(result: { details?: TodoToolDetails }, options: { expanded: boolean; isPartial: boolean }, theme: any): Text {
+export function renderTodosResult(result: { details?: TodoToolDetails }, options: { expanded: boolean; isPartial: boolean }, theme: any): Text {
   const details = result.details;
   if (!details) return new Text("", 0, 0);
   if (details.error) return new Text(theme.fg("error", `Error: ${details.error}`), 0, 0);
@@ -771,7 +771,7 @@ function renderTodosResult(result: { details?: TodoToolDetails }, options: { exp
 // Tool Factory (with mergeCallAndResult support)
 // ============================================================================
 
-function createTodoTool(api: ExtensionAPI): ToolDefinition<any, TodoToolDetails> {
+export function createTodoTool(api: ExtensionAPI): ToolDefinition<any, TodoToolDetails> {
   // No per-session state; global constants only
 
   api.on("session_start", async (_event, ctx) => {

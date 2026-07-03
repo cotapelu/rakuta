@@ -138,29 +138,6 @@
     }
   },
   {
-    "file": "addon/extensions/capability-system/plugins/dev/capabilities/build.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 7,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 7,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 7,
-      "percent": 0
-    }
-  },
-  {
     "file": "addon/extensions/capability-system/plugins/dev/capabilities/format.ts",
     "Statements": {
       "covered": 0,
@@ -437,52 +414,6 @@
     }
   },
   {
-    "file": "addon/extensions/capability-system/plugins/git/renderers/status-renderer.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 8,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 23,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 4,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 8,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/capability-system/plugins/security/capabilities/scan.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 8,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 9,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 8,
-      "percent": 0
-    }
-  },
-  {
     "file": "addon/extensions/capability-system/plugins/system/capabilities/metrics.ts",
     "Statements": {
       "covered": 0,
@@ -552,52 +483,6 @@
     }
   },
   {
-    "file": "addon/extensions/commands/copy-command.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 43,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 24,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 7,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 37,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/commands/provider-command.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 68,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 27,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 9,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 66,
-      "percent": 0
-    }
-  },
-  {
     "file": "addon/extensions/commands/session-tree-command.ts",
     "Statements": {
       "covered": 0,
@@ -640,29 +525,6 @@
     "Lines": {
       "covered": 0,
       "total": 45,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/commands/team-command.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 5,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 2,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 2,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 5,
       "percent": 0
     }
   },
@@ -713,25 +575,48 @@
     }
   },
   {
-    "file": "addon/extensions/hooks/auto-continue.ts",
+    "file": "addon/extensions/keybinding/keybinding-extension.ts",
     "Statements": {
       "covered": 0,
-      "total": 88,
+      "total": 40,
       "percent": 0
     },
     "Branches": {
       "covered": 0,
-      "total": 57,
+      "total": 28,
       "percent": 0
     },
     "Functions": {
       "covered": 0,
-      "total": 9,
+      "total": 5,
       "percent": 0
     },
     "Lines": {
       "covered": 0,
-      "total": 83,
+      "total": 40,
+      "percent": 0
+    }
+  },
+  {
+    "file": "addon/extensions/multi-agent-tool/index.ts",
+    "Statements": {
+      "covered": 0,
+      "total": 2,
+      "percent": 0
+    },
+    "Branches": {
+      "covered": 0,
+      "total": 0,
+      "percent": null
+    },
+    "Functions": {
+      "covered": 0,
+      "total": 2,
+      "percent": 0
+    },
+    "Lines": {
+      "covered": 0,
+      "total": 2,
       "percent": 0
     }
   },
@@ -782,29 +667,6 @@
     }
   },
   {
-    "file": "addon/extensions/providers/models/index.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 11,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 6,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 11,
-      "percent": 0
-    }
-  },
-  {
     "file": "addon/extensions/providers/registry.ts",
     "Statements": {
       "covered": 0,
@@ -824,6 +686,29 @@
     "Lines": {
       "covered": 0,
       "total": 1,
+      "percent": 0
+    }
+  },
+  {
+    "file": "addon/extensions/renderers/branch-summary-renderer.ts",
+    "Statements": {
+      "covered": 0,
+      "total": 19,
+      "percent": 0
+    },
+    "Branches": {
+      "covered": 0,
+      "total": 12,
+      "percent": 0
+    },
+    "Functions": {
+      "covered": 0,
+      "total": 2,
+      "percent": 0
+    },
+    "Lines": {
+      "covered": 0,
+      "total": 19,
       "percent": 0
     }
   },
@@ -897,6 +782,52 @@
     }
   },
   {
+    "file": "addon/extensions/team/team-widget.ts",
+    "Statements": {
+      "covered": 0,
+      "total": 75,
+      "percent": 0
+    },
+    "Branches": {
+      "covered": 0,
+      "total": 26,
+      "percent": 0
+    },
+    "Functions": {
+      "covered": 0,
+      "total": 21,
+      "percent": 0
+    },
+    "Lines": {
+      "covered": 0,
+      "total": 72,
+      "percent": 0
+    }
+  },
+  {
+    "file": "addon/extensions/tools/actions/index.ts",
+    "Statements": {
+      "covered": 0,
+      "total": 1,
+      "percent": 0
+    },
+    "Branches": {
+      "covered": 0,
+      "total": 0,
+      "percent": null
+    },
+    "Functions": {
+      "covered": 0,
+      "total": 0,
+      "percent": null
+    },
+    "Lines": {
+      "covered": 0,
+      "total": 1,
+      "percent": 0
+    }
+  },
+  {
     "file": "buildin/extensions/index.ts",
     "Statements": {
       "covered": 0,
@@ -917,6 +848,29 @@
       "covered": 0,
       "total": 4,
       "percent": 0
+    }
+  },
+  {
+    "file": "addon/extensions/team/team-manager.ts",
+    "Statements": {
+      "covered": 294,
+      "total": 369,
+      "percent": 80
+    },
+    "Branches": {
+      "covered": 112,
+      "total": 155,
+      "percent": 72
+    },
+    "Functions": {
+      "covered": 96,
+      "total": 116,
+      "percent": 83
+    },
+    "Lines": {
+      "covered": 274,
+      "total": 338,
+      "percent": 81
     }
   },
   {
@@ -1058,6 +1012,29 @@
     }
   },
   {
+    "file": "addon/extensions/hooks/auto-continue.ts",
+    "Statements": {
+      "covered": 83,
+      "total": 88,
+      "percent": 94
+    },
+    "Branches": {
+      "covered": 41,
+      "total": 57,
+      "percent": 72
+    },
+    "Functions": {
+      "covered": 9,
+      "total": 9,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 82,
+      "total": 83,
+      "percent": 99
+    }
+  },
+  {
     "file": "addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts",
     "Statements": {
       "covered": 234,
@@ -1077,6 +1054,75 @@
     "Lines": {
       "covered": 220,
       "total": 226,
+      "percent": 97
+    }
+  },
+  {
+    "file": "addon/extensions/team/team-ops-tool.ts",
+    "Statements": {
+      "covered": 65,
+      "total": 68,
+      "percent": 96
+    },
+    "Branches": {
+      "covered": 47,
+      "total": 53,
+      "percent": 89
+    },
+    "Functions": {
+      "covered": 3,
+      "total": 3,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 64,
+      "total": 67,
+      "percent": 96
+    }
+  },
+  {
+    "file": "addon/extensions/tools/action-tool.ts",
+    "Statements": {
+      "covered": 48,
+      "total": 50,
+      "percent": 96
+    },
+    "Branches": {
+      "covered": 37,
+      "total": 44,
+      "percent": 84
+    },
+    "Functions": {
+      "covered": 3,
+      "total": 3,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 43,
+      "total": 44,
+      "percent": 98
+    }
+  },
+  {
+    "file": "addon/extensions/commands/provider-command.ts",
+    "Statements": {
+      "covered": 66,
+      "total": 68,
+      "percent": 97
+    },
+    "Branches": {
+      "covered": 25,
+      "total": 27,
+      "percent": 93
+    },
+    "Functions": {
+      "covered": 9,
+      "total": 9,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 64,
+      "total": 66,
       "percent": 97
     }
   },
@@ -1104,6 +1150,52 @@
     }
   },
   {
+    "file": "addon/extensions/commands/copy-command.ts",
+    "Statements": {
+      "covered": 42,
+      "total": 43,
+      "percent": 98
+    },
+    "Branches": {
+      "covered": 20,
+      "total": 24,
+      "percent": 83
+    },
+    "Functions": {
+      "covered": 7,
+      "total": 7,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 37,
+      "total": 37,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/team/task-manager.ts",
+    "Statements": {
+      "covered": 126,
+      "total": 129,
+      "percent": 98
+    },
+    "Branches": {
+      "covered": 58,
+      "total": 64,
+      "percent": 91
+    },
+    "Functions": {
+      "covered": 23,
+      "total": 23,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 115,
+      "total": 116,
+      "percent": 99
+    }
+  },
+  {
     "file": "addon/extensions/capability-system/plugins/codebase/capabilities/metrics.ts",
     "Statements": {
       "covered": 76,
@@ -1123,6 +1215,98 @@
     "Lines": {
       "covered": 67,
       "total": 67,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/capability-system/plugins/dev/capabilities/build.ts",
+    "Statements": {
+      "covered": 7,
+      "total": 7,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 6,
+      "total": 7,
+      "percent": 86
+    },
+    "Functions": {
+      "covered": 1,
+      "total": 1,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 7,
+      "total": 7,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/capability-system/plugins/git/renderers/status-renderer.ts",
+    "Statements": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 21,
+      "total": 23,
+      "percent": 91
+    },
+    "Functions": {
+      "covered": 4,
+      "total": 4,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/capability-system/plugins/security/capabilities/scan.ts",
+    "Statements": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 8,
+      "total": 9,
+      "percent": 89
+    },
+    "Functions": {
+      "covered": 1,
+      "total": 1,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/commands/team-command.ts",
+    "Statements": {
+      "covered": 5,
+      "total": 5,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 2,
+      "total": 2,
+      "percent": 100
+    },
+    "Functions": {
+      "covered": 2,
+      "total": 2,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 5,
+      "total": 5,
       "percent": 100
     }
   },
@@ -1173,52 +1357,6 @@
     }
   },
   {
-    "file": "addon/extensions/keybinding/keybinding-extension.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 40,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 28,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 5,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 40,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/multi-agent-tool/index.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 2,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 0,
-      "percent": null
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 2,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 2,
-      "percent": 0
-    }
-  },
-  {
     "file": "addon/extensions/providers/index.ts",
     "Statements": {
       "covered": 0,
@@ -1239,52 +1377,6 @@
       "covered": 0,
       "total": 0,
       "percent": null
-    }
-  },
-  {
-    "file": "addon/extensions/providers/models/kilo-models.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 0,
-      "percent": null
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 0,
-      "percent": null
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/renderers/branch-summary-renderer.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 19,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 12,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 2,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 19,
-      "percent": 0
     }
   },
   {
@@ -1334,144 +1426,6 @@
     }
   },
   {
-    "file": "addon/extensions/team/team-widget.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 75,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 26,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 21,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 72,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/tools/actions/index.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 0,
-      "percent": null
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 0,
-      "percent": null
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/team/team-manager.ts",
-    "Statements": {
-      "covered": 294,
-      "total": 369,
-      "percent": 80
-    },
-    "Branches": {
-      "covered": 112,
-      "total": 155,
-      "percent": 72
-    },
-    "Functions": {
-      "covered": 96,
-      "total": 116,
-      "percent": 83
-    },
-    "Lines": {
-      "covered": 274,
-      "total": 338,
-      "percent": 81
-    }
-  },
-  {
-    "file": "addon/extensions/team/team-ops-tool.ts",
-    "Statements": {
-      "covered": 65,
-      "total": 68,
-      "percent": 96
-    },
-    "Branches": {
-      "covered": 47,
-      "total": 53,
-      "percent": 89
-    },
-    "Functions": {
-      "covered": 3,
-      "total": 3,
-      "percent": 100
-    },
-    "Lines": {
-      "covered": 64,
-      "total": 67,
-      "percent": 96
-    }
-  },
-  {
-    "file": "addon/extensions/tools/action-tool.ts",
-    "Statements": {
-      "covered": 48,
-      "total": 50,
-      "percent": 96
-    },
-    "Branches": {
-      "covered": 37,
-      "total": 44,
-      "percent": 84
-    },
-    "Functions": {
-      "covered": 3,
-      "total": 3,
-      "percent": 100
-    },
-    "Lines": {
-      "covered": 43,
-      "total": 44,
-      "percent": 98
-    }
-  },
-  {
-    "file": "addon/extensions/team/task-manager.ts",
-    "Statements": {
-      "covered": 126,
-      "total": 129,
-      "percent": 98
-    },
-    "Branches": {
-      "covered": 58,
-      "total": 64,
-      "percent": 91
-    },
-    "Functions": {
-      "covered": 23,
-      "total": 23,
-      "percent": 100
-    },
-    "Lines": {
-      "covered": 115,
-      "total": 116,
-      "percent": 99
-    }
-  },
-  {
     "file": "addon/extensions/team/team-tool.ts",
     "Statements": {
       "covered": 45,
@@ -1502,9 +1456,9 @@
       "percent": 100
     },
     "Branches": {
-      "covered": 53,
+      "covered": 54,
       "total": 57,
-      "percent": 93
+      "percent": 95
     },
     "Functions": {
       "covered": 27,
@@ -1537,6 +1491,52 @@
     "Lines": {
       "covered": 3,
       "total": 3,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/providers/models/index.ts",
+    "Statements": {
+      "covered": 11,
+      "total": 11,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 5,
+      "total": 6,
+      "percent": 83
+    },
+    "Functions": {
+      "covered": 1,
+      "total": 1,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 11,
+      "total": 11,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/providers/models/kilo-models.ts",
+    "Statements": {
+      "covered": 1,
+      "total": 1,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 0,
+      "total": 0,
+      "percent": null
+    },
+    "Functions": {
+      "covered": 0,
+      "total": 0,
+      "percent": null
+    },
+    "Lines": {
+      "covered": 1,
+      "total": 1,
       "percent": 100
     }
   },
@@ -1863,52 +1863,6 @@
     }
   },
   {
-    "file": "addon/extensions/tools/sub-tools/computer-use.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 51,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 39,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 4,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 42,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/tools/sub-tools/http.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 28,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 23,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 1,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 23,
-      "percent": 0
-    }
-  },
-  {
     "file": "addon/extensions/tools/subtool-loader.ts",
     "Statements": {
       "covered": 0,
@@ -1928,52 +1882,6 @@
     "Lines": {
       "covered": 0,
       "total": 56,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/tools/todos-tool.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 485,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 337,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 63,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 404,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/extensions/utils/command-args.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 11,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 8,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 3,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 10,
       "percent": 0
     }
   },
@@ -2043,75 +1951,6 @@
     "Lines": {
       "covered": 0,
       "total": 5,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/tools/multi-agent/message-bus.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 62,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 29,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 18,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 59,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/tools/multi-agent/parent-tools.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 31,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 16,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 8,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 31,
-      "percent": 0
-    }
-  },
-  {
-    "file": "addon/tools/multi-agent/router.ts",
-    "Statements": {
-      "covered": 0,
-      "total": 35,
-      "percent": 0
-    },
-    "Branches": {
-      "covered": 0,
-      "total": 28,
-      "percent": 0
-    },
-    "Functions": {
-      "covered": 0,
-      "total": 5,
-      "percent": 0
-    },
-    "Lines": {
-      "covered": 0,
-      "total": 29,
       "percent": 0
     }
   },
@@ -2277,6 +2116,52 @@
     }
   },
   {
+    "file": "addon/extensions/tools/todos-tool.ts",
+    "Statements": {
+      "covered": 404,
+      "total": 485,
+      "percent": 83
+    },
+    "Branches": {
+      "covered": 251,
+      "total": 337,
+      "percent": 74
+    },
+    "Functions": {
+      "covered": 59,
+      "total": 63,
+      "percent": 94
+    },
+    "Lines": {
+      "covered": 350,
+      "total": 404,
+      "percent": 87
+    }
+  },
+  {
+    "file": "addon/extensions/tools/sub-tools/computer-use.ts",
+    "Statements": {
+      "covered": 47,
+      "total": 51,
+      "percent": 92
+    },
+    "Branches": {
+      "covered": 33,
+      "total": 39,
+      "percent": 85
+    },
+    "Functions": {
+      "covered": 4,
+      "total": 4,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 38,
+      "total": 42,
+      "percent": 90
+    }
+  },
+  {
     "file": "addon/extensions/tools/tool-template.ts",
     "Statements": {
       "covered": 47,
@@ -2346,6 +2231,29 @@
     }
   },
   {
+    "file": "addon/extensions/tools/sub-tools/http.ts",
+    "Statements": {
+      "covered": 27,
+      "total": 28,
+      "percent": 96
+    },
+    "Branches": {
+      "covered": 23,
+      "total": 23,
+      "percent": 100
+    },
+    "Functions": {
+      "covered": 1,
+      "total": 1,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 22,
+      "total": 23,
+      "percent": 96
+    }
+  },
+  {
     "file": "addon/extensions/tools/skill-reader.ts",
     "Statements": {
       "covered": 62,
@@ -2365,29 +2273,6 @@
     "Lines": {
       "covered": 61,
       "total": 61,
-      "percent": 100
-    }
-  },
-  {
-    "file": "addon/logger.ts",
-    "Statements": {
-      "covered": 31,
-      "total": 32,
-      "percent": 97
-    },
-    "Branches": {
-      "covered": 30,
-      "total": 32,
-      "percent": 94
-    },
-    "Functions": {
-      "covered": 8,
-      "total": 8,
-      "percent": 100
-    },
-    "Lines": {
-      "covered": 31,
-      "total": 31,
       "percent": 100
     }
   },
@@ -2435,6 +2320,98 @@
       "covered": 0,
       "total": 0,
       "percent": null
+    }
+  },
+  {
+    "file": "addon/logger.ts",
+    "Statements": {
+      "covered": 31,
+      "total": 32,
+      "percent": 97
+    },
+    "Branches": {
+      "covered": 30,
+      "total": 32,
+      "percent": 94
+    },
+    "Functions": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 31,
+      "total": 31,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/tools/multi-agent/parent-tools.ts",
+    "Statements": {
+      "covered": 30,
+      "total": 31,
+      "percent": 97
+    },
+    "Branches": {
+      "covered": 15,
+      "total": 16,
+      "percent": 94
+    },
+    "Functions": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 30,
+      "total": 31,
+      "percent": 97
+    }
+  },
+  {
+    "file": "addon/tools/multi-agent/router.ts",
+    "Statements": {
+      "covered": 34,
+      "total": 35,
+      "percent": 97
+    },
+    "Branches": {
+      "covered": 25,
+      "total": 28,
+      "percent": 89
+    },
+    "Functions": {
+      "covered": 5,
+      "total": 5,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 29,
+      "total": 29,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/extensions/utils/command-args.ts",
+    "Statements": {
+      "covered": 11,
+      "total": 11,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 8,
+      "total": 8,
+      "percent": 100
+    },
+    "Functions": {
+      "covered": 3,
+      "total": 3,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 10,
+      "total": 10,
+      "percent": 100
     }
   },
   {
@@ -2802,6 +2779,29 @@
     "Lines": {
       "covered": 61,
       "total": 61,
+      "percent": 100
+    }
+  },
+  {
+    "file": "addon/tools/multi-agent/message-bus.ts",
+    "Statements": {
+      "covered": 62,
+      "total": 62,
+      "percent": 100
+    },
+    "Branches": {
+      "covered": 25,
+      "total": 29,
+      "percent": 86
+    },
+    "Functions": {
+      "covered": 18,
+      "total": 18,
+      "percent": 100
+    },
+    "Lines": {
+      "covered": 59,
+      "total": 59,
       "percent": 100
     }
   },

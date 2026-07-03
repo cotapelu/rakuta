@@ -215,6 +215,27 @@
 
 ---
 
+### Cycle 12 - 2025-07-01 05:30 (Batch 12: Core System & Hook)
+
+**Tasks**:
+- [x] extensions/capability-system/registry.ts → 100% stmt, 95% branch, 100% func, 100% lines
+- [x] extensions/hooks/auto-continue.ts → 94% stmt, 72% branch, 100% func, 99% lines
+- [x] extensions/tools/todos-tool.ts → 83% stmt, 74% branch, 94% func, 87% lines
+
+**Summary**:
+- Tests added: 88 (total 1339)
+- Coverage delta:
+  - Statements: +8.06% (60.44% → 68.5%)
+  - Branches: +7.82% (54.91% → 62.73%)
+  - Functions: +5.79% (65.61% → 71.4%)
+  - Lines: +8.19% (59.49% → 67.68%)
+- Quality Gate: All tasks ≥80%
+- Audit: Exported createTodoTool and render functions for testability; no other issues.
+
+**Health Score**: ~60.0
+
+---
+
 ## Health Score Calculation
 
 ```
