@@ -5,7 +5,7 @@
 ## Current Trajectory
 
 - **Health Score**: ~62 (after 14 cycles)
-- **Coverage Trend**: 76.8% statements (target ≥80%)
+- **Coverage Trend**: 77.6% statements (target ≥80%)
 - **Estimated Cycles to Production-Ready**: ~20-24 batches (assuming ~1.0% avg gain)
 
 ## Upcoming Refactors
@@ -16,13 +16,13 @@
 
 ## Infrastructure Evolution
 
-- **Immediate** (Cycles 10-17):
-  - High-priority 0% modules: plugin-loader, extension, guideline-generator (now covered), and remaining small 0% modules.
-  - Target: reduce 0-coverage files to <5
+- **Immediate** (Cycles 10-18):
+  - High-priority 0% modules: plugin-loader (largest), and remaining small 0% modules.
+  - Target: reduce 0-coverage files to <8
   - Refactor file-actions lsAction bug (else-if)
   - Continue splitting large functions (memory-tool, action-tool)
   - Maintain coverage gain (~0.8% per batch expected)
-  - Covered: all UI renderers, team-widget, multi-agent core (definition, types), runtime, child-worker, guideline-generator, session-tool.
+  - Covered: all UI renderers, team-widget, multi-agent core (definition, types), runtime, child-worker, guideline-generator, session-tool, capability-system extension.
 
 - **Short-term** (Month 1-2):
   - Coverage target ≥70% overall

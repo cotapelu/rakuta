@@ -322,6 +322,21 @@
 
 ---
 
+### Cycle 18 - 2025-07-02 (Batch: Capability System Extension)
+
+**Tasks**:
+- [x] capability-system/extension.ts → 8 tests, covers initialization, loader usage, command registration.
+
+**Summary**:
+- Tests added: 8 (total 1471)
+- Coverage delta:
+  - Statements: +0.85% (76.77% → 77.62%)
+  - Branches: +0.45% (70.41% → 70.86%)
+  - Functions: +0.43% (78.97% → 79.4%)
+  - Lines: +0.97% (76.68% → 77.65%)
+
+---
+
 ## Health Score Calculation
 
 ```
