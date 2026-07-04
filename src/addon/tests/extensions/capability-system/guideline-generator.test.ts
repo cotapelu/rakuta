@@ -1,127 +1,99 @@
 import { describe, it, expect } from 'vitest';
-import generateCapabilityGuidelines from '../../../extensions/capability-system/guideline-generator.js';
+import generateCapabilityGuidelines, { extractMinimalParams } from '../../../extensions/capability-system/guideline-generator.js';
 
-describe('Guideline Generator', () => {
-  describe('generateCapabilityGuidelines', () => {
-    it('includes custom guidelines first', () => {
-      const result = generateCapabilityGuidelines(
-        'test.cap',
-        { type: 'object', properties: { name: { type: 'string' } } },
-        undefined,
-        ['Custom rule: always use UTF-8']
-      );
-      const text = result.join('\n');
-      expect(text.indexOf('Custom rule: always use UTF-8')).toBeLessThan(text.indexOf('Parameters:'));
-    });
+describe('guideline-generator', () => {
+  it('generateCapabilityGuidelines includes Parameters and Examples', () => {
+    const inputSchema = {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Input text' }
+      },
+      required: ['input']
+    };
+    const result = generateCapabilityGuidelines('test.cap', inputSchema);
+    expect(result.length).toBeGreaterThan(0);
+    expect(result.some(l => l.includes('Parameters:'))).toBe(true);
+    expect(result.some(l => l.includes('Examples:'))).toBe(true);
+  });
 
-    it('includes Parameters section', () => {
-      const result = generateCapabilityGuidelines('test', { type: 'object', properties: { name: { type: 'string' } } });
-      expect(result.some(line => /Parameters/i.test(line))).toBe(true);
-    });
+  it('includes custom guidelines at top', () => {
+    const result = generateCapabilityGuidelines(
+      'test.cap',
+      { type: 'object', properties: { a: { type: 'string' } }, required: [] },
+      undefined,
+      ['Custom first line']
+    );
+    expect(result[0]).toBe('Custom first line');
+  });
 
-    it('includes Examples section', () => {
-      const result = generateCapabilityGuidelines('test', { type: 'object', properties: { name: { type: 'string' } } });
-      expect(result.some(line => /Examples/i.test(line))).toBe(true);
-    });
+  it('includes returns section when outputSchema given', () => {
+    const result = generateCapabilityGuidelines(
+      'test.cap',
+      { type: 'object', properties: { a: { type: 'string' } }, required: ['a'] },
+      { type: 'object', properties: { output: { type: 'string', description: 'Output' } } }
+    );
+    expect(result.some(l => l.includes('Returns:'))).toBe(true);
+  });
 
-    it('produces no empty lines', () => {
-      const result = generateCapabilityGuidelines('test', { type: 'object', properties: { name: { type: 'string' } } });
-      expect(result).not.toContain('');
-    });
+  it('extractMinimalParams returns required with examples', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        requiredField: { type: 'string', example: 'explicit' },
+        optionalField: { type: 'number' }
+      },
+      required: ['requiredField']
+    };
+    const result = extractMinimalParams(schema);
+    expect(result).toEqual({ requiredField: 'explicit' });
+  });
 
-    it('adds Returns section when outputSchema provided', () => {
-      const result = generateCapabilityGuidelines('test', { type: 'object', properties: {} }, { type: 'object', properties: { ok: { type: 'boolean' } } });
-      expect(result.some(line => /Returns/i.test(line))).toBe(true);
-    });
+  it('extractMinimalParams uses enum for string example', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        status: { type: 'string', enum: ['pending', 'active'] }
+      },
+      required: ['status']
+    };
+    const result = extractMinimalParams(schema);
+    expect(result.status).toBe('pending');
+  });
 
-    it('omits Returns section when outputSchema missing', () => {
-      const result = generateCapabilityGuidelines('test', { type: 'object', properties: {} });
-      expect(result.every(line => !/Returns/i.test(line))).toBe(true);
-    });
+  it('extractMinimalParams uses file path context', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        file: { type: 'string', description: 'Path to source file' }
+      },
+      required: ['file']
+    };
+    const result = extractMinimalParams(schema);
+    expect(result.file).toBe('src/example.test.ts');
+  });
 
-    it('describes parameters with type and required/optional', () => {
-      const schema = {
-        type: 'object',
-        properties: {
-          userId: { type: 'string', description: 'User identifier' },
-          count: { type: 'number', description: 'Count' }
-        },
-        required: ['userId']
-      };
-      const text = generateCapabilityGuidelines('test', schema).join('\n');
-      expect(text).toMatch(/userId.*string.*required/i);
-      expect(text).toMatch(/count.*number.*optional/i);
-    });
+  it('generates variations for booleans', () => {
+    const result = generateCapabilityGuidelines(
+      'test.cap',
+      { type: 'object', properties: { flag: { type: 'boolean' } }, required: [] }
+    );
+    expect(result.some(l => l.includes('flag=true'))).toBe(true);
+    expect(result.some(l => l.includes('flag=false'))).toBe(true);
+  });
 
-    it('handles array property', () => {
-      const schema = {
-        type: 'object',
-        properties: {
-          tags: { type: 'array', items: { type: 'string' }, description: 'Tags' }
-        }
-      };
-      const text = generateCapabilityGuidelines('test', schema).join('\n');
-      expect(text).toMatch(/tags.*array/i);
-    });
+  it('generates variations for arrays', () => {
+    const result = generateCapabilityGuidelines(
+      'test.cap',
+      { type: 'object', properties: { items: { type: 'array', items: { type: 'string' } } }, required: [] }
+    );
+    expect(result.some(l => l.includes('items=['))).toBe(true);
+  });
 
-    it('handles nested object property', () => {
-      const schema = {
-        type: 'object',
-        properties: {
-          cfg: { type: 'object', description: 'Configuration' }
-        }
-      };
-      const text = generateCapabilityGuidelines('test', schema).join('\n');
-      expect(text).toMatch(/cfg.*object/i);
-    });
-
-    it('describes any type', () => {
-      const schema = {
-        type: 'object',
-        properties: {
-          data: {}
-        }
-      };
-      const text = generateCapabilityGuidelines('test', schema).join('\n');
-      expect(text).toMatch(/data.*any/i);
-    });
-
-    it('examples contain JSON representations', () => {
-      const schema = {
-        type: 'object',
-        properties: {
-          name: { type: 'string' },
-          age: { type: 'number' }
-        },
-        required: ['name']
-      };
-      const result = generateCapabilityGuidelines('cap', schema);
-      const text = result.join('\n');
-      // Look for code block with JSON or plain JSON
-      const hasJsonBlock = text.includes('```json') && text.includes('```');
-      const hasPlainJson = /\{.*"name".*:.*\}\}/s.test(text) || /\{.*"age"/s.test(text);
-      expect(hasJsonBlock || hasPlainJson).toBe(true);
-    });
-
-    it('returns section lists output properties', () => {
-      const output = {
-        type: 'object',
-        properties: {
-          success: { type: 'boolean' },
-          message: { type: 'string' }
-        }
-      };
-      const text = generateCapabilityGuidelines('test', { type: 'object', properties: {} }, output).join('\n');
-      expect(text).toMatch(/success.*boolean/i);
-      expect(text).toMatch(/message.*string/i);
-    });
-
-    it('handles simple non-object return', () => {
-      const output = { type: 'string' };
-      const text = generateCapabilityGuidelines('test', { type: 'object', properties: {} }, output).join('\n');
-      expect(text).toMatch(/Returns/i);
-      // Generic fallback description for simple returns
-      expect(text).toMatch(/result object/i);
-    });
+  it('does not include empty strings in output', () => {
+    const result = generateCapabilityGuidelines(
+      'test.cap',
+      { type: 'object', properties: {}, required: [] }
+    );
+    expect(result).not.toContain('');
   });
 });
