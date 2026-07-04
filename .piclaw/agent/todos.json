@@ -3,36 +3,36 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Cycle 3: Fix internal imports for coverage instrumentation",
+      "name": "Cycle 4: Boost team-manager coverage",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Convert extension.ts internal imports from .js to .ts (plugin-loader, registry, prompt-integration)",
+          "content": "Analyze uncovered branches in team-manager.ts (target 43 uncovered)",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Convert plugin-loader.ts internal imports from .js to .ts (types, registry, guideline-generator)",
+          "content": "Write tests for reclaimZombieAgents full flow (setup zombie, call, verify cleanup)",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Convert guideline-generator.ts internal imports from .js to .ts",
+          "content": "Write tests for handleAgentFailure with various error types (network, timeout)",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Run coverage and verify extension.ts, plugin-loader.ts, guideline-generator.ts now have >0% coverage",
+          "content": "Write test for setupChildRuntimes with invalid role (error path)",
           "status": "pending"
         },
         {
           "id": "task-5",
-          "content": "If still zero, investigate further (source maps, Vite config)",
+          "content": "Run full coverage and verify branch increase",
           "status": "pending"
         },
         {
           "id": "task-6",
-          "content": "Then add targeted edge-case tests for these modules to push branches >50%",
+          "content": "Update AGENT_METRICS.md and commit",
           "status": "pending"
         }
       ]
@@ -40,5 +40,5 @@
   ],
   "nextTaskId": 7,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-04T17:59:18.084Z"
+  "updatedAt": "2026-07-04T18:34:42.448Z"
 }
