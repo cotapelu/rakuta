@@ -14,11 +14,11 @@ import type {
   PluginLoaderStats,
   CapabilityManifest,
   // CapabilityExecute removed - unused
-} from "./types.js";
+} from "./types.ts";
 import type { ExtensionContext, AgentToolResult } from "@earendil-works/pi-coding-agent";
-import { getCapabilityRegistry } from "./registry.js";
-import { MANIFEST_FILENAME } from "./types.js";
-import { generateCapabilityGuidelines, extractMinimalParams } from "./guideline-generator.js";
+import { getCapabilityRegistry } from "./registry.ts";
+import { MANIFEST_FILENAME } from "./types.ts";
+import { generateCapabilityGuidelines, extractMinimalParams } from "./guideline-generator.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

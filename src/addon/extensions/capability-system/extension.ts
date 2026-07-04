@@ -7,12 +7,12 @@ import { join, dirname } from "path";
 import type { Component } from "@earendil-works/pi-tui";
 import { Container, Text, truncateToWidth } from "@earendil-works/pi-tui";
 import { fileURLToPath } from "url";
-import { PluginLoader, getGlobalLoader, setGlobalLoader, createPluginLoader } from "./plugin-loader.js";
-import { getCapabilityRegistry } from "./registry.js";
-import type { Capability } from "./types.js";
-import type { CapabilityContext } from "./types.js";
+import { PluginLoader, getGlobalLoader, setGlobalLoader, createPluginLoader } from "./plugin-loader.ts";
+import { getCapabilityRegistry } from "./registry.ts";
+import type { Capability } from "./types.ts";
+import type { CapabilityContext } from "./types.ts";
 import type { AgentToolResult } from "@earendil-works/pi-coding-agent";
-import { createCapabilityDiscoveryCapability } from "./prompt-integration.js";
+import { createCapabilityDiscoveryCapability } from "./prompt-integration.ts";
 
 // Simple truncateToVisualLines implementation (matches pi-tui internal)
 function truncateToVisualLines(text: string, maxLines: number, width: number): { visualLines: string[]; skippedCount: number } {
