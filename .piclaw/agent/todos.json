@@ -3,42 +3,37 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Cycle 4: Boost team-manager coverage",
+      "name": "Cycle 6: Targeted lcov-guided branch tests",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Analyze uncovered branches in team-manager.ts (target 43 uncovered)",
+          "content": "Parse coverage/lcov.info to list top 10 lines with most uncovered branches",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Write tests for reclaimZombieAgents full flow (setup zombie, call, verify cleanup)",
+          "content": "Design tests for todos-tool applyOp missing branches (e.g., tasks as string fallback, id vs ids conflict)",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Write tests for handleAgentFailure with various error types (network, timeout)",
+          "content": "Design tests for team-manager.handleAgentFailure edge cases (wrong assignee, maxRetries exceeded)",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Write test for setupChildRuntimes with invalid role (error path)",
+          "content": "Design tests for ast_query parent container resolution in nested scopes",
           "status": "pending"
         },
         {
           "id": "task-5",
-          "content": "Run full coverage and verify branch increase",
-          "status": "pending"
-        },
-        {
-          "id": "task-6",
-          "content": "Update AGENT_METRICS.md and commit",
+          "content": "Run coverage and verify improvement",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 7,
+  "nextTaskId": 6,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-04T18:34:42.448Z"
+  "updatedAt": "2026-07-04T19:29:31.423Z"
 }
