@@ -18,7 +18,7 @@
 | Lines Coverage | 84.55% | 80% | ✅ |
 | ESLint Warnings | 18 | 0 | ❌ |
 | Hardcoded Secrets | 0 | 0 | ✅ |
-| Test Pass Rate | 100% (1458/1458) | 100% | ✅ |
+| Test Pass Rate | 100% (1464/1464) | 100% | ✅ |
 
 ---
 
@@ -33,12 +33,10 @@
    - `team-manager.branch-coverage.test.ts` (21 tests)
    - `plugin-loader.branches.test.ts` (5 tests)
    - `guideline-generator.test.ts` (9 tests)
-4. ✅ Increased test count: 1410 → 1461 (+51 tests)
-   - Cycles added: extension minimal smoke test
-❌ Branch coverage: 75.47% (2594/3437)
-   - No measurable gain last cycle
-   - Focus shift: analyze lcov to identify truly uncovered branches
-   - Zero-coverage modules still unexplained but not blocking.
+4. ✅ Increased test count: 1410 → 1464 (+54 tests)
+   - Cycles added: extension minimal smoke test, todos-tool normalizeParams branches (3)
+❌ Branch coverage: 75.47% (2594/3437) – no measurable gain
+   - Zero-coverage modules (extension, plugin-loader, guideline-generator) remain unexplained.
 5. ✅ All tests passing (100% pass rate)
 6. ✅ Fixed security audit: npm audit fix, 0 vulnerabilities
 7. ✅ Coverage improvements:
