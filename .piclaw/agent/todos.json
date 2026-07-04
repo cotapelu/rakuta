@@ -3,37 +3,42 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Cycle 1 Summary",
+      "name": "Cycle 3: Fix internal imports for coverage instrumentation",
       "tasks": [
         {
           "id": "task-1",
-          "content": "[✓] Discovered codebase state: coverage 75.26% branches, 83.82% statements, 1436 tests",
-          "status": "completed"
-        },
-        {
-          "id": "task-2",
-          "content": "[✓] Created docs: AGENT_METRICS.md, AGENT_PROFILE.md, EVOLUTION.md",
-          "status": "completed"
-        },
-        {
-          "id": "task-3",
-          "content": "[✓] Added 5 new test files, 26+ tests, all passing",
-          "status": "completed"
-        },
-        {
-          "id": "task-4",
-          "content": "[~] Branch coverage improved +1.09% (74.16%→75.26%) - still below 80%",
+          "content": "Convert extension.ts internal imports from .js to .ts (plugin-loader, registry, prompt-integration)",
           "status": "in_progress"
         },
         {
+          "id": "task-2",
+          "content": "Convert plugin-loader.ts internal imports from .js to .ts (types, registry, guideline-generator)",
+          "status": "pending"
+        },
+        {
+          "id": "task-3",
+          "content": "Convert guideline-generator.ts internal imports from .js to .ts",
+          "status": "pending"
+        },
+        {
+          "id": "task-4",
+          "content": "Run coverage and verify extension.ts, plugin-loader.ts, guideline-generator.ts now have >0% coverage",
+          "status": "pending"
+        },
+        {
           "id": "task-5",
-          "content": "[P0] Next: extension.ts render tests, plugin-loader watch/errors, guideline-generator deeper tests",
+          "content": "If still zero, investigate further (source maps, Vite config)",
+          "status": "pending"
+        },
+        {
+          "id": "task-6",
+          "content": "Then add targeted edge-case tests for these modules to push branches >50%",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 6,
+  "nextTaskId": 7,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-04T16:55:08.763Z"
+  "updatedAt": "2026-07-04T17:59:18.084Z"
 }

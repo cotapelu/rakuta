@@ -18,7 +18,7 @@
 | Lines Coverage | 84.47% | 80% | ✅ |
 | ESLint Warnings | 18 | 0 | ❌ |
 | Hardcoded Secrets | 0 | 0 | ✅ |
-| Test Pass Rate | 100% (1437/1437) | 100% | ✅ |
+| Test Pass Rate | 100% (1438/1438) | 100% | ✅ |
 
 ---
 
@@ -33,7 +33,11 @@
    - `team-manager.branch-coverage.test.ts` (21 tests)
    - `plugin-loader.branches.test.ts` (5 tests)
    - `guideline-generator.test.ts` (9 tests)
-4. ✅ Increased test count: 1410 → 1437 (+27 tests) including ast_query invalid regex test
+4. ✅ Increased test count: 1410 → 1438 (+28 tests)
+   - Cycle 2: import fixes, ast_query invalid regex
+   - Cycle 3: self-import cycle test for dependency_tree
+❌ Branch coverage unchanged at 75.26% (2587/3437)
+   - Investigated zero-coverage modules (extension, plugin-loader, guideline-generator): changed internal imports to .ts but coverage still 0% – requires deeper investigation (source maps, Vite config, or instrumentation quirks).
 5. ✅ All tests passing (100% pass rate)
 6. ✅ Fixed security audit: npm audit fix, 0 vulnerabilities
 7. ✅ Coverage improvements:
