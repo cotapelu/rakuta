@@ -13,7 +13,7 @@
   },
   "scripts": {
     "generate-custom-models": "tsx scripts/generate-custom-models.ts",
-    "build": "npm run generate-custom-models && tsc -p tsconfig.build.json && chmod +x dist/cli.js && mkdir -p dist/extensions/tools/skill-reader dist/extensions/capability-system && cp -r src/addon/extensions/tools/skill-reader/skills dist/extensions/tools/skill-reader/ && cp -r src/addon/extensions/capability-system/plugins dist/extensions/capability-system/",
+    "build": "npm run generate-custom-models && tsc -p tsconfig.build.json && chmod +x dist/cli.js && mkdir -p dist/addon/extensions/capability-system dist/addon/extensions/tools/skill-reader && cp -r src/addon/extensions/tools/skill-reader/skills dist/addon/extensions/tools/skill-reader/ && cp -r src/addon/extensions/capability-system/plugins dist/addon/extensions/capability-system/",
     "start": "node dist/cli.js",
     "dev": "npm run generate-custom-models && tsx src/cli.ts",
     "lint": "eslint src/**/*.ts --fix",
@@ -23,10 +23,10 @@
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@earendil-works/pi-agent-core": "^0.80.2",
-    "@earendil-works/pi-ai": "^0.80.2",
-    "@earendil-works/pi-coding-agent": "^0.80.2",
-    "@earendil-works/pi-tui": "^0.80.2",
+    "@earendil-works/pi-agent-core": "^0.80.3",
+    "@earendil-works/pi-ai": "^0.80.3",
+    "@earendil-works/pi-coding-agent": "^0.80.3",
+    "@earendil-works/pi-tui": "^0.80.3",
     "chalk": "^5.6.2",
     "globals": "^17.5.0",
     "minimatch": "^10.2.5",

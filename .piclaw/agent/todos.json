@@ -3,42 +3,17 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Coverage Improvement Sprint",
+      "name": "Verify",
       "tasks": [
         {
           "id": "task-1",
-          "content": "[T] addon/tools/session/handoff.ts: Increase coverage from 38% → ≥80%",
-          "status": "in_progress"
-        },
-        {
-          "id": "task-2",
-          "content": "[T] addon/extensions/capability-system/registry.ts: Increase coverage from 0% → ≥80%",
-          "status": "pending"
-        },
-        {
-          "id": "task-3",
-          "content": "[T] addon/extensions/tools/memory-tool.ts: Increase coverage from 0% → ≥80%",
-          "status": "pending"
-        },
-        {
-          "id": "task-4",
-          "content": "Verify all tests pass after each batch",
-          "status": "pending"
-        },
-        {
-          "id": "task-5",
-          "content": "Audit coverage improvement (10-dimension)",
-          "status": "pending"
-        },
-        {
-          "id": "task-6",
-          "content": "Update metrics and profile",
-          "status": "pending"
+          "content": "Verify skill_reader tool metadata",
+          "status": "completed"
         }
       ]
     }
   ],
-  "nextTaskId": 7,
+  "nextTaskId": 2,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-02T22:57:15.964Z"
+  "updatedAt": "2026-07-04T12:12:59.524Z"
 }

@@ -375,6 +375,19 @@
   - Functions: -0.68% (81.87% → 81.19%)
   - Lines: +0.19% (80.34% → 80.53%)
 
+### Cycle 21 - 2025-07-02 (Batch: Guideline Generator Edge Cases)
+
+**Tasks**:
+- [x] capability-system/guideline-generator.ts → 22 new tests covering `extractMinimalParams` and `getExampleValue` branches (enums, defaults, types, arrays, objects, contextual descriptions).
+
+**Summary**:
+- Tests added: 22 (total 1586)
+- Coverage delta:
+  - Statements: +0.46% (80.30% → 80.76%)
+  - Branches: +0.75% (73.15% → 73.90%)
+  - Functions: +0.25% (81.19% → 81.44%)
+  - Lines: +0.32% (80.53% → 80.85%)
+
 ---
 
 ## Health Score Calculation
