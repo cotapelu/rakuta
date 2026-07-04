@@ -3,31 +3,31 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Cycle 6: Targeted lcov-guided branch tests",
+      "name": "Fix internal imports in capability-system core",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Parse coverage/lcov.info to list top 10 lines with most uncovered branches",
+          "content": "Convert .js imports to .ts in registry.ts (types, shared utils)",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Design tests for todos-tool applyOp missing branches (e.g., tasks as string fallback, id vs ids conflict)",
+          "content": "Convert .js imports to .ts in prompt-integration.ts",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Design tests for team-manager.handleAgentFailure edge cases (wrong assignee, maxRetries exceeded)",
+          "content": "Verify other core files (index.ts, types.ts) have no .js imports",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Design tests for ast_query parent container resolution in nested scopes",
+          "content": "Run coverage for extension.ts/plugin-loader.ts and confirm >0%",
           "status": "pending"
         },
         {
           "id": "task-5",
-          "content": "Run coverage and verify improvement",
+          "content": "If still 0%, investigate Vite config or test mocks",
           "status": "pending"
         }
       ]
@@ -35,5 +35,5 @@
   ],
   "nextTaskId": 6,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-04T19:29:31.423Z"
+  "updatedAt": "2026-07-04T19:37:52.713Z"
 }
