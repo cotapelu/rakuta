@@ -18,7 +18,7 @@
 | Lines Coverage | 84.47% | 80% | ✅ |
 | ESLint Warnings | 18 | 0 | ❌ |
 | Hardcoded Secrets | 0 | 0 | ✅ |
-| Test Pass Rate | 100% (1436/1436) | 100% | ✅ |
+| Test Pass Rate | 100% (1437/1437) | 100% | ✅ |
 
 ---
 
@@ -33,7 +33,7 @@
    - `team-manager.branch-coverage.test.ts` (21 tests)
    - `plugin-loader.branches.test.ts` (5 tests)
    - `guideline-generator.test.ts` (9 tests)
-4. ✅ Increased test count: 1410 → 1436 (+26 tests)
+4. ✅ Increased test count: 1410 → 1437 (+27 tests) including ast_query invalid regex test
 5. ✅ All tests passing (100% pass rate)
 6. ✅ Fixed security audit: npm audit fix, 0 vulnerabilities
 7. ✅ Coverage improvements:
@@ -47,12 +47,12 @@
 #### P0 Files (Many Uncovered Branches)
 | File | Branches | Uncovered | % | Notes |
 |------|----------|-----------|---|-------|
-| extension.ts | 130 | 130 | 0% | Need tests for renderCall, renderResult, watch mode command |
-| plugin-loader.ts | 112 | 112 | 0% | Need tests for watch mode, errors, cache invalidation |
-| guideline-generator.ts | 124 | 124 | 0% | Initial tests added but still 0% (branches not fully hit) |
+| extension.ts | 130 | 130 | 0% | Tests exist but coverage not registering; investigation needed |
+| plugin-loader.ts | 112 | 112 | 0% | Tests exist but coverage not registering; investigation needed |
+| guideline-generator.ts | 124 | 124 | 0% | Tests exist but coverage not registering; investigation needed |
 | todos-tool.ts | 337 | 86 | 74% | Error paths covered; need more edge cases |
 | team-manager.ts | 155 | 43 | 72% | Basic edge cases added; need zombie recovery, backoff tests |
-| codebase/ast_query.ts | 149 | 35 | 77% | Not yet addressed |
+| codebase/ast_query.ts | 149 | 35 | 77% | Added invalid regex test; still gaps |
 | codebase/dependency_tree.ts | 141 | 34 | 76% | Not yet addressed |
 | codebase/analyze_ast.ts | 125 | 30 | 76% | Not yet addressed |
 
@@ -118,7 +118,7 @@
 
 ## Autonomous Execution Plan
 
-**Next Cycle Trigger**: 2 hours from now (18:50)
+**Next Cycle Trigger**: 2 hours from now (19:35)
 
 **Discovery Steps**:
 1. Scan for new violations (quality gates, anti-patterns)
