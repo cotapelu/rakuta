@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import generateCapabilityGuidelines, { extractMinimalParams } from '../../../extensions/capability-system/guideline-generator.js';
+import generateCapabilityGuidelines, { extractMinimalParams } from '../../../extensions/capability-system/guideline-generator.ts';
 
 describe('guideline-generator', () => {
   it('generateCapabilityGuidelines includes Parameters and Examples', () => {

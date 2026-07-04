@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TaskManager } from '../task-manager.js';
-import { AgentTeam } from '../team-manager.js';
-import { createMockRuntime } from './test-utils.js';
+import { TaskManager } from '../task-manager.ts';
+import { AgentTeam } from '../team-manager.ts';
+import { createMockRuntime } from './test-utils.ts';
 
 describe('TaskManager branch coverage', () => {
   let tm: TaskManager;

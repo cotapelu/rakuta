@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyOp, type TodoPhase } from '../../../extensions/tools/todos-tool.js';
+import { applyOp, type TodoPhase } from '../../../extensions/tools/todos-tool.ts';
 
 describe('todos-tool applyOp additional branch coverage', () => {
   const nextTid = 1, nextPid = 1;

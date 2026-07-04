@@ -10,7 +10,7 @@ vi.mock('@earendil-works/pi-tui', () => {
 });
 
 // Mock plugin-loader
-vi.mock('../../../extensions/capability-system/plugin-loader.js', () => {
+vi.mock('../../../extensions/capability-system/plugin-loader.ts', () => {
   const MockPluginLoader = class PluginLoader {
     async loadAll() {
       return { totalPlugins: 1, totalCapabilities: 2, errors: [] };
@@ -32,7 +32,7 @@ vi.mock('../../../extensions/capability-system/plugin-loader.js', () => {
 });
 
 // Mock registry
-vi.mock('../../../extensions/capability-system/registry.js', () => ({
+vi.mock('../../../extensions/capability-system/registry.ts', () => ({
   getCapabilityRegistry: vi.fn(() => ({
     has: vi.fn(),
     register: vi.fn(),
@@ -42,14 +42,14 @@ vi.mock('../../../extensions/capability-system/registry.js', () => ({
 }));
 
 // Mock prompt-integration
-vi.mock('../../../extensions/capability-system/prompt-integration.js', () => ({
+vi.mock('../../../extensions/capability-system/prompt-integration.ts', () => ({
   createCapabilityDiscoveryCapability: vi.fn().mockReturnValue({ id: 'system.capabilities' })
 }));
 
 // Import the extension after all mocks
-import capabilitySystemExtension from '../../../extensions/capability-system/extension.js';
-import { setGlobalLoader, createPluginLoader } from '../../../extensions/capability-system/plugin-loader.js';
-import { getCapabilityRegistry } from '../../../extensions/capability-system/registry.js';
+import capabilitySystemExtension from '../../../extensions/capability-system/extension.ts';
+import { setGlobalLoader, createPluginLoader } from '../../../extensions/capability-system/plugin-loader.ts';
+import { getCapabilityRegistry } from '../../../extensions/capability-system/registry.ts';
 
 describe('Capability System Extension', () => {
   beforeEach(() => {
@@ -165,7 +165,7 @@ describe('Capability System Extension', () => {
       getStats: () => ({ totalPlugins: 1, totalCapabilities: 1, errors: [] }),
       getLoadedPlugins: () => [{ manifest: { name: 'TestPlugin', id: 'test.plugin' }, capabilities: [] }]
     };
-    const { setGlobalLoader } = await import('../../../extensions/capability-system/plugin-loader.js');
+    const { setGlobalLoader } = await import('../../../extensions/capability-system/plugin-loader.ts');
     setGlobalLoader(mockLoader as any);
 
     const ctx = {

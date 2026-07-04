@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PluginLoader } from '../../../extensions/capability-system/plugin-loader.js';
+import { PluginLoader } from '../../../extensions/capability-system/plugin-loader.ts';
 
 // Mock fs
 vi.mock('fs', () => ({
@@ -18,7 +18,7 @@ vi.mock('../../../extensions/capability-system/registry.js', () => ({
 }));
 
 // Mock guideline-generator
-vi.mock('../../../extensions/capability-system/guideline-generator.js', () => ({
+vi.mock('../../../extensions/capability-system/guideline-generator.ts', () => ({
   generateCapabilityGuidelines: vi.fn(() => ['Guideline']),
   extractMinimalParams: vi.fn(() => ({}))
 }));

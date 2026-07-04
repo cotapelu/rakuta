@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mock registry and related modules BEFORE importing extension
 let mockCapabilities: any[] = [];
 
-vi.mock('../../../extensions/capability-system/registry.js', () => {
+vi.mock('../../../extensions/capability-system/registry.ts', () => {
   const registry = {
     has: vi.fn((id) => mockCapabilities.some(c => c.id === id)),
     register: vi.fn((cap: any) => { mockCapabilities.push(cap); }),
@@ -18,8 +18,8 @@ vi.mock('./prompt-integration.js', () => ({
   createCapabilityDiscoveryCapability: vi.fn(() => ({ id: 'system.capabilities' }))
 }));
 
-import capabilitySystemExtension from '../../../extensions/capability-system/extension.js';
-import { getCapabilityRegistry } from '../../../extensions/capability-system/registry.js';
+import capabilitySystemExtension from '../../../extensions/capability-system/extension.ts';
+import { getCapabilityRegistry } from '../../../extensions/capability-system/registry.ts';
 
 describe('Capability Router Tool execute() branches', () => {
   let mockApi: any;
