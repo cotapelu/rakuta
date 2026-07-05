@@ -2,7 +2,7 @@
 
 ## Fragile Modules
 - `src/addon/extensions/tools/todos-tool.ts`: Branches ~75% (86 uncovered); added edge case tests for applyOp and formatSummary; many branches remain.
-- `src/addon/extensions/team/team-manager.ts`: Branch coverage ~72% (small improvements); missing branches in releaseTask failure, handleAgentFailure wrong agent, getMyCurrentTask, and concurrency lockQueue.
+- `src/addon/extensions/team/team-manager.ts`: Branch coverage ~69% (43 uncovered); added idempotency and withLock error tests; remaining branches in agentMonitor interactions and setupChildRuntimes.
 - `src/addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts`: Branches ~76%; added parse error test; still many untested branches (file resolution edge cases, cycle detection variations).
 - `src/addon/extensions/capability-system/plugins/codebase/capabilities/analyze.ts`: Branches improved to ~76%; fixed import parsing bug; still need coverage for edge import patterns and error paths.
 - `src/addon/extensions/capability-system/plugins/codebase/capabilities/ast_query.ts`: Branches ~77%; added unknown kind test; still missing branches for some handler edge cases.

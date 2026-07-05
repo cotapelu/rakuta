@@ -110,3 +110,16 @@
   - Functions: unchanged
   - Lines: +0.02% (85.18% → 85.20%)
 - **Notes**: Overall branch coverage 76.09%, still below 80% target. Next high‑gain files: `todos-tool.ts` (86 uncovered), `team-manager.ts` (43 uncovered), `dependency_tree.ts` (34 uncovered). Continue incremental branch testing.
+
+## [2026-07-05 09:00] Cycle 9 - Task: team-manager extra branches
+- **Type**: Test (T)
+- **Priority**: MEDIUM
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +3 tests in `team-manager.extra.test.ts`:
+  - `withLock` propagates exception and releases lock (finally branch)
+  - `dispose` idempotent (multiple calls safe)
+  - `claimTask` with no tasks returns null
+- **Coverage Delta**: 
+  - Branches: unchanged (76.09%)
+- **Notes**: These tests cover error handling paths but branches were already mostly covered. Still, they defend against regressions. Next target: address high‑gain modules (`todos-tool.ts`, `dependency_tree.ts`) with more comprehensive tests, especially file I/O error paths and cycle detection variations.
