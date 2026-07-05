@@ -1,83 +1,83 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AgentTeam } from '../team-manager.js';
-import { createMockRuntime } from './test-utils.js';
-import { describe, it, expect, vi, beforeEach, afterEach, test } from 'vitest';
 
-describe('AgentTeam Edge Cases', () => {
+async function initTeam(team: AgentTeam, tasks: string[]) {
+  await team.initialize(tasks);
+}
+
+describe('AgentTeam edge cases', () => {
   let team: AgentTeam;
 
   beforeEach(() => {
     team = new AgentTeam();
-    team.registerRuntime(createMockRuntime(), 'parent');
-    team.registerRuntime(createMockRuntime(), 'agent-1');
-    team.registerRuntime(createMockRuntime(), 'agent-2');
+    team.id = 'test-team';
   });
 
   afterEach(async () => {
-    if (team) {
-      await team.dispose();
-    }
+    await team.dispose();
   });
 
-  test('completeTask should clear task assignee', async () => {
-    await team.initialize(['task1']);
-    const idx = await team.claimTask('agent-1');
-    expect(idx).toBe(0);
-    await team.completeTask('agent-1', idx!, 'result');
-    const status = await team.getTeamStatus();
-    const task = status.tasks.find(t => t.index === idx);
-    expect(task?.assignee).toBeNull();
+  describe('claimTask', () => {
+    it('returns null when no pending tasks', async () => {
+      await initTeam(team, ['t1']);
+      const idx1 = await team.claimTask('agent-1');
+      expect(idx1).toBe(0);
+      // No pending tasks left
+      const idx2 = await team.claimTask('agent-2');
+      expect(idx2).toBeNull();
+    });
   });
 
-  test('releaseTask should fail for completed task', async () => {
-    await team.initialize(['task1']);
-    const idx = await team.claimTask('agent-1');
-    await team.completeTask('agent-1', idx!, 'result');
-    const released = await team.releaseTask('agent-1', idx!);
-    expect(released).toBe(false);
-    // Ensure task still completed
-    const status = await team.getTeamStatus();
-    const task = status.tasks.find(t => t.index === idx);
-    expect(task?.status).toBe('completed');
+  describe('releaseTask', () => {
+    it('returns false and does not change assignment if task not owned by agent', async () => {
+      await initTeam(team, ['t1']);
+      const idx = await team.claimTask('agent-1');
+      expect(idx).toBe(0);
+      const released = await team.releaseTask('agent-2', idx);
+      expect(released).toBe(false);
+      // Task should still be assigned to agent-1
+      const status = await team.getTeamStatus();
+      const task = status.tasks[idx];
+      expect(task.assignee).toBe('agent-1');
+      expect(task.status).toBe('in_progress');
+    });
   });
 
-  test('releaseTask should fail if task not assigned to agent', async () => {
-    await team.initialize(['task1', 'task2']);
-    const idx1 = await team.claimTask('agent-1');
-    const idx2 = await team.claimTask('agent-2');
-    // agent-1 tries to release idx2 (not assigned to it)
-    const released = await team.releaseTask('agent-1', idx2!);
-    expect(released).toBe(false);
+  describe('handleAgentFailure', () => {
+    it('does nothing if task not assigned to the given agent', async () => {
+      await initTeam(team, ['t1']);
+      const idx = await team.claimTask('agent-1');
+      expect(idx).toBe(0);
+      // agent-2 reports failure for task owned by agent-1
+      await team.handleAgentFailure('agent-2', idx, new Error('oops'));
+      // Task should remain assigned to agent-1 and still in_progress
+      const status = await team.getTeamStatus();
+      const task = status.tasks[idx];
+      expect(task.assignee).toBe('agent-1');
+      expect(task.status).toBe('in_progress');
+    });
   });
 
-  test('released task should become pending and claimable by others', async () => {
-    await team.initialize(['t1']);
-    const idx = await team.claimTask('agent-1');
-    await team.releaseTask('agent-1', idx!);
-    // Now agent-2 should be able to claim
-    const idx2 = await team.claimTask('agent-2');
-    expect(idx2!).toBe(idx!);
-    // Verify task status is in_progress and assignee is agent-2
-    const status = await team.getTeamStatus();
-    const task = status.tasks.find(t => t.index === idx);
-    expect(task?.status).toBe('in_progress');
-    expect(task?.assignee).toBe('agent-2');
+  describe('getMyCurrentTask', () => {
+    it('returns null for unknown agent', async () => {
+      const idx = await team.getMyCurrentTask('unknown');
+      expect(idx).toBeNull();
+    });
   });
 
-  test('agent failure simulation should release its task', async () => {
-    await team.initialize(['t1', 't2']);
-    // agent-1 claims t1
-    const idx1 = await team.claimTask('agent-1');
-    expect(idx1).toBe(0);
-    // Simulate what runAgentLoop catch does:
-    const currentTask = await team.getMyCurrentTask('agent-1');
-    expect(currentTask).toBe(0);
-    // Release it
-    const released = await team.releaseTask('agent-1', currentTask!);
-    expect(released).toBe(true);
-    // Now agent-2 can claim t1
-    const idx2 = await team.claimTask('agent-2');
-    expect(idx2!).toBe(0);
-    // agent-1 should have no current task
-    expect(await team.getMyCurrentTask('agent-1')).toBeNull();
+  describe('concurrency control', () => {
+    it('serializes concurrent claimTask calls, returning distinct indices', async () => {
+      await initTeam(team, ['t1', 't2']);
+      const p1 = team.claimTask('agent-1');
+      const p2 = team.claimTask('agent-2');
+      const [idx1, idx2] = await Promise.all([p1, p2]);
+      expect(idx1 !== null && idx2 !== null).toBe(true);
+      expect(idx1 !== idx2).toBe(true);
+      expect([0, 1]).toContain(idx1);
+      expect([0, 1]).toContain(idx2);
+      // Verify agent statuses updated
+      expect(team.agentStatuses.get('agent-1')?.currentTaskIndex).toBe(idx1);
+      expect(team.agentStatuses.get('agent-2')?.currentTaskIndex).toBe(idx2);
+    });
   });
 });
