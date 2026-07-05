@@ -61,3 +61,8 @@
 - Added `todos-tool.multiple-ops.test.ts` to cover `execute` branch when multiple operations detected.
 - Branch coverage +2 to 76.62% (2613/3410). `todos-tool.ts` branch % rose to 87.83%.
 - Remaining: `todos-tool` (~44), `team-manager` (~35), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 20 (2026-07-05)
+- Added `todos-tool.write-error.test.ts` (writeFile failure) and extended `ast_query` tests.
+- No new branch coverage overall (remained 76.62%). Some targeted branches may have been already covered by other tests.
+- Continued focus on modules with highest absolute uncovered branches: `todos-tool`, `team-manager`, `dependency_tree`, `ast_query`, `call_graph`.

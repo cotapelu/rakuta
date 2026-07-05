@@ -266,3 +266,19 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Covered branch in `execute` for multiple‑operations error. Small but measurable gain. Remaining top modules: `todos-tool` (~44 uncovered), `team-manager` (~35), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+## [2026-07-05 11:35] Cycle 20 - Tasks: todos-tool write error + ast_query extra branches
+- **Type**: Test (T)
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success (tests added)
+- **Test Delta**:
+  - `todos-tool.write-error.test.ts` – covers `fs.writeFile` failure in atomic write
+  - `todos-tool.multiple-ops.test.ts` – covers `execute` branch when `countOperations > 1` (already added previous cycle)
+  - `ast_query.branch-coverage.test.ts` – added: member expression calls; nested function parent match (matched expectation but did not yield new branch)
+- **Coverage Delta**:
+  - Branches: 0 pp (76.62% unchanged)
+  - Statements: +0
+  - Functions: +0
+  - Lines: +0
+- **Notes**: Despite adding tests targeting suspected uncovered branches, overall coverage did not increase. This indicates those branches were already covered by other existing tests (perhaps through indirect paths). The suite now has 164 test files, 1493 passing tests. Continued effort needed to reach 80% branch coverage; next focus may shift to modules with highest absolute uncovered counts or to more systematic branch identification.

@@ -2,7 +2,7 @@
 
 ## Current Trajectory
 - Health Score: unknown (baseline pending stable metrics)
-- Coverage trend: slow improvement (branches +1.14% over nineteen cycles: +0.32% todos, +0.03% team, +0.00% dep_tree, +0.12% analyze, +0.03% ast_query, +0.06% todos-formatSummary, +0.05% todos+dep_tree edge tests, +0.00% team-manager extra, +0.03% todos-io-error, +0.06% todos-normalize-no-pending, +0.00% todos extra, +0.03% dep_tree+call_graph, +0.06% todos-reconstruct, +0.03% ast_query+call_graph, +0.06% todos-save-error, +0.17% team-manager-runAgentLoop, +0.03% team-manager-registry, +0.06% todos-tool-multiple-ops). Target: ≥80% branches.
+- Coverage trend: slow improvement (branches +1.14% over twenty cycles: +0.32% todos, +0.03% team, +0.00% dep_tree, +0.12% analyze, +0.03% ast_query, +0.06% todos-formatSummary, +0.05% todos+dep_tree edge tests, +0.00% team-manager extra, +0.03% todos-io-error, +0.06% todos-normalize-no-pending, +0.00% todos extra, +0.03% dep_tree+call_graph, +0.06% todos-reconstruct, +0.03% ast_query+call_graph, +0.06% todos-save-error, +0.17% team-manager-runAgentLoop, +0.03% team-manager-registry, +0.06% todos-tool-multiple-ops, +0.00% todos-tool-write-error + ast_query extra). Target: ≥80% branches.
 - Key improvements needed: continue branch coverage focus; next high‑gain files: `todos-tool.ts` (~44), `team-manager.ts` (~35), `dependency_tree.ts` (~34), `ast_query.ts` (~35), `call_graph.ts` (~22). Also address ESLint `any` warnings and default-case.
 
 ## Upcoming Refactors
