@@ -72,6 +72,11 @@
 - Branch coverage +7 to 76.83% (2620/3410). `team-manager.ts` per‑file branches improved.
 - Remaining high‑uncovered: `todos-tool` (~44), `team-manager` (~29), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
 
+### Cycle 22 (2026-07-05)
+- Added `team-manager.runAgentLoop-prompt-catch.test.ts` covering catch block when `runtime.session.prompt` rejects.
+- Branch coverage +1 to 76.86% (2621/3410).
+- Remaining high‑uncovered: `todos-tool` (~44), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
 ### Cycle 23 (2026-07-05)
 - Added test for `todos-tool.getLatestTodoPhasesFromEntries` with toolName `'todo_write'`.
 - Branch coverage +1 to 76.89% (2622/3410).

@@ -296,6 +296,19 @@
   - Lines: +9 (+0.18%) 85.69% → 85.87%
 - **Notes**: The test forces many iterations using fake timers; the loop detects completion only after tasks done, but MAX_TURNS check occurs each iteration. This exercised previously uncovered branch in `runAgentLoop`.
 
+## [2026-07-05 12:00] Cycle 22 - Task: team-manager runAgentLoop prompt error catch
+- **Type**: Test (T)
+- **Priority**: HIGH (team-manager still large uncovered)
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test file (`team-manager.runAgentLoop-prompt-catch.test.ts`) covering catch block when `runtime.session.prompt` rejects; loop continues.
+- **Coverage Delta**:
+  - Branches: +1 branch (+0.03%) 76.83% → 76.86%
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: The test forces prompt rejection on first iteration, then continues until MAX_TURNS. Covered the catch branch in `runAgentLoop`.
+
 ## [2026-07-05 12:15] Cycle 23 - Task: todos-tool getLatestTodoPhasesFromEntries "todo_write" branch
 - **Type**: Test (T)
 - **Priority**: LOW
