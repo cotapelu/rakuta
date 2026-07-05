@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyOp, type TodoPhase } from '../../../extensions/tools/todos-tool';
+import { applyOp, formatSummary, type TodoPhase } from '../../../extensions/tools/todos-tool';
 
 describe('todos-tool applyOp additional branch coverage (extra)', () => {
   const nextTid = 1, nextPid = 1;
@@ -67,6 +67,44 @@ describe('todos-tool applyOp additional branch coverage (extra)', () => {
       expect(result.errors).toHaveLength(0);
       const statuses = result.phases[0].tasks.map(t => t.status);
       expect(statuses).toEqual(['completed', 'completed']);
+    });
+  });
+
+  describe('normalizeInProgress with multiple in_progress tasks', () => {
+    it('demotes extra in_progress tasks to pending, leaving exactly one in_progress', () => {
+      const phases: TodoPhase[] = [
+        {
+          id: 'phase-1',
+          name: 'Phase 1',
+          tasks: [
+            { id: 'task-1', content: 'A', status: 'in_progress' },
+            { id: 'task-2', content: 'B', status: 'in_progress' },
+            { id: 'task-3', content: 'C', status: 'pending' }
+          ]
+        }
+      ];
+      const nextTid = 4, nextPid = 2;
+      // Use update on a pending task to trigger normalization without altering in_progress tasks
+      const result = applyOp(phases, nextTid, nextPid, { update: { id: 'task-3', content: 'C-modified' } });
+      expect(result.errors).toHaveLength(0);
+      const tasks = result.phases[0].tasks;
+      const inProgCount = tasks.filter(t => t.status === 'in_progress').length;
+      const pendingCount = tasks.filter(t => t.status === 'pending').length;
+      expect(inProgCount).toBe(1);
+      expect(pendingCount).toBe(2);
+      // The first in_progress (task-1) remains in_progress; the second (task-2) demoted to pending
+      const t1 = tasks.find(t => t.id === 'task-1');
+      const t2 = tasks.find(t => t.id === 'task-2');
+      expect(t1?.status).toBe('in_progress');
+      expect(t2?.status).toBe('pending');
+    });
+  });
+
+  describe('applyOp fallthrough error', () => {
+    it('returns error when no operation specified', () => {
+      const phases: TodoPhase[] = [];
+      const result = applyOp(phases, 1, 1, {});
+      expect(result.errors).toContain('No operation specified');
     });
   });
 });

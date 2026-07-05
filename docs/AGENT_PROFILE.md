@@ -21,3 +21,8 @@
 - TEST_COVERAGE: Branches below target (75.74% vs 80% required).
 - CODE_QUALITY: 15 ESLint warnings about `any` and `default-case`.
 
+
+### Cycle 12 (2026-07-05)
+- Added two tests for `todos-tool`: multi-in_progress demotion, no-op error.
+- No new branch coverage; still 86 uncovered in `todos-tool.ts`.
+- Focus remains on high‑uncovered modules: `todos-tool`, `dependency_tree`, `call_graph`.

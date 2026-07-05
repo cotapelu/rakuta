@@ -2,7 +2,7 @@
 
 ## Current Trajectory
 - Health Score: unknown (baseline pending stable metrics)
-- Coverage trend: slowly improving (branches +0.70% over eleven cycles: +0.32% todos, +0.03% team, +0.00% dep_tree, +0.12% analyze, +0.03% ast_query, +0.06% todos-formatSummary, +0.05% todos+dep_tree edge tests, +0.00% team-manager extra, +0.03% todos-io-error, +0.06% todos-normalize-no-pending). Target: ≥80% branches.
+- Coverage trend: plateaued (branches +0.70% over twelve cycles: +0.32% todos, +0.03% team, +0.00% dep_tree, +0.12% analyze, +0.03% ast_query, +0.06% todos-formatSummary, +0.05% todos+dep_tree edge tests, +0.00% team-manager extra, +0.03% todos-io-error, +0.06% todos-normalize-no-pending, +0.00% todos extra). Target: ≥80% branches.
 - Key improvements needed: continue branch coverage focus; next high‑gain files: `todos-tool.ts` (86 uncovered), `dependency_tree.ts` (34 uncovered), `call_graph.ts` (23 uncovered). Also address ESLint `any` warnings and default-case.
 
 ## Upcoming Refactors

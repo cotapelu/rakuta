@@ -152,3 +152,18 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Covered branch in normalizeInProgress where no pending tasks exist. Overall branch coverage remains far below 80%.
+
+## [2026-07-05 09:50] Cycle 12 - Task: todos-tool additional branch tests (multi-in_progress, no-op error)
+- **Type**: Test (T)
+- **Priority**: LOW
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +2 tests
+  - normalizeInProgress with multiple in_progress tasks (demotion)
+  - applyOp with no operation (error)
+- **Coverage Delta**:
+  - Branches: +0.00% (76.18% → 76.18%)
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Both tests passed; no new branch coverage gain, indicating those branches were already covered by existing tests. 86 branches still uncovered in todos-tool.ts.
