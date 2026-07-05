@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "P1",
+      "tasks": [
+        {
+          "id": "task-1",
+          "content": "T1",
+          "status": "in_progress"
+        }
+      ]
+    }
+  ],
+  "nextTaskId": 2,
+  "nextPhaseId": 2,
+  "updatedAt": "2026-07-05T10:39:42.250Z"
+}

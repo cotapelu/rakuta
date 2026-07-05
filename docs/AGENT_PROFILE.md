@@ -46,3 +46,8 @@
 - Added `todos-tool.save-error.test.ts` to cover `fs.rename` failure in atomic write.
 - Branches +2 to 76.36%; `todos-tool.ts` branch coverage rose to 87.24%.
 - Remaining high‑uncovered modules: `todos-tool` (~45 uncovered), `team-manager` (~43), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22). Continue with error‑path tests for these modules.
+
+### Cycle 17 (2026-07-05)
+- Added `team-manager.runAgentLoop.test.ts` covering early exit when tasks already completed.
+- Branch coverage +6 to 76.53% (2610/3410). `team-manager.ts` per‑file improved.
+- Remaining uncovered: `todos-tool` (~45), `team-manager` (~37), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
