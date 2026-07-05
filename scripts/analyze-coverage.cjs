@@ -1,76 +1,49 @@
-const fs = require('fs');
-const path = require('path');
+const cov = require("../coverage/coverage-final.json");
+let totalStatements = 0, totalBranches = 0, totalFunctions = 0, totalLines = 0;
+let coveredStatements = 0, coveredBranches = 0, coveredFunctions = 0, coveredLines = 0;
+const fileStats = [];
 
-function parseHtmlFile(content) {
-  // Extract file path from title
-  const filePathMatch = content.match(/Code coverage report for (src\/.*?\.ts)/);
-  if (!filePathMatch) return null;
-  let filePath = filePathMatch[1].replace(/^src\//, '');
+for (const [file, data] of Object.entries(cov)) {
+  if (file.includes("node_modules") || file.includes(".d.ts")) continue;
+  const s = data.s || {};
+  const b = data.b || {};
+  const f = data.f || {};
+  const totalS = Object.keys(s).length;
+  const totalB = Object.keys(b).length;
+  const totalF = Object.keys(f).length;
+  const hitS = Object.values(s).filter(v => v > 0).length;
+  const hitB = Object.values(b).filter(arr => arr && arr.some(v => v > 0)).length;
+  const hitF = Object.values(f).filter(v => v > 0).length;
+  const totalL = Object.keys(data.statementMap || {}).length;
+  const hitL = Object.values(data.statementMap || {}).filter((_, idx) => s[idx] > 0).length;
 
-  // Extract metrics: find each metric block
-  const metrics = {};
-  const regex = /<div class='fl[^>]*>.*?<span class="quiet">(Statements|Branches|Functions|Lines)<\/span>.*?<span class='fraction'>(\d+)\/(\d+)<\/span>.*?<\/div>/gis;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    const metric = match[1];
-    const covered = parseInt(match[2], 10);
-    const total = parseInt(match[3], 10);
-    metrics[metric] = {
-      covered,
-      total,
-      percent: Math.round((covered / total) * 100)
-    };
-  }
+  totalStatements += totalS;
+  totalBranches += totalB;
+  totalFunctions += totalF;
+  totalLines += totalL;
+  coveredStatements += hitS;
+  coveredBranches += hitB;
+  coveredFunctions += hitF;
+  coveredLines += hitL;
 
-  // Check we got all four
-  if (Object.keys(metrics).length !== 4) {
-    return null;
-  }
-
-  return { file: filePath, ...metrics };
-}
-
-function walk(dir, results) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      walk(fullPath, results);
-    } else if (entry.name.endsWith('.html') && entry.name !== 'index.html') {
-      try {
-        const content = fs.readFileSync(fullPath, 'utf-8');
-        const result = parseHtmlFile(content);
-        if (result) results.push(result);
-      } catch (e) {
-        // ignore
-      }
-    }
+  if (totalB >= 10) {
+    const branchPct = totalB ? (hitB / totalB * 100).toFixed(2) : 0;
+    fileStats.push({
+      file: file,
+      shortName: file.split("/").slice(-2).join("/"),
+      branchPct: branchPct,
+      uncovered: totalB - hitB,
+      totalBranches: totalB
+    });
   }
 }
 
-const coverageDir = 'coverage/src';
-const results = [];
-walk(coverageDir, results);
-
-results.sort((a, b) => a.Statements.percent - b.Statements.percent);
-
-console.log('File'.padEnd(50), 'Stmts', 'Branch', 'Funcs', 'Lines');
-console.log('─'.repeat(50 + 5*10));
-for (const r of results) {
-  console.log(
-    `${r.file.padEnd(50)}  ` +
-    `${String(r.Statements.percent).padStart(3)}%  ` +
-    `${String(r.Branches.percent).padStart(3)}%  ` +
-    `${String(r.Functions.percent).padStart(3)}%  ` +
-    `${String(r.Lines.percent).padStart(3)}%`
-  );
-}
-
-console.log(`\nTotal files: ${results.length}`);
-if (results.length > 0) {
-  const avgStmts = Math.round(results.reduce((sum, r) => sum + r.Statements.percent, 0) / results.length);
-  console.log(`Average statement coverage: ${avgStmts}%`);
-}
-
-fs.writeFileSync('coverage-per-file.json', JSON.stringify(results, null, 2));
-console.log('\nDetailed data saved to coverage-per-file.json');
+console.log("=== OVERALL COVERAGE ===");
+console.log("Statements:", coveredStatements + "/" + totalStatements, "(" + (coveredStatements/totalStatements*100).toFixed(2) + "%)");
+console.log("Branches:", coveredBranches + "/" + totalBranches, "(" + (coveredBranches/totalBranches*100).toFixed(2) + "%)");
+console.log("Functions:", coveredFunctions + "/" + totalFunctions, "(" + (coveredFunctions/totalFunctions*100).toFixed(2) + "%)");
+console.log("Lines:", coveredLines + "/" + totalLines, "(" + (coveredLines/totalLines*100).toFixed(2) + "%)");
+console.log("\n=== FILES WITH MOST UNCOVERED BRANCHES ===");
+fileStats.sort((a,b) => b.uncovered - a.uncovered).slice(0, 20).forEach(f => {
+  console.log(f.shortName.padEnd(50) + " branches:" + f.totalBranches + " uncovered:" + f.uncovered + " pct:" + f.branchPct + "%");
+});

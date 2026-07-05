@@ -42,4 +42,4 @@ llm-context/
 
 # Test artifacts
 evo-test-metrics-*/
-
+.piclaw/agent/todos.json.tmp.*
