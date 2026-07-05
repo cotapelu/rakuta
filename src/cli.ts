@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { main } from "@earendil-works/pi-coding-agent";
-import registerAllAddon from "./addon/index.js";
+import registerAllAddon from "./addon/registry.js";
 
 const { extensions } = registerAllAddon();
 

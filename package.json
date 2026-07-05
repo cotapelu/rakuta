@@ -6,6 +6,9 @@
     "packages/*"
   ],
   "description": "Tau Coding Agent CLI - Professional AI coding assistant",
+  "pi": {
+    "extensions": ["dist/addon/index.js"]
+  },
   "type": "module",
   "main": "dist/index.js",
   "bin": {
