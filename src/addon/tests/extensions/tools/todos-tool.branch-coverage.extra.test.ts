@@ -107,4 +107,12 @@ describe('todos-tool applyOp additional branch coverage (extra)', () => {
       expect(result.errors).toContain('No operation specified');
     });
   });
+
+  describe('formatSummary errors', () => {
+    it('includes errors in output when errors present', () => {
+      const phases: TodoPhase[] = [{ id: 'p1', name: 'P1', tasks: [] }];
+      const text = formatSummary(phases, ['oops']);
+      expect(text).toContain('Errors: oops');
+    });
+  });
 });

@@ -86,3 +86,18 @@
 - Added `ast_query` test for MethodDefinition inside class with parent filter.
 - No new branch coverage (remained 76.89%). The parent‑match branch for class methods was already covered.
 - Remaining high‑uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 25 (2026-07-05)
+- Added `formatSummary` error test to `todos-tool.branch-coverage.extra.test.ts`.
+- No new branch coverage (remained 76.89%). Branch already covered indirectly.
+- Remaining high‑uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 26 (2026-07-05)
+- Added `dependency_tree-external-package.test.ts` for non‑relative specifier early return.
+- No new branch coverage (remained 76.89%).
+- Remaining high‑uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 27 (2026-07-05)
+- Added `todos-tool.getNextIds-nonstandard.test.ts` covering regex‑fail branches in `getNextIds`.
+- No new branch coverage (remained 76.89%).
+- Remaining high‑uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
