@@ -81,3 +81,8 @@
 - Added test for `todos-tool.getLatestTodoPhasesFromEntries` with toolName `'todo_write'`.
 - Branch coverage +1 to 76.89% (2622/3410).
 - Remaining high-uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 24 (2026-07-05)
+- Added `ast_query` test for MethodDefinition inside class with parent filter.
+- No new branch coverage (remained 76.89%). The parent‑match branch for class methods was already covered.
+- Remaining high‑uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).

@@ -78,4 +78,20 @@ another.doSomething();
     const names = result.details.matches.map(m => m.name);
     expect(names).toContain('method');
   });
+
+  it('includes class methods when parent matches class name', async () => {
+    const code = `
+class MyClass {
+  method() {}
+  another() {}
+}
+    `;
+    await fs.writeFile('test.ts', code);
+    const ctx = { cwd: tmpDir };
+    const result = await execute({ file: 'test.ts', query: { kind: 'function', parent: 'MyClass' } }, ctx as any);
+    expect(result.isError).toBe(false);
+    const names = result.details.matches.map(m => m.name);
+    expect(names).toContain('method');
+    expect(names).toContain('another');
+  });
 });

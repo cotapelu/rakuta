@@ -321,3 +321,16 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Very small gain; still far from 80%. Many branches remain.
+
+## [2026-07-05 12:25] Cycle 24 - Task: ast_query class method parent-match
+- **Type**: Test (T)
+- **Priority**: MEDIUM
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test in `ast_query.branch-coverage.test.ts` covering MethodDefinition inside ClassBody with parent filter.
+- **Coverage Delta**: 
+  - Branches: +0 branches (+0.00%) 76.89% → 76.89%
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: The branch for MethodDefinition with class container was already covered by existing tests. Coverage remains at 76.89%. Need alternative high‑gain targets.
