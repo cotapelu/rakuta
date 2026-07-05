@@ -34,4 +34,16 @@ describe('AgentTeam runAgentLoop completion', () => {
     // Agent should remain idle
     expect(team.agentStatuses.get('agent-1')?.status).toBe('idle');
   });
+
+  it('exits immediately if controller already aborted', async () => {
+    // Get the agent runtime
+    const agentRuntime = team.runtimes.find(rt => team.roleByAgentId.get(rt.session.sessionId) === 'agent-1')!;
+    const controller = new AbortController();
+    controller.abort();
+    // Access private runAgentLoop
+    const loopPromise = (team as any).runAgentLoop('agent-1', agentRuntime, controller);
+    // Should resolve immediately without entering loop body
+    await loopPromise;
+    // No assertions needed beyond not throwing
+  });
 });

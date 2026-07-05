@@ -236,3 +236,20 @@
   - Functions: +3 84.93% → 85.21%
   - Lines: +4 lines (+0.39%) 85.27% → 85.66%
 - **Notes**: Covered multiple branches in `runAgentLoop` (completion detection, early exit). This demonstrates that targeting higher-level control flow can yield decent gains.
+
+## [2026-07-05 11:15] Cycle 18 - Task: team-manager TeamRegistry branch coverage
+- **Type**: Test (T)
+- **Priority**: HIGH (team-manager large uncovered)
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test file (`team-manager.registry-coverage.test.ts`) with 6 tests covering:
+  - TeamRegistry register/has/getAll
+  - unregister
+  - resetAutoDisposeTimer (sets timer when team exists; does nothing when missing)
+  - clearAutoDisposeTimer (clears existing timer; no-op when none)
+- **Coverage Delta**:
+  - Branches: +1 branch (+0.03%) 76.53% → 76.56%
+  - Statements: +1 (+0.02%)
+  - Functions: +1 (+0.04%)
+  - Lines: +1 (+0.02%)
+- **Notes**: Coverage gains small but consistent. TeamManager branch coverage improved from ~78% to ~79%? (estimate). Remaining top uncovered: todos-tool (~45), team-manager (~36), dependency_tree (~34), ast_query (~35), call_graph (~22).

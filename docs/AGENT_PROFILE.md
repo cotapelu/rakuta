@@ -51,3 +51,8 @@
 - Added `team-manager.runAgentLoop.test.ts` covering early exit when tasks already completed.
 - Branch coverage +6 to 76.53% (2610/3410). `team-manager.ts` per‑file improved.
 - Remaining uncovered: `todos-tool` (~45), `team-manager` (~37), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 18 (2026-07-05)
+- Added `team-manager.registry-coverage.test.ts` covering TeamRegistry branches (register/unregister, timer logic).
+- Branch coverage +1 to 76.56%. TeamManager per‑file branches improved modestly.
+- Remaining high‑uncovered: `todos-tool` (~45), `team-manager` (~36), `dependency_tree` (~34), `ast_query` (~35), `call_graph.ts` (~22).
