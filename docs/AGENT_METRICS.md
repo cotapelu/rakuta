@@ -282,3 +282,16 @@
   - Functions: +0
   - Lines: +0
 - **Notes**: Despite adding tests targeting suspected uncovered branches, overall coverage did not increase. This indicates those branches were already covered by other existing tests (perhaps through indirect paths). The suite now has 164 test files, 1493 passing tests. Continued effort needed to reach 80% branch coverage; next focus may shift to modules with highest absolute uncovered counts or to more systematic branch identification.
+
+## [2026-07-05 11:46] Cycle 21 - Task: team-manager runAgentLoop MAX_TURNS branch
+- **Type**: Test (T)
+- **Priority**: HIGH (team-manager high uncovered)
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test file (`team-manager.runAgentLoop-maxturns.test.ts`) covering loop exit when `turnCount >= MAX_TURNS`.
+- **Coverage Delta**:
+  - Branches: +7 branches (+0.21%) 76.62% → 76.83%
+  - Statements: +10 (+0.18%) 85.03% → 85.21%
+  - Functions: +2 (+0.19%) 85.31% → 85.5%
+  - Lines: +9 (+0.18%) 85.69% → 85.87%
+- **Notes**: The test forces many iterations using fake timers; the loop detects completion only after tasks done, but MAX_TURNS check occurs each iteration. This exercised previously uncovered branch in `runAgentLoop`.

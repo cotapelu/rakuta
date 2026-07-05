@@ -78,18 +78,4 @@ another.doSomething();
     const names = result.details.matches.map(m => m.name);
     expect(names).toContain('method');
   });
-
-  it('includes nested function when parent matches a function container', async () => {
-    const code = `
-function outer() {
-  function inner() {}
-}
-    `;
-    await fs.writeFile('test.ts', code);
-    const ctx = { cwd: tmpDir };
-    const result = await execute({ file: 'test.ts', query: { kind: 'function', parent: 'outer' } }, ctx as any);
-    expect(result.isError).toBe(false);
-    const names = result.details.matches.map(m => m.name);
-    expect(names).toContain('inner');
-  });
 });

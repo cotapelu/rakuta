@@ -66,3 +66,8 @@
 - Added `todos-tool.write-error.test.ts` (writeFile failure) and extended `ast_query` tests.
 - No new branch coverage overall (remained 76.62%). Some targeted branches may have been already covered by other tests.
 - Continued focus on modules with highest absolute uncovered branches: `todos-tool`, `team-manager`, `dependency_tree`, `ast_query`, `call_graph`.
+
+### Cycle 21 (2026-07-05)
+- Added `team-manager.runAgentLoop-maxturns.test.ts` covering loop exit on `turnCount >= MAX_TURNS`.
+- Branch coverage +7 to 76.83% (2620/3410). `team-manager.ts` per‑file branches improved.
+- Remaining high‑uncovered: `todos-tool` (~44), `team-manager` (~29), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
