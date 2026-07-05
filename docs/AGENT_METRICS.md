@@ -123,3 +123,19 @@
 - **Coverage Delta**: 
   - Branches: unchanged (76.09%)
 - **Notes**: These tests cover error handling paths but branches were already mostly covered. Still, they defend against regressions. Next target: address high‑gain modules (`todos-tool.ts`, `dependency_tree.ts`) with more comprehensive tests, especially file I/O error paths and cycle detection variations.
+
+## [2026-07-05 09:15] Cycle 10 - Task: todos-tool file I/O error tests
+- **Type**: Test (T)
+- **Priority**: MEDIUM
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +3 tests (`todos-tool.io-error.test.ts`) for `TodoState.loadFromFile` error paths:
+  - missing file returns false
+  - corrupted JSON returns false
+  - version mismatch returns false
+- **Coverage Delta**:
+  - Statements: +0.06% (84.51% → 84.57%)
+  - Branches: +0.03% (76.09% → 76.12%)
+  - Functions: unchanged
+  - Lines: +0.07% (85.20% → 85.27%)
+- **Notes**: Branch coverage improved by covering catch and version‑mismatch branches in `loadTodoFromFile`. Still far from 80% target. Next high‑gain: continue with `todos-tool.ts` remaining branches (e.g., `saveTodoToFile` atomic write errors) and `dependency_tree.ts`.
