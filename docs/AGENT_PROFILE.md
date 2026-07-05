@@ -36,3 +36,8 @@
 - Added 6 tests for `TodoState.reconstructFromEntries` covering multiple entry filtering branches.
 - Branch coverage +2 (~+0.06%) to 76.27%. Still far from 80%.
 - Next targets: `todos-tool` (86 uncovered), `dependency_tree` (34), `ast_query` (35), `call_graph` (23), `team-manager` (43).
+
+### Cycle 15 (2026-07-05)
+- Added tests: `call_graph` missing export branch, `ast_query` branches (invalid regex, parent non-match, unknown kind).
+- Branch coverage +0.03% to 76.3%. `call_graph` per-file improved to 82.56% branches.
+- Still far from 80% overall; modules with most uncovered: `todos-tool` (~86), `team-manager` (~43), `dependency_tree` (~34).

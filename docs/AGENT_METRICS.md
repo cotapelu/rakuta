@@ -195,3 +195,18 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Covered branches in `TodoState.reconstructFromEntries`. `todos-tool.ts` branch coverage still at 74.0% (86 uncovered). Next: continue with `todos-tool` (loadTodoFromFile error handling refinement) or switch to `ast_query.ts` (35 uncovered).
+
+## [2026-07-05 10:25] Cycle 15 - Tasks: call_graph missing export, ast_query branch tests
+- **Type**: Test (T)
+- **Priority**: LOW
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +2 test files, +3 tests total
+  - `call_graph.unresolved-callee.test.ts`: 2 tests: (1) ignores calls to undefined functions; (2) handles import with missing export (no edge created)
+  - `ast_query.branch-coverage.test.ts`: 3 tests: invalid regex fallback, parent filter on nested function (exclusion), unknown kind returns empty
+- **Coverage Delta**:
+  - Branches: +0.03% (76.27% → 76.3%)
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Call_graph branch coverage rose from 81.65% to 82.56% in per-file metrics, indicating the import-missing-export test covered a previously uncovered branch in `resolveCallee`. Overall progress slow; still 76.3% branches. Next: continue with team-manager or todo-tool error handling (save failure) if mocking can be resolved.
