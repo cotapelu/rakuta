@@ -53,3 +53,16 @@
   - Functions: +0.28% (84.65% → 84.93%)
   - Lines: +0.24% (84.90% → 85.14%)
 - **Notes**: The `analyze.ts` capability had misaligned regex group parsing; fixed and added import branch coverage. Overall branch coverage remains below 80%. Next targets: `call_graph.ts` (79%) and remaining branches in other files.
+
+## [2026-07-05 08:08] Cycle 5 - Task: ast_query unknown kind handling
+- **Type**: Test (T)
+- **Priority**: MEDIUM
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test (unknown kind returns no matches gracefully)
+- **Coverage Delta**:
+  - Statements: 84.46% → 84.46% (no change)
+  - Branches: +0.03% (75.89% → 75.92% → 75.98%)
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Added test for invalid `kind` value in `ast_query` to cover handler lookup branch. Coverage continues to inch upward. Next candidates: `call_graph.ts` (109 branches, 23 uncovered), `todos-tool.ts` (337 branches, 86 uncovered). Once overall branches reach ~76.5%, consider larger integration tests for `extension.ts` (130 branches).

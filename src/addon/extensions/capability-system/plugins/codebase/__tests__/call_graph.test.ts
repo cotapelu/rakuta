@@ -244,4 +244,39 @@ function baz() {}
     }
     await rm(dir, { recursive: true, force: true });
   });
+
+  it('should skip cross-file traversal when depth is 0 (unlimited not supported currently)', async () => {
+    // Graph: main -> lib -> deeper
+    const lib = `export function libFunc() {}`;
+    const main = `import { libFunc } from './lib'; function main() { libFunc(); }`;
+    const dir = await mkdtemp(path.join(os.tmpdir(), 'callgraph-depth0-'));
+    await writeFile(path.join(dir, 'lib.ts'), lib);
+    await writeFile(path.join(dir, 'main.ts'), main);
+
+    const result = await callGraphModule.execute({ file: 'main.ts', query: { includeCrossFile: true, depth: 0 } }, { cwd: dir } as any);
+    expect(result.isError).toBe(false);
+    const names = result.details.result.nodes.map((n: any) => n.name);
+    // Only main should be present; imports not followed because depth=0 skips traversal
+    expect(names).toEqual(['main']);
+
+    // Cleanup
+    for (const f of ['lib.ts', 'main.ts']) {
+      try { await unlink(path.join(dir, f)); } catch {}
+    }
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('should ignore calls to unknown external functions (no edge)', async () => {
+    const code = `function foo() { console.log('hi'); }`;
+    const dir = await mkdtemp(path.join(os.tmpdir(), 'callgraph-unknown-'));
+    await writeFile(path.join(dir, 'test.ts'), code);
+
+    const result = await callGraphModule.execute({ file: 'test.ts', query: { includeCrossFile: false } }, { cwd: dir } as any);
+    expect(result.isError).toBe(false);
+    // No edges because call to console.log is external and ignored
+    expect(result.details.result.edges).toHaveLength(0);
+
+    await unlink(path.join(dir, 'test.ts'));
+    await rm(dir, { recursive: true, force: true });
+  });
 });

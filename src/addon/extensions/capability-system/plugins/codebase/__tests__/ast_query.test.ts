@@ -320,4 +320,18 @@ function standalone() {}
     expect(result.details.matches.length).toBe(0);
     await unlink(file);
   });
+
+  it('handles unknown kind gracefully (no matches)', async () => {
+    const code = `function foo() {}`;
+    const file = await writeTempFile(code);
+    const ctx = { cwd: path.dirname(file) };
+    // @ts-ignore - intentionally invalid kind
+    const result = await astQueryModule.execute({ 
+      file: path.basename(file), 
+      query: { kind: 'unknown' } 
+    }, ctx as { cwd: string });
+    expect(result.isError).toBe(false);
+    expect(result.details.matches).toHaveLength(0);
+    await unlink(file);
+  });
 });
