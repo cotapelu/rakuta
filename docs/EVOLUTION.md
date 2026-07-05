@@ -2,8 +2,8 @@
 
 ## Current Trajectory
 - Health Score: unknown (baseline pending stable metrics)
-- Coverage trend: slowly improving (branches +0.35% over two cycles: +0.32% from todos-tool, +0.03% from team-manager). Target: ≥80% branches.
-- Key improvements needed: continue branch coverage focus; next files: dependency_tree (76%), analyze (79%), call_graph (79%). Also address ESLint `any` warnings and default-case.
+- Coverage trend: slowly improving (branches +0.35% over three cycles: +0.32% from todos-tool, +0.03% from team-manager, +0.00% from dependency_tree). Target: ≥80% branches.
+- Key improvements needed: continue branch coverage focus; next high-leverage files: `analyze.ts` (79%), `call_graph.ts` (79%), and remaining branches in `dependency_tree.ts`. Also address ESLint `any` warnings and default-case for type safety.
 
 ## Upcoming Refactors
 - **todos-tool.ts**: Already improved normalizeParams; address remaining branches (if any) after other files.

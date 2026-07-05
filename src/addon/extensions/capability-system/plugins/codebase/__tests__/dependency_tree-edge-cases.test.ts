@@ -131,4 +131,17 @@ describe('dependency_tree edge cases', () => {
     const userToApi = details.edges.find(e => e.from.endsWith('user.ts') && e.to.endsWith('api.ts'));
     expect(userToApi).toBeDefined();
   });
+
+  it('handles syntax error in source file gracefully', async () => {
+    // Missing closing quote
+    await fs.writeFile('syntax.ts', `import { x } from ./a;`);
+    const result = await execute({ files: ['syntax.ts'] }, { cwd: tmpDir } as any);
+    // Should either return an error result or an empty success without crashing
+    if (result.isError) {
+      const msg = typeof result.content === 'string' ? result.content : JSON.stringify(result.content);
+      expect(msg.toLowerCase()).toMatch(/syntax|parse error/);
+    } else {
+      expect((result.details as any).nodes.length).toBe(0);
+    }
+  });
 });

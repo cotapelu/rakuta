@@ -28,3 +28,14 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Covered several missing branches in AgentTeam (releaseTask false branch, handleAgentFailure no-op, concurrency lockQueue). Overall branch coverage remains below target (80%). Next high-leverage file: `addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts` (branches 76%, 141 branches).
+
+## [2026-07-05 07:45] Cycle 3 - Task: dependency_tree parse error handling
+- **Type**: Tests (T)
+- **Priority**: MEDIUM
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test (syntax error handling)
+- **Coverage Delta**: 
+  - Statements: +0.02% (84.19% → 84.21%)
+  - Branches: 75.77% → 75.77% (unchanged)
+- **Notes**: Added test for syntax error in file parsing; ensures capability returns error gracefully. Overall branch coverage remains far below target (80%). Continue with next high-leverage file: `analyze.ts` (branches 79%, functions 192 statements). Need many branch tests.
