@@ -210,3 +210,16 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Call_graph branch coverage rose from 81.65% to 82.56% in per-file metrics, indicating the import-missing-export test covered a previously uncovered branch in `resolveCallee`. Overall progress slow; still 76.3% branches. Next: continue with team-manager or todo-tool error handling (save failure) if mocking can be resolved.
+
+## [2026-07-05 10:32] Cycle 16 - Task: todos-tool save error handling (fs.rename)
+- **Type**: Test (T)
+- **Priority**: HIGH (todos-tool largest uncovered)
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test file (`todos-tool.save-error.test.ts`) mocking `fs.promises.rename` to throw.
+- **Coverage Delta**:
+  - Branches: +2 branches (+0.06%) 76.30% → 76.36%
+  - Statements: +1 (+0.02%) 84.61% → 84.62%
+  - Functions: unchanged
+  - Lines: +1 (+0.02%) 85.25% → 85.27%
+- **Notes**: Covered error path in tool execute when atomic rename fails; storage falls back to memory. `todos-tool.ts` branch coverage improved from 86.64% to 87.24% (still ~45 uncovered absolute). Ongoing target.

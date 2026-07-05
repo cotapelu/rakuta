@@ -41,3 +41,8 @@
 - Added tests: `call_graph` missing export branch, `ast_query` branches (invalid regex, parent non-match, unknown kind).
 - Branch coverage +0.03% to 76.3%. `call_graph` per-file improved to 82.56% branches.
 - Still far from 80% overall; modules with most uncovered: `todos-tool` (~86), `team-manager` (~43), `dependency_tree` (~34).
+
+### Cycle 16 (2026–07–05)
+- Added `todos-tool.save-error.test.ts` to cover `fs.rename` failure in atomic write.
+- Branches +2 to 76.36%; `todos-tool.ts` branch coverage rose to 87.24%.
+- Remaining high‑uncovered modules: `todos-tool` (~45 uncovered), `team-manager` (~43), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22). Continue with error‑path tests for these modules.
