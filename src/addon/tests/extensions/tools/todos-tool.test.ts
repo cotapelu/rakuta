@@ -735,3 +735,28 @@ describe('TodoTool session lifecycle', () => {
     expect(result.details.phases[0].name).toBe('P2');
   });
 });
+
+// Additional formatSummary edge cases for branch coverage
+describe('formatSummary edge cases', () => {
+  it('shows "Remaining items: none." when all tasks completed', () => {
+    const phases: TodoPhase[] = [
+      { id: 'p1', name: 'P1', tasks: [
+        { id: 't1', content: 'A', status: 'completed' },
+        { id: 't2', content: 'B', status: 'completed' }
+      ]}
+    ];
+    const text = formatSummary(phases, []);
+    expect(text).toContain('Remaining items: none.');
+  });
+
+  it('selects last phase as current when no phase has pending/in_progress tasks', () => {
+    const phases: TodoPhase[] = [
+      { id: 'p1', name: 'P1', tasks: [{ id: 't1', content: 'A', status: 'completed' }] },
+      { id: 'p2', name: 'P2', tasks: [{ id: 't2', content: 'B', status: 'completed' }] }
+    ];
+    const text = formatSummary(phases, []);
+    // Should show Phase 2/2 "P2"
+    expect(text).toMatch(/Phase 2\/2/);
+    expect(text).toContain('P2');
+  });
+});

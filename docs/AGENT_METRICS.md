@@ -66,3 +66,16 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Added test for invalid `kind` value in `ast_query` to cover handler lookup branch. Coverage continues to inch upward. Next candidates: `call_graph.ts` (109 branches, 23 uncovered), `todos-tool.ts` (337 branches, 86 uncovered). Once overall branches reach ~76.5%, consider larger integration tests for `extension.ts` (130 branches).
+
+## [2026-07-05 08:15] Cycle 6 - Task: todos-tool formatSummary edge cases
+- **Type**: Test (T)
+- **Priority**: MEDIUM
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +4 tests (formatSummary: all completed -> "Remaining items: none."; fallback to last phase when no pending/in_progress tasks)
+- **Coverage Delta**:
+  - Statements: +0.04% (84.46% → 84.50%)
+  - Branches: +0.06% (75.98% → 76.04%)
+  - Functions: unchanged
+  - Lines: +0.02% (85.16% → 85.18%)
+- **Notes**: Tests cover branches in formatSummary for empty remaining items and current phase fallback. Overall branch coverage now 76.04%, still below 80%. Next high-gain: `todos-tool.ts` (86 uncovered), `call_graph.ts` (23 uncovered), `dependency_tree.ts` (34 uncovered).
