@@ -55,4 +55,18 @@ describe('todos-tool applyOp additional branch coverage (extra)', () => {
       expect(result.phases).toEqual(phases);
     });
   });
+
+  describe('normalizeInProgress via update', () => {
+    it('does not promote any task when all are completed', () => {
+      const phases: TodoPhase[] = [{ id: 'p1', name: 'P1', tasks: [
+        { id: 't1', content: 'A', status: 'completed' },
+        { id: 't2', content: 'B', status: 'completed' }
+      ]}];
+      const nextTid = 3, nextPid = 1;
+      const result = applyOp(phases, nextTid, nextPid, { update: { id: 't1', content: 'A-modified' } });
+      expect(result.errors).toHaveLength(0);
+      const statuses = result.phases[0].tasks.map(t => t.status);
+      expect(statuses).toEqual(['completed', 'completed']);
+    });
+  });
 });

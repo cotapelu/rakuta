@@ -139,3 +139,16 @@
   - Functions: unchanged
   - Lines: +0.07% (85.20% → 85.27%)
 - **Notes**: Branch coverage improved by covering catch and version‑mismatch branches in `loadTodoFromFile`. Still far from 80% target. Next high‑gain: continue with `todos-tool.ts` remaining branches (e.g., `saveTodoToFile` atomic write errors) and `dependency_tree.ts`.
+
+## [2026-07-05 09:30] Cycle 11 - Task: todos-tool normalizeInProgress no-pending branch
+- **Type**: Test (T)
+- **Priority**: LOW
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test (normalizeInProgress when all tasks completed)
+- **Coverage Delta**:
+  - Branches: +0.06% (76.12% → 76.18%)
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Covered branch in normalizeInProgress where no pending tasks exist. Overall branch coverage remains far below 80%.
