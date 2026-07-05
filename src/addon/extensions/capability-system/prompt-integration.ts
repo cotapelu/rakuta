@@ -3,8 +3,8 @@
  * System Prompt Integration
  */
 
-import { getCapabilityRegistry } from "./registry.ts";
-import type { SystemPromptOptions, Capability } from "./types.ts";
+import { getCapabilityRegistry } from "./registry.js";
+import type { SystemPromptOptions, Capability } from "./types.js";
 import { Type } from "typebox";
 
 /**

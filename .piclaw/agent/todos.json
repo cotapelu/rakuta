@@ -3,37 +3,27 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Fix internal imports in capability-system core",
+      "name": "Build Fix Phase",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Convert .js imports to .ts in registry.ts (types, shared utils)",
-          "status": "in_progress"
+          "content": "Analyze TypeScript build errors",
+          "status": "completed"
         },
         {
           "id": "task-2",
-          "content": "Convert .js imports to .ts in prompt-integration.ts",
-          "status": "pending"
+          "content": "Fix tsconfig.build.json or import paths",
+          "status": "in_progress"
         },
         {
           "id": "task-3",
-          "content": "Verify other core files (index.ts, types.ts) have no .js imports",
-          "status": "pending"
-        },
-        {
-          "id": "task-4",
-          "content": "Run coverage for extension.ts/plugin-loader.ts and confirm >0%",
-          "status": "pending"
-        },
-        {
-          "id": "task-5",
-          "content": "If still 0%, investigate Vite config or test mocks",
+          "content": "Rebuild to verify fix",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 6,
+  "nextTaskId": 4,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-04T19:37:52.713Z"
+  "updatedAt": "2026-07-05T00:36:13.362Z"
 }

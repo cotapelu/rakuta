@@ -6,7 +6,7 @@
  * Provides registration, lookup, search, and system prompt generation.
  */
 
-import type { Capability, CapabilityRegistry } from "./types.ts";
+import type { Capability, CapabilityRegistry } from "./types.js";
 // Type import removed - unused
 
 class RegistryImpl implements CapabilityRegistry {
