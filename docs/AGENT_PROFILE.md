@@ -26,3 +26,8 @@
 - Added two tests for `todos-tool`: multi-in_progress demotion, no-op error.
 - No new branch coverage; still 86 uncovered in `todos-tool.ts`.
 - Focus remains on high‑uncovered modules: `todos-tool`, `dependency_tree`, `call_graph`.
+
+### Cycle 13 (2026-07-05)
+- Added 2 tests: `dependency_tree` extension fallback (`.js` when no `.ts`), `call_graph` unresolved callee handling.
+- Branch coverage +0.03% (76.21% total). Slow progress.
+- Target modules: `todos-tool` (86 uncovered), `dependency_tree` (33), `call_graph` (22), `ast_query` (35), `team-manager` (43).

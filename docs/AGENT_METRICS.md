@@ -167,3 +167,18 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Both tests passed; no new branch coverage gain, indicating those branches were already covered by existing tests. 86 branches still uncovered in todos-tool.ts.
+
+## [2026-07-05 09:59] Cycle 13 - Tasks: dependency_tree extension resolution, call_graph unresolved callee
+- **Type**: Test (T)
+- **Priority**: LOW
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +2 tests
+  - `dependency_tree` resolves `.js` file when `.ts` absent (extension fallback)
+  - `call_graph` ignores calls to undefined functions (null resolution)
+- **Coverage Delta**:
+  - Branches: +0.03% (76.18% → 76.21%)
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Gained 1 branch overall. Progress slow but positive. `call_graph` uncovered branches now 22; `dependency_tree` now 33? (estimate).
