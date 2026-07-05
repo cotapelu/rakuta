@@ -59,6 +59,12 @@ describe('todos-tool applyOp additional branch coverage', () => {
       expect(result.errors).toContain('Task "missing" not found');
       expect(result.phases[0].tasks[0].status).toBe('completed');
     });
+
+    it('neither id nor ids provided -> error', () => {
+      const phases: TodoPhase[] = [{ id: 'phase-1', name: 'P1', tasks: [{ id: 'task-1', content: 'A', status: 'pending' }] }];
+      const result = applyOp(phases, nextTid, nextPid, { update: { status: 'completed' } as any });
+      expect(result.errors).toContain("update must have either 'id' (string) or 'ids' (array of strings)");
+    });
   });
 
   describe('remove_task validation', () => {
@@ -79,6 +85,20 @@ describe('todos-tool applyOp additional branch coverage', () => {
       // @ts-ignore
       const result = applyOp([], nextTid, nextPid, { foo: 'bar' });
       expect(result.errors).toContain('No operation specified');
+    });
+  });
+
+  describe('normalizeInProgress', () => {
+    it('prevents multiple in_progress tasks when updating multiple ids', () => {
+      const phases: TodoPhase[] = [{ id: 'p1', name: 'P1', tasks: [
+        { id: 't1', content: 'A', status: 'pending' },
+        { id: 't2', content: 'B', status: 'pending' }
+      ]}];
+      const nextTid = 2, nextPid = 1;
+      const result = applyOp(phases, nextTid, nextPid, { update: { ids: ['t1', 't2'], status: 'in_progress' } });
+      expect(result.errors).toHaveLength(0);
+      const statuses = result.phases[0].tasks.map(t => t.status).sort();
+      expect(statuses).toEqual(['in_progress', 'pending']);
     });
   });
 });

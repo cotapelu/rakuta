@@ -79,3 +79,13 @@
   - Functions: unchanged
   - Lines: +0.02% (85.16% → 85.18%)
 - **Notes**: Tests cover branches in formatSummary for empty remaining items and current phase fallback. Overall branch coverage now 76.04%, still below 80%. Next high-gain: `todos-tool.ts` (86 uncovered), `call_graph.ts` (23 uncovered), `dependency_tree.ts` (34 uncovered).
+
+## [2026-07-05 08:25] Cycle 7 - Task: todos-tool normalizeInProgress multiple in_progress
+- **Type**: Test (T)
+- **Priority**: LOW
+- **Duration**: ~10 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test (update multiple tasks to in_progress triggers normalization to keep only one in_progress)
+- **Coverage Delta**: 
+  - Branches: unchanged (76.04%)
+- **Notes**: Coverage progress slow; need to target larger uncovered files. Next: continue with `todos-tool` deeper branches or switch to `team-manager`/`dependency_tree`.
