@@ -31,3 +31,8 @@
 - Added 2 tests: `dependency_tree` extension fallback (`.js` when no `.ts`), `call_graph` unresolved callee handling.
 - Branch coverage +0.03% (76.21% total). Slow progress.
 - Target modules: `todos-tool` (86 uncovered), `dependency_tree` (33), `call_graph` (22), `ast_query` (35), `team-manager` (43).
+
+### Cycle 14 (2026-07-05)
+- Added 6 tests for `TodoState.reconstructFromEntries` covering multiple entry filtering branches.
+- Branch coverage +2 (~+0.06%) to 76.27%. Still far from 80%.
+- Next targets: `todos-tool` (86 uncovered), `dependency_tree` (34), `ast_query` (35), `call_graph` (23), `team-manager` (43).

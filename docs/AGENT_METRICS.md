@@ -182,3 +182,16 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Gained 1 branch overall. Progress slow but positive. `call_graph` uncovered branches now 22; `dependency_tree` now 33? (estimate).
+
+## [2026-07-05 10:05] Cycle 14 - Task: todos-tool.reconstructFromEntries branch coverage
+- **Type**: Test (T)
+- **Priority**: MEDIUM (high uncovered in todos-tool)
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: +6 tests (TodoState.reconstructFromEntries scenarios: valid entry, skip non-message, skip non-toolResult, details-without-phases, no valid entries, latest wins)
+- **Coverage Delta**:
+  - Branches: +2 branches (~+0.06%) 76.21% → 76.27%
+  - Statements: +1 (84.59% → 84.61%)
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Covered branches in `TodoState.reconstructFromEntries`. `todos-tool.ts` branch coverage still at 74.0% (86 uncovered). Next: continue with `todos-tool` (loadTodoFromFile error handling refinement) or switch to `ast_query.ts` (35 uncovered).
