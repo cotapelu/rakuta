@@ -295,3 +295,16 @@
   - Functions: +2 (+0.19%) 85.31% → 85.5%
   - Lines: +9 (+0.18%) 85.69% → 85.87%
 - **Notes**: The test forces many iterations using fake timers; the loop detects completion only after tasks done, but MAX_TURNS check occurs each iteration. This exercised previously uncovered branch in `runAgentLoop`.
+
+## [2026-07-05 12:15] Cycle 23 - Task: todos-tool getLatestTodoPhasesFromEntries "todo_write" branch
+- **Type**: Test (T)
+- **Priority**: LOW
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test in `todos-tool.reconstruct.test.ts` covering toolName `'todo_write'`.
+- **Coverage Delta**:
+  - Branches: +1 branch (+0.03%) 76.86% → 76.89%
+  - Statements: unchanged
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Very small gain; still far from 80%. Many branches remain.

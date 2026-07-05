@@ -86,4 +86,15 @@ describe('TodoState reconstructFromEntries', () => {
     expect(found).toBe(true);
     expect(state.phases).toEqual(phases2);
   });
+
+  it('accepts toolName "todo_write" as valid', () => {
+    const state = new TodoState();
+    const phases = [{ id: 'p1', name: 'P1', tasks: [{ id: 't1', content: 'A', status: 'pending' }] }];
+    const entries: any[] = [
+      { type: 'message', message: { role: 'toolResult', toolName: 'todo_write', details: { phases } } },
+    ];
+    const found = state.reconstructFromEntries(entries);
+    expect(found).toBe(true);
+    expect(state.phases).toEqual(phases);
+  });
 });
