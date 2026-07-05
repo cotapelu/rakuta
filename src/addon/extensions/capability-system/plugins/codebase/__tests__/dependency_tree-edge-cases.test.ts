@@ -144,4 +144,15 @@ describe('dependency_tree edge cases', () => {
       expect((result.details as any).nodes.length).toBe(0);
     }
   });
+
+  it('ignores external package imports (e.g., react)', async () => {
+    await fs.writeFile('a.ts', `import React from 'react'; export const x = 1;`);
+    await fs.writeFile('b.ts', `export const y = 2;`);
+    const result = await execute({ files: ['a.ts','b.ts'] }, { cwd: tmpDir } as any);
+    expect(result.isError).toBe(false);
+    const details = result.details as any;
+    // No edge should point to 'react' external module
+    const edgesToReact = details.edges.filter((e: any) => e.to.includes('react'));
+    expect(edgesToReact).toHaveLength(0);
+  });
 });

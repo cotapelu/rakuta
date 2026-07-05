@@ -89,3 +89,24 @@
 - **Coverage Delta**: 
   - Branches: unchanged (76.04%)
 - **Notes**: Coverage progress slow; need to target larger uncovered files. Next: continue with `todos-tool` deeper branches or switch to `team-manager`/`dependency_tree`.
+
+## [2026-07-05 08:55] Cycle 8 - Task: todos-tool & dependency_tree edge tests
+- **Type**: Tests (T)
+- **Priority**: MEDIUM
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: 
+  - Added `todos-tool.branch-coverage.extra.test.ts` (4 tests) covering:
+    - `add_phase` mixed statuses (invalid defaults to pending)
+    - `update` with empty `ids` array (no error, normalizeInProgress promotes)
+    - `remove_task` isolation between phases
+    - `list` operation unchanged
+  - Added `dependency_tree-edge-cases.extra.test.ts` (2 tests):
+    - `export * as ns` namespace re-export
+    - multiple independent cycles detection
+- **Coverage Delta**:
+  - Statements: +0.01% (84.50% → 84.51%)
+  - Branches: +0.05% (76.04% → 76.09%)
+  - Functions: unchanged
+  - Lines: +0.02% (85.18% → 85.20%)
+- **Notes**: Overall branch coverage 76.09%, still below 80% target. Next high‑gain files: `todos-tool.ts` (86 uncovered), `team-manager.ts` (43 uncovered), `dependency_tree.ts` (34 uncovered). Continue incremental branch testing.

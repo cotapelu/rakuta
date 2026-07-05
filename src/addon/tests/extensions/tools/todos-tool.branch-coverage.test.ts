@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyOp, type TodoPhase } from '../../../extensions/tools/todos-tool.ts';
+import { applyOp, type TodoPhase } from '../../../extensions/tools/todos-tool';
 
 describe('todos-tool applyOp additional branch coverage', () => {
   const nextTid = 1, nextPid = 1;
@@ -62,7 +62,7 @@ describe('todos-tool applyOp additional branch coverage', () => {
 
     it('neither id nor ids provided -> error', () => {
       const phases: TodoPhase[] = [{ id: 'phase-1', name: 'P1', tasks: [{ id: 'task-1', content: 'A', status: 'pending' }] }];
-      const result = applyOp(phases, nextTid, nextPid, { update: { status: 'completed' } as any });
+      const result = applyOp(phases, nextTid, nextPid, { update: { status: 'completed' } } as any);
       expect(result.errors).toContain("update must have either 'id' (string) or 'ids' (array of strings)");
     });
   });

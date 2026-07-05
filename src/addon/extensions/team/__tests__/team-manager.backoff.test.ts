@@ -116,4 +116,18 @@ describe('AgentTeam Backoff & Retry', () => {
     expect(status.tasks[0].status).toBe('in_progress');
     expect(status.tasks[0].assignee).toBe('agent-1');
   });
+
+  it('should not allow claiming task during backoff period', async () => {
+    await team.initialize(['task1']);
+    const idx = (await team.claimTask('agent-1'))!;
+    expect(idx).toBe(0);
+    // Cause failure to set backoff
+    await team.handleAgentFailure('agent-1', idx, new Error('fail'));
+    const taskStatus = getInternal(team).taskStatuses.get(idx)!;
+    // Force backoff far in the future to avoid flakiness
+    taskStatus.retryAvailableAt = Date.now() + 60000;
+    // Another agent tries to claim the same task
+    const idx2 = await team.claimTask('agent-2');
+    expect(idx2).toBeNull();
+  });
 });

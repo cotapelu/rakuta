@@ -1,7 +1,7 @@
 # Agent Weakness Profile
 
 ## Fragile Modules
-- `src/addon/extensions/tools/todos-tool.ts`: Branches ~74% (86 uncovered); improved formatSummary coverage; still many error handling branches.
+- `src/addon/extensions/tools/todos-tool.ts`: Branches ~75% (86 uncovered); added edge case tests for applyOp and formatSummary; many branches remain.
 - `src/addon/extensions/team/team-manager.ts`: Branch coverage ~72% (small improvements); missing branches in releaseTask failure, handleAgentFailure wrong agent, getMyCurrentTask, and concurrency lockQueue.
 - `src/addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts`: Branches ~76%; added parse error test; still many untested branches (file resolution edge cases, cycle detection variations).
 - `src/addon/extensions/capability-system/plugins/codebase/capabilities/analyze.ts`: Branches improved to ~76%; fixed import parsing bug; still need coverage for edge import patterns and error paths.
