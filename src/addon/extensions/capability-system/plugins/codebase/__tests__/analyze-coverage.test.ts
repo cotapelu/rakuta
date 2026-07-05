@@ -116,4 +116,64 @@ describe('codebase.analyze coverage', () => {
     const result = await execute({ file: 'test.xyz' }, { cwd: tmpdir });
     expect(result.details.language).toBe('unknown');
   });
+
+  // --- Import parsing branch coverage ---
+
+  it('parses import * as ns', async () => {
+    const code = `import * as ns from 'mod';`;
+    const file = join(tmpdir, 'test.ts');
+    await fs.writeFile(file, code, 'utf8');
+    const result = await execute({ file: 'test.ts' }, { cwd: tmpdir });
+    expect(result.isError).toBe(false);
+    expect(result.details.imports.length).toBe(1);
+    const imp = result.details.imports[0];
+    expect(imp.importClause).toBe('* as ns');
+    expect(imp.moduleSpecifier).toBe('mod');
+    expect(imp.namedImports).toBeUndefined();
+  });
+
+  it('parses import default', async () => {
+    const code = `import x from 'mod';`;
+    const file = join(tmpdir, 'test.ts');
+    await fs.writeFile(file, code, 'utf8');
+    const result = await execute({ file: 'test.ts' }, { cwd: tmpdir });
+    expect(result.isError).toBe(false);
+    const imp = result.details.imports[0];
+    expect(imp.importClause).toBe('x');
+    expect(imp.moduleSpecifier).toBe('mod');
+  });
+
+  it('parses import named with alias', async () => {
+    const code = `import { foo as bar } from 'mod';`;
+    const file = join(tmpdir, 'test.ts');
+    await fs.writeFile(file, code, 'utf8');
+    const result = await execute({ file: 'test.ts' }, { cwd: tmpdir });
+    expect(result.isError).toBe(false);
+    const imp = result.details.imports[0];
+    expect(imp.importClause).toContain('{');
+    expect(imp.namedImports).toContain('bar');
+  });
+
+  it('parses import named multiple', async () => {
+    const code = `import { foo, baz } from 'mod';`;
+    const file = join(tmpdir, 'test.ts');
+    await fs.writeFile(file, code, 'utf8');
+    const result = await execute({ file: 'test.ts' }, { cwd: tmpdir });
+    expect(result.isError).toBe(false);
+    const imp = result.details.imports[0];
+    expect(imp.namedImports).toHaveLength(2);
+    expect(imp.namedImports).toContain('foo');
+    expect(imp.namedImports).toContain('baz');
+  });
+
+  it('parses import empty named set', async () => {
+    const code = `import {} from 'mod';`;
+    const file = join(tmpdir, 'test.ts');
+    await fs.writeFile(file, code, 'utf8');
+    const result = await execute({ file: 'test.ts' }, { cwd: tmpdir });
+    expect(result.isError).toBe(false);
+    const imp = result.details.imports[0];
+    expect(imp.importClause).toBe('');
+    expect(imp.namedImports).toHaveLength(0);
+  });
 });

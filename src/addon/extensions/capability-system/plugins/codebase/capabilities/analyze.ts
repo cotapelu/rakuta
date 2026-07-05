@@ -86,10 +86,15 @@ function processNamedGroup(namedGroup: string): { importClause: string; namedImp
 function tryParseImport(line: string, lineNum: number, imports: ImportInfo[]): boolean {
   const importMatch = line.match(IMPORT_DECL_REGEX);
   if (importMatch) {
-    const [, starAs, namedGroup, defaultImport, moduleSpecifier] = importMatch;
+    // Groups: 1: '*' (star token), 2: alias for * as, 3: namedGroup '{...}', 4: defaultImport identifier, 5: moduleSpecifier
+    const starToken = importMatch[1];
+    const starAlias = importMatch[2];
+    const namedGroup = importMatch[3];
+    const defaultImport = importMatch[4];
+    const moduleSpecifier = importMatch[5];
     const importInfo: ImportInfo = { moduleSpecifier };
-    if (starAs) {
-      importInfo.importClause = `* as ${starAs}`;
+    if (starToken) {
+      importInfo.importClause = `* as ${starAlias}`;
     } else if (namedGroup) {
       const result = processNamedGroup(namedGroup);
       importInfo.importClause = result.importClause;

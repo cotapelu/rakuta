@@ -39,3 +39,17 @@
   - Statements: +0.02% (84.19% → 84.21%)
   - Branches: 75.77% → 75.77% (unchanged)
 - **Notes**: Added test for syntax error in file parsing; ensures capability returns error gracefully. Overall branch coverage remains far below target (80%). Continue with next high-leverage file: `analyze.ts` (branches 79%, functions 192 statements). Need many branch tests.
+
+## [2026-07-05 07:55] Cycle 4 - Task: analyze.ts import parsing & bug fix
+- **Type**: Test (T) + Fix
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +5 tests (import * as, default, named (single/multiple), empty named set)
+- **Code Changes**: Fixed destructuring bug in `tryParseImport` (wrong capture group indices) and correctly handle starAs alias.
+- **Coverage Delta**:
+  - Statements: +0.23% (84.21% → 84.44%)
+  - Branches: +0.12% (75.77% → 75.89%)
+  - Functions: +0.28% (84.65% → 84.93%)
+  - Lines: +0.24% (84.90% → 85.14%)
+- **Notes**: The `analyze.ts` capability had misaligned regex group parsing; fixed and added import branch coverage. Overall branch coverage remains below 80%. Next targets: `call_graph.ts` (79%) and remaining branches in other files.

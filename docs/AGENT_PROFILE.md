@@ -4,6 +4,7 @@
 - `src/addon/extensions/tools/todos-tool.ts`: Coverage improved, branches ~75-76%; remaining branches in error handling and edge cases.
 - `src/addon/extensions/team/team-manager.ts`: Branch coverage ~72% (small improvements); missing branches in releaseTask failure, handleAgentFailure wrong agent, getMyCurrentTask, and concurrency lockQueue.
 - `src/addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts`: Branches ~76%; added parse error test; still many untested branches (file resolution edge cases, cycle detection variations).
+- `src/addon/extensions/capability-system/plugins/codebase/capabilities/analyze.ts`: Branches improved to ~76%; fixed import parsing bug; still need coverage for edge import patterns and error paths.
 - `src/addon/addon/logger.ts` & `src/addon/runtime-context.ts`: Multiple `any` type usages (ESLint warnings), reduce type safety.
 
 ## Error-Prone Stacks
