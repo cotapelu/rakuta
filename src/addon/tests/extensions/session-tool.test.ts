@@ -1,10 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock the session tool module
-vi.mock('../../tools/session/index.js', () => ({
-  createSessionTool: vi.fn(() => ({ name: 'session', execute: () => {} }))
-}));
-
 import sessionToolExtension from '../../extensions/session-tool/index.js';
 
 describe('Session Tool Extension', () => {
@@ -20,6 +15,6 @@ describe('Session Tool Extension', () => {
     // Get the registered handler
     const [, handler] = mockApi.on.mock.calls[0];
     await handler(null as any, {} as any);
-    expect(mockApi.registerTool).toHaveBeenCalledWith({ name: 'session', execute: expect.any(Function) });
+    expect(mockApi.registerTool).toHaveBeenCalledWith(expect.objectContaining({ name: 'session', execute: expect.any(Function) }));
   });
 });

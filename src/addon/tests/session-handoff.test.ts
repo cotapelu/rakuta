@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   extractSessionIdFromPath,
   buildHandoffBusPaths,
-} from '../tools/session/handoff.ts';
+} from '../extensions/session-tool/handoff.ts';
 
 describe('extractSessionIdFromPath', () => {
   it('should extract session ID from filename with .jsonl extension', () => {

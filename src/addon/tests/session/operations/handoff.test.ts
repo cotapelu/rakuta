@@ -6,9 +6,9 @@ import {
   operationChildWrite,
   operationParentRead,
   operationCompleteChild,
-} from '../../../tools/session/operations/handoff.js';
-import type { MultiSessionManager } from '../../../tools/session/manager.js';
-import type { SessionMetadata } from '../../../tools/session/registry.js';
+} from '../../../extensions/session-tool/operations/handoff.js';
+import type { MultiSessionManager } from '../../../extensions/session-tool/manager.js';
+import type { SessionMetadata } from '../../../extensions/session-tool/registry.js';
 
 // Mock fs/promises (default import)
 vi.mock('node:fs/promises', () => ({

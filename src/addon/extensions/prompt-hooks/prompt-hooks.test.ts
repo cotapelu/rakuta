@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/no-explicit-any: "off" */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import promptHookExtension, { parseCommandArgs, substitutePromptArgs } from './prompt-hook-extension.js';
+import promptHookExtension, { parseCommandArgs, substitutePromptArgs } from './prompt-hooks.js';
 
 // Mock logger for observability
 vi.mock('../utils/logger.js', () => ({

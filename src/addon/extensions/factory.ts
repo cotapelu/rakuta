@@ -23,6 +23,7 @@ import contextLoggerExtension from "./context-logger.js";
 // import registerBuiltinsExtension from "./buildin-tools/index.js";
 import multiAgentToolExtension from "./multi-agent-tool/index.js";
 import sessionToolExtension from "./session-tool/index.js";
+import promptHookExtension from "./prompt-hooks/index.js";
 // skillsToolExtension removed - skill_reader extension handles skills
 
 import piclawHeader from "./piclaw-header.js";
@@ -69,6 +70,9 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   
   // Register session tool
   sessionToolExtension(api);
+  
+  // Register prompt hooks extension
+  promptHookExtension(api);
   
   // skills tool removed (use skill_reader extension)
 

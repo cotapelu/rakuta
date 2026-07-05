@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { MessageBus } from '../../tools/multi-agent/message-bus.js';
-import { messageBus as singleton } from '../../tools/multi-agent/message-bus.js';
+import { MessageBus } from '../../extensions/multi-agent-tool/message-bus.js';
+import { messageBus as singleton } from '../../extensions/multi-agent-tool/message-bus.js';
 
 function msg(type: string, payload?: any) {
   return { type, payload } as any;

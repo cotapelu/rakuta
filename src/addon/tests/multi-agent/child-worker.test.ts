@@ -11,20 +11,20 @@ vi.mock('node:worker_threads', () => ({
 }));
 
 // Mock child-tools
-vi.mock('../../tools/multi-agent/child-tools.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/child-tools.js', () => ({
   setCurrentChildId: vi.fn()
 }));
-import { setCurrentChildId } from '../../tools/multi-agent/child-tools.js';
+import { setCurrentChildId } from '../../extensions/multi-agent-tool/child-tools.js';
 
 // Mock messageBus with sendToParent and sendToChild
-vi.mock('../../tools/multi-agent/message-bus.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/message-bus.js', () => ({
   messageBus: {
     sendToParent: vi.fn(),
     sendToChild: vi.fn(),
     onIncomingMessage: vi.fn(() => () => {})
   }
 }));
-import { messageBus } from '../../tools/multi-agent/message-bus.js';
+import { messageBus } from '../../extensions/multi-agent-tool/message-bus.js';
 
 // Mock createAgentSessionFromServices
 vi.mock('@earendil-works/pi-coding-agent', () => ({
@@ -60,7 +60,7 @@ describe('Child Worker', () => {
     vi.spyOn(process, 'exit').mockImplementation(() => {});
 
     // Dynamically import child-worker after all mocks are set
-    await import('../../tools/multi-agent/worker/child-worker.js');
+    await import('../../extensions/multi-agent-tool/worker/child-worker.js');
   });
 
   it('calls setCurrentChildId with child config id', () => {

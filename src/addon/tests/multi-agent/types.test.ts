@@ -9,7 +9,7 @@ import {
   isErrorMessage,
   ParentToChildMessage,
   ChildToParentMessage,
-} from '../../tools/multi-agent/types.js';
+} from '../../extensions/multi-agent-tool/types.js';
 
 describe('Multi-Agent Types - Type Guards', () => {
   describe('ParentToChildMessage guards', () => {

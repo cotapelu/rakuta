@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createMultiAgentTool } from '../../tools/multi-agent/router.js';
+import { createMultiAgentTool } from '../../extensions/multi-agent-tool/router.js';
 
 // Mock dependencies with correct relative paths
-vi.mock('../../tools/multi-agent/parent-tools.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/parent-tools.js', () => ({
   setRuntime: vi.fn(),
   spawnChild: vi.fn(),
   sendMessage: vi.fn(),
@@ -15,23 +15,23 @@ vi.mock('../../runtime-context.js', () => ({
   getCurrentRuntime: vi.fn(),
 }));
 
-vi.mock('../../tools/multi-agent/runtime.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/runtime.js', () => ({
   multiAgentRuntime: {
     setParentConfig: vi.fn(),
     parentConfig: undefined,
   },
 }));
 
-vi.mock('../../tools/multi-agent/definition.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/definition.js', () => ({
   MULTI_AGENT_TOOL_DESCRIPTION: 'desc',
   MULTI_AGENT_TOOL_PROMPT_SNIPPET: 'snippet',
   MULTI_AGENT_TOOL_PROMPT_GUIDELINES: [],
   MULTI_AGENT_TOOL_PARAMETERS: { type: 'object', properties: {} },
 }));
 
-import { spawnChild, sendMessage, awaitResult, listChildren, terminateChild } from '../../tools/multi-agent/parent-tools.js';
+import { spawnChild, sendMessage, awaitResult, listChildren, terminateChild } from '../../extensions/multi-agent-tool/parent-tools.js';
 import { getCurrentRuntime } from '../../runtime-context.js';
-import { multiAgentRuntime } from '../../tools/multi-agent/runtime.js';
+import { multiAgentRuntime } from '../../extensions/multi-agent-tool/runtime.js';
 
 describe('MultiAgent Router', () => {
   beforeEach(() => {

@@ -5,7 +5,7 @@ import {
   MULTI_AGENT_TOOL_PROMPT_GUIDELINES,
   MULTI_AGENT_TOOL_PARAMETERS,
   buildMultiAgentToolDefinition
-} from '../../tools/multi-agent/definition.js';
+} from '../../extensions/multi-agent-tool/definition.js';
 
 describe('Multi-Agent Tool Definition', () => {
   it('exports all expected constants', () => {

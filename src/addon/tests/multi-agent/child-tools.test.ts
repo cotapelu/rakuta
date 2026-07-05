@@ -1,14 +1,14 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock the message-bus module before importing child-tools
-vi.mock('../../tools/multi-agent/message-bus.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/message-bus.js', () => ({
   messageBus: {
     sendToParent: vi.fn(),
     onIncomingMessage: vi.fn(),
   },
 }));
 
-import { messageBus } from '../../tools/multi-agent/message-bus.js';
+import { messageBus } from '../../extensions/multi-agent-tool/message-bus.js';
 import {
   setCurrentChildId,
   getCurrentChildId,
@@ -17,7 +17,7 @@ import {
   complete,
   error,
   childTools,
-} from '../../tools/multi-agent/child-tools.js';
+} from '../../extensions/multi-agent-tool/child-tools.js';
 
 describe('Child Tools', () => {
   beforeEach(() => {

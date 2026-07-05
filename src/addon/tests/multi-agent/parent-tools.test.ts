@@ -7,17 +7,17 @@ import {
   listChildren,
   terminateChild,
   parentTools,
-} from '../../tools/multi-agent/parent-tools.js';
+} from '../../extensions/multi-agent-tool/parent-tools.js';
 
 // Mock runtime and messageBus
-vi.mock('../../tools/multi-agent/message-bus.js', () => ({
+vi.mock('../../extensions/multi-agent-tool/message-bus.js', () => ({
   messageBus: {
     waitForParentMessage: vi.fn(),
     sendToChild: vi.fn(),
   },
 }));
 
-import { messageBus } from '../../tools/multi-agent/message-bus.js';
+import { messageBus } from '../../extensions/multi-agent-tool/message-bus.js';
 
 class MockRuntime {
   spawnChild = vi.fn();

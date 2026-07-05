@@ -1,8 +1,17 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { createMultiAgentTool } from "../../tools/multi-agent/index.js";
+import { createMultiAgentTool } from './router.js';
+import { messageBus } from './message-bus.js';
+import { multiAgentRuntime } from './runtime.js';
 
-export default function (pi: ExtensionAPI) {
-  pi.on("session_start", async (event, ctx) => {
-    pi.registerTool(createMultiAgentTool());
+// Extension wrapper
+export default function (api: ExtensionAPI) {
+  api.on("session_start", async (event, ctx) => {
+    api.registerTool(createMultiAgentTool());
   });
 }
+
+// Re-exports for programmatic access
+export * from './types.js';
+export { messageBus };
+export { multiAgentRuntime };
+export { createMultiAgentTool };

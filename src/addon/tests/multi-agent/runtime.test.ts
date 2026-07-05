@@ -15,8 +15,8 @@ vi.mock('node:worker_threads', () => {
 });
 
 import { Worker } from 'node:worker_threads';
-import { MultiAgentRuntime, multiAgentRuntime } from '../../tools/multi-agent/runtime.js';
-import type { ParentConfig, ChildConfig } from '../../tools/multi-agent/types.js';
+import { MultiAgentRuntime, multiAgentRuntime } from '../../extensions/multi-agent-tool/runtime.js';
+import type { ParentConfig, ChildConfig } from '../../extensions/multi-agent-tool/types.js';
 
 describe('MultiAgentRuntime', () => {
   let runtime: MultiAgentRuntime;

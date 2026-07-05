@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { substitutePromptArgs, parseCommandArgs } from './prompt-hook-extension.js';
+import { substitutePromptArgs, parseCommandArgs } from './prompt-hooks.js';
 
 describe('substitutePromptArgs', () => {
   it('should substitute positional args $1, $2, $3', () => {
