@@ -39,6 +39,7 @@ import { registerTeamCommand } from "./commands/team-command.js";
 // - registerSettingsCommand (conflicts with built-in /settings)
 // - registerCopyCommand (conflicts with built-in /copy)
 import { registerKeybindingExtension } from "./keybinding/keybinding-extension.js";
+import autonomousEngineExtension from "./autonomous-engine/index.js";
 
 /**
  * Main extension aggregator function
@@ -105,6 +106,9 @@ export default async function extensionsAggregator(api: import("@earendil-works/
 
   // Register Context Logger Extension
   contextLoggerExtension(api);
+
+  // Register Autonomous Engine Extension
+  autonomousEngineExtension(api);
 
   // Master-tool extension removed (not efficient)
 
