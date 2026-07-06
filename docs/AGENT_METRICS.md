@@ -454,3 +454,12 @@
 - **Coverage Delta**: 
   - Branches: -0.28% (76.53% → 76.25%) – within noise; overall target 80%.
 - **Notes**: Subtool-loader coverage increased from ~65% to ~72% (estimated). Next: continue with capability-system modules or additional extension error branch tests.
+
+## [2026-07-06 22:55] Cycle 34 - Task: extension.docs-errors tests
+- **Type**: Tests (T)
+- **Priority**: LOW
+- **Duration**: ~10 min
+- **Status**: ✅ Success
+- **Test Delta**: +4 tests covering appendMetrics and updateAgentProfile error handling (fs write/read errors).
+- **Coverage Delta**: Branches unchanged (~76.25%).
+- **Notes**: These functions are called rarely; error branches already partially covered. Next high‑gap: `capability-system/extension.ts`, `dependency_tree.ts`, `autonomous-engine/extension.ts` error paths.

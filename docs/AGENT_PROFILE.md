@@ -165,3 +165,9 @@
   - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
   - `autonomous-engine/quality-gate.ts` (74 branches, 29.73%)
 - Next: tackle capability-system/extension.ts or continue extension error branches.
+
+### Cycle 34 (2026-07-06)
+- Added 4 tests for extension.docs error handling (appendMetrics, updateAgentProfile). Covered catch blocks when file writes fail.
+- Overall branch coverage remains ~76.25%.
+- Challenges: Testing `agent_end` hook proved complex due to async dependencies and mocked QualityGate interactions. May require alternative approach (e.g., integration test with temporary filesystem) or refactor for testability.
+- Remaining high‑gap modules unchanged.
