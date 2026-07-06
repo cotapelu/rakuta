@@ -414,3 +414,18 @@
   - Functions: +0.18% (83.39% → 83.57%)
   - Lines: +0.44% (81.76% → 82.20%)
 - **Notes**: Fixed extension.ts exports to include actual function names (removed non-existent runCycle). Still major gaps: runDiscoveryCycle (125 branches), quality-gate (74), task-discovery (21). Next: test runDiscoveryCycle with proper mocking or shift to other high‑gain modules.
+
+## [2026-07-06 20:35] Cycle 31 - Task: autonomous-engine core tests (TaskDiscovery & QualityGate)
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +23 tests:
+  - `task-discovery.test.ts` (9): covers violationToPriority, suggestFixAction, proactiveAnalysis (coverage, security, etc.)
+  - `quality-gate.test.ts` (14): calculateScore, parseLintViolations, getCoverage (file read, malformed, threshold)
+- **Coverage Delta**: 
+  - Statements: +0.84% (81.87% → 82.71%)
+  - Branches: +1.18% (74.85% → 76.03%)
+  - Functions: +0.71% (83.57% → 84.28%)
+  - Lines: +1.09% (83.15% → 84.24%)
+- **Notes**: autonomous-engine overall branch coverage now ~20% (extension) and 29.7% (quality-gate). Next: cover extension runDiscoveryCycle and capability-system modules.

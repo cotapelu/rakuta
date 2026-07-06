@@ -135,3 +135,13 @@
   - `capability-system/extension.ts` (130 branches, 24.62%)
   - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
 - Next strategies: either refactor runDiscoveryCycle to be more testable or write integration tests with full environment mock; alternatively, address quality-gate which is also high impact.
+
+### Cycle 31 (2026-07-06)
+- Added comprehensive tests for TaskDiscovery (9) and QualityGate (14), covering core logic and scoring.
+- Branch coverage increased by 1.18% to 76.03%.
+- Remaining critical gaps:
+  - `autonomous-engine/extension.ts` (125 branches, 20% covered) – need to test runDiscoveryCycle and event hooks.
+  - `capability-system/extension.ts` (130 branches, 24.62% covered).
+  - `capability-system/plugin-loader.ts` (112 branches, 49.11% covered).
+  - `autonomous-engine/quality-gate.ts` (74 branches, 29.73% covered) – more branches remain (runBuild, runTests, etc.).
+- Next: continue with extension runDiscoveryCycle tests or shift to capability-system.

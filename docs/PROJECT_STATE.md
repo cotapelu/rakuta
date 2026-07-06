@@ -1,29 +1,33 @@
 # Project State
 
-Last update: 2026-07-06 20:25 UTC
+Last update: 2026-07-06 20:40 UTC
 
 ## Completed Tasks (Recent)
-- **2026-07-06 Cycle 28**: Added 9 comprehensive branch coverage tests for `todos-tool.ts` (applyOp validation, normalizeParams edge cases, formatSummary scenarios, getLatestTodoPhasesFromEntries). todos-tool branch coverage improved from ~87% to 89.02%.
-- **2026-07-06 Cycle 29**: Added 14 unit tests for `autonomous-engine/extension.ts` pure functions (loadState, saveState, buildTaskPrompt, mapPriority, getStatePath). Fixed exports.
-- **2026-07-06 Cycle 30**: Added 10 tests for `updateEvolutionDocs` and `updateAgentProfile`; overall branch coverage +0.49% to 74.85%.
+- **Cycle 28**: todos-tool branch coverage tests (9) – coverage 89.02% on that module.
+- **Cycle 29**: autonomous-engine/extension pure function tests (14) + export fixes.
+- **Cycle 30**: autonomous-engine/extension docs update tests (10).
+- **Cycle 31**: autonomous-engine core tests:
+  - TaskDiscovery (9 tests): violationToPriority, suggestFixAction, proactiveAnalysis.
+  - QualityGate (14 tests): calculateScore, parseLintViolations, getCoverage.
+- **Overall branch coverage**: 76.03% (target 80%).
 
 ## Recent Failures
 None.
 
 ## Current Metrics
-- Overall branch coverage: 74.85% (target: 80%)
-- Overall statement coverage: 81.87%
-- Test suite: 1575 passing tests
+- Overall branch coverage: 76.03%
+- Overall statement coverage: 82.71%
+- Test suite: 1598 passing tests
 
-## Critical Gaps
-- `autonomous-engine/extension.ts`: 125 branches, still ~0.2% coverage (pure and docs functions only)
-- `autonomous-engine/quality-gate.ts`: 74 branches, 0% coverage
-- `autonomous-engine/task-discovery.ts`: 21 branches, 0% coverage
-- `capability-system/extension.ts`: 130 branches, 24.62% coverage
-- `capability-system/plugin-loader.ts`: 112 branches, 49.11% coverage
+## Critical Gaps (largest uncovered branch counts)
+- `autonomous-engine/extension.ts`: 125 total branches, ~20% covered (runDiscoveryCycle not yet tested)
+- `capability-system/extension.ts`: 130 total branches, 24.62% covered
+- `autonomous-engine/quality-gate.ts`: 74 total branches, 29.73% covered (runBuild/runTests remain)
+- `capability-system/plugin-loader.ts`: 112 total branches, 49.11% covered
+- `autonomous-engine/extension.ts` also has many error-handling branches uncovered.
 
 ## Next Actions
-1. Write tests for `autonomous-engine/extension.ts` core logic: runDiscoveryCycle (with proper mocking), agent_end handling, emergency brake.
-2. Test `autonomous-engine/quality-gate.ts` and `task-discovery.ts`.
-3. Improve coverage for `capability-system` extension modules.
-4. Continue incremental coverage improvements until ≥80%.
+1. Write tests for `runDiscoveryCycle` in extension (mock TaskDiscovery & QualityGate).
+2. Test `quality-gate` remaining methods: runBuild, runTests, runLint.
+3. Improve coverage for `capability-system/extension.ts` and `plugin-loader.ts`.
+4. Continue until branch coverage ≥80%.
