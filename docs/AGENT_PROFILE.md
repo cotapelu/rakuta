@@ -155,3 +155,13 @@
   - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
   - `autonomous-engine/quality-gate.ts` (74 branches, 29.73%) – methods like runBuild, runTests remain untested.
 - Next: fill remaining runDiscoveryCycle branches, then tackle capability-system modules.
+
+### Cycle 33 (2026-07-06)
+- Added 7 tests: appendMetrics (2) covers file creation/append; subtool-loader validation (5) covers input validation branches.
+- Overall branch coverage ~76.25% (slight fluctuation). subtool-loader branch coverage improved from 65.31% to ~72%.
+- Remaining gaps (unchanged):
+  - `autonomous-engine/extension.ts` (125 branches, error paths)
+  - `capability-system/extension.ts` (130 branches, 24.62%)
+  - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
+  - `autonomous-engine/quality-gate.ts` (74 branches, 29.73%)
+- Next: tackle capability-system/extension.ts or continue extension error branches.

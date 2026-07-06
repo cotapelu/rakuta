@@ -442,3 +442,15 @@
   - Functions: +1.07% (84.28% → 85.35%)
   - Lines: +0.58% (84.24% → 84.82%)
 - **Notes**: autonomous-engine/extension.ts branch coverage improved from ~20% to ~40% (roughly). Still need to cover remaining branches in runDiscoveryCycle (error handling, multiple saves) and other functions. Next: continue with extension error paths and shift to capability-system.
+
+## [2026-07-06 21:30] Cycle 33 - Task: appendMetrics + subtool-loader validation tests
+- **Type**: Tests (T)
+- **Priority**: MEDIUM
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +7 tests:
+  - `extension.appendMetrics.test.ts` (2): creates new file vs appends.
+  - `subtool-loader.test.ts` (5): validate missing subtool, unknown subtool, HTTP missing/invalid/url.
+- **Coverage Delta**: 
+  - Branches: -0.28% (76.53% → 76.25%) – within noise; overall target 80%.
+- **Notes**: Subtool-loader coverage increased from ~65% to ~72% (estimated). Next: continue with capability-system modules or additional extension error branch tests.
