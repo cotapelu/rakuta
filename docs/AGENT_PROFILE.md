@@ -112,3 +112,14 @@
   - `capability-system/extension.ts`: 130 branches, 24.62% coverage (98 uncovered)
   - `capability-system/plugin-loader.ts`: 112 branches, 49.11% coverage (57 uncovered)
 - Immediate priority: Write unit tests for autonomous engine to bring coverage above 80%.
+
+### Cycle 29 (2026-07-06)
+- Added 14 unit tests for `autonomous-engine/extension.ts` focusing on pure functions: state load/save, prompt building, priority mapping.
+- Autonomous engine branch coverage remains near 0% (core logic untested).
+- Critical remaining gaps (unchanged):
+  - `autonomous-engine/extension.ts` runCycle and event handlers (125 branches)
+  - `autonomous-engine/quality-gate.ts` (74 branches)
+  - `autonomous-engine/task-discovery.ts` (21 branches)
+  - `capability-system/extension.ts` (130 branches, 24.62%)
+  - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
+- Next iteration: expand coverage of `extension.ts` by testing runCycle scenarios (success, failure, emergency brake, throttling).

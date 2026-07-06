@@ -663,3 +663,6 @@ function mapPriority(p: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' {
     default: return 'LOW';
   }
 }
+
+// Exports for testing
+ export { loadState, saveState, buildTaskPrompt, runDiscovery, runCycle, appendMetrics, updateEvolutionDocs, mapPriority, defaultState, getStatePath };

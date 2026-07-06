@@ -386,3 +386,16 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: Added comprehensive edge-case tests for todos-tool. The overall branch coverage drop reflects new untested autonomous engine components (125+ branches). Next critical target: autonomous-engine/extension.ts (125 branches, 0% coverage).
+
+## [2026-07-06 20:15] Cycle 29 - Task: autonomous-engine pure function tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +14 tests covering loadState, saveState, buildTaskPrompt, mapPriority, getStatePath.
+- **Coverage Delta**: 
+  - Statements: +0.19% (81.29% → 81.48%)
+  - Branches: +0.12% (74.24% → 74.36%)
+  - Functions: +0.30% (83.09% → 83.39%)
+  - Lines: +0.21% (81.55% → 81.76%)
+- **Notes**: Coverage improvement slow due to large autonomous engine codebase (125 branches, 0% coverage). Next: test runCycle, discovery, and event hooks to cover core engine logic.
