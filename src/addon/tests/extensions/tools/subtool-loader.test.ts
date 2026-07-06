@@ -1,23 +1,44 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Mutable capture variables for args passed to tool executes
+let capturedBashArgs: any = undefined;
+let capturedReadArgs: any = undefined;
+let capturedLsArgs: any = undefined;
+let capturedFindArgs: any = undefined;
+let capturedGrepArgs: any = undefined;
+
 // Mock the pi-coding-agent SDK
 vi.mock('@earendil-works/pi-coding-agent', () => ({
   createReadToolDefinition: vi.fn(() => ({
-    execute: vi.fn().mockResolvedValue({ content: [{ type: 'text', text: 'read result' }] })
+    execute: vi.fn().mockImplementation(async (id: string, args: any) => {
+      capturedReadArgs = args;
+      return { content: [{ type: 'text', text: 'read result' }] };
+    })
   })),
   createLsToolDefinition: vi.fn(() => ({
-    execute: vi.fn().mockResolvedValue({ content: [{ type: 'text', text: 'ls result' }] })
+    execute: vi.fn().mockImplementation(async (id: string, args: any) => {
+      capturedLsArgs = args;
+      return { content: [{ type: 'text', text: 'ls result' }] };
+    })
   })),
   createFindToolDefinition: vi.fn(() => ({
-    execute: vi.fn().mockResolvedValue({ content: [{ type: 'text', text: 'find result' }] })
+    execute: vi.fn().mockImplementation(async (id: string, args: any) => {
+      capturedFindArgs = args;
+      return { content: [{ type: 'text', text: 'find result' }] };
+    })
   })),
   createGrepToolDefinition: vi.fn(() => ({
-    execute: vi.fn().mockResolvedValue({ content: [{ type: 'text', text: 'grep result' }] })
+    execute: vi.fn().mockImplementation(async (id: string, args: any) => {
+      capturedGrepArgs = args;
+      return { content: [{ type: 'text', text: 'grep result' }] };
+    })
   })),
   createBashToolDefinition: vi.fn(() => ({
-    execute: vi.fn().mockResolvedValue({ content: [{ type: 'text', text: 'bash result' }] })
+    execute: vi.fn().mockImplementation(async (id: string, args: any) => {
+      capturedBashArgs = args;
+      return { content: [{ type: 'text', text: 'bash result' }] };
+    })
   })),
-  // Minimal Text for renderCall (not tested)
   Text: class Text { constructor(public text: string) {} },
 }));
 
@@ -32,11 +53,19 @@ function makeCtx(cwd = CWD): ExtensionContext {
   return { cwd } as any;
 }
 
+beforeEach(() => {
+  vi.clearAllMocks();
+  capturedBashArgs = undefined;
+  capturedReadArgs = undefined;
+  capturedLsArgs = undefined;
+  capturedFindArgs = undefined;
+  capturedGrepArgs = undefined;
+});
+
 describe('subtool-loader', () => {
   let tool: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
     tool = createSubLoaderToolDefinition();
   });
 
@@ -50,6 +79,7 @@ describe('subtool-loader', () => {
     const result = await tool.execute('call1', { subtool: 'unknown', args: {} }, null, () => {}, makeCtx());
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('Unknown sub-tool');
+    expect(result.content[0].text).toContain('http, ls, find, grep, read');
   });
 
   describe('http subtool validation', () => {
@@ -65,12 +95,77 @@ describe('subtool-loader', () => {
       expect(result.content[0].text).toContain('Invalid URL');
     });
 
-    it('success for valid http url', async () => {
+    it('success for valid http url, builds curl command with GET', async () => {
       const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com' } }, null, () => {}, makeCtx());
       expect(result.isError).toBe(false);
-      expect(result.content[0].type).toBe('text');
+      expect(capturedBashArgs).toBeDefined();
+      expect(capturedBashArgs.command).toContain('curl');
+      expect(capturedBashArgs.command).toContain('https://example.com');
+      // Should include fail flag
+      expect(capturedBashArgs.command).toContain('--fail');
+    });
+
+    it('includes -X method when not GET', async () => {
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', method: 'POST' } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      // Command includes both '-X' and 'POST' as separate quoted args
+      expect(capturedBashArgs.command).toContain('-X');
+      expect(capturedBashArgs.command).toContain('POST');
+    });
+
+    it('includes -H headers when provided', async () => {
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', headers: { 'Content-Type': 'application/json', 'X-Api-Key': '123' } } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(capturedBashArgs.command).toContain('-H');
+      expect(capturedBashArgs.command).toContain('Content-Type: application/json');
+      expect(capturedBashArgs.command).toContain('X-Api-Key: 123');
+    });
+
+    it('includes -d body when provided', async () => {
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', body: 'hello world' } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(capturedBashArgs.command).toContain('-d');
+      expect(capturedBashArgs.command).toContain('hello world');
+    });
+
+    it('http result details contain url, method, headers', async () => {
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', method: 'POST', headers: { 'X-Test': 'yes' } } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(result.details).toEqual({
+        url: 'https://example.com',
+        method: 'POST',
+        headers: { 'X-Test': 'yes' },
+      });
     });
   });
 
-  // Skipping caching test due to require/mocking limitations
+  describe('other subtools pass-through', () => {
+    it('read passes args to SDK tool and returns its content', async () => {
+      const result = await tool.execute('call1', { subtool: 'read', args: { path: '/etc/passwd' } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(result.content).toEqual([{ type: 'text', text: 'read result' }]);
+      expect(capturedReadArgs).toEqual({ path: '/etc/passwd' });
+    });
+
+    it('ls passes args to SDK tool', async () => {
+      const result = await tool.execute('call1', { subtool: 'ls', args: { path: '/tmp', all: true } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(result.content).toEqual([{ type: 'text', text: 'ls result' }]);
+      expect(capturedLsArgs).toEqual({ path: '/tmp', all: true });
+    });
+
+    it('find passes args to SDK tool', async () => {
+      const result = await tool.execute('call1', { subtool: 'find', args: { pattern: '*.ts', path: '/src' } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(result.content).toEqual([{ type: 'text', text: 'find result' }]);
+      expect(capturedFindArgs).toEqual({ pattern: '*.ts', path: '/src' });
+    });
+
+    it('grep passes args to SDK tool', async () => {
+      const result = await tool.execute('call1', { subtool: 'grep', args: { pattern: 'TODO', path: '/src', limit: 10, glob: '*.ts' } }, null, () => {}, makeCtx());
+      expect(result.isError).toBe(false);
+      expect(result.content).toEqual([{ type: 'text', text: 'grep result' }]);
+      expect(capturedGrepArgs).toEqual({ pattern: 'TODO', path: '/src', limit: 10, glob: '*.ts' });
+    });
+  });
 });
