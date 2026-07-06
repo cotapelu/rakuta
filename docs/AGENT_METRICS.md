@@ -399,3 +399,18 @@
   - Functions: +0.30% (83.09% → 83.39%)
   - Lines: +0.21% (81.55% → 81.76%)
 - **Notes**: Coverage improvement slow due to large autonomous engine codebase (125 branches, 0% coverage). Next: test runCycle, discovery, and event hooks to cover core engine logic.
+
+## [2026-07-06 20:20] Cycle 30 - Task: autonomous-engine docs and pure tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: +24 tests:
+  - `extension.pure.test.ts` (14): loadState, saveState, buildTaskPrompt, mapPriority, getStatePath
+  - `extension.docs.test.ts` (10): updateEvolutionDocs, updateAgentProfile
+- **Coverage Delta**: 
+  - Statements: +0.39% (81.48% → 81.87%)
+  - Branches: +0.49% (74.36% → 74.85%)
+  - Functions: +0.18% (83.39% → 83.57%)
+  - Lines: +0.44% (81.76% → 82.20%)
+- **Notes**: Fixed extension.ts exports to include actual function names (removed non-existent runCycle). Still major gaps: runDiscoveryCycle (125 branches), quality-gate (74), task-discovery (21). Next: test runDiscoveryCycle with proper mocking or shift to other high‑gain modules.

@@ -123,3 +123,15 @@
   - `capability-system/extension.ts` (130 branches, 24.62%)
   - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
 - Next iteration: expand coverage of `extension.ts` by testing runCycle scenarios (success, failure, emergency brake, throttling).
+
+### Cycle 30 (2026-07-06)
+- Added 24 unit tests for `autonomous-engine/extension.ts`: pure functions and doc update helpers.
+- Fixed export list (removed non-existent runCycle, added runDiscoveryCycle, runGitCommand, etc.).
+- Overall branch coverage: 74.85% (+0.49%).
+- Remaining critical gaps unchanged:
+  - `autonomous-engine/extension.ts` runDiscoveryCycle and event hooks (125 branches)
+  - `autonomous-engine/quality-gate.ts` (74 branches, 0%)
+  - `autonomous-engine/task-discovery.ts` (21 branches, 0%)
+  - `capability-system/extension.ts` (130 branches, 24.62%)
+  - `capability-system/plugin-loader.ts` (112 branches, 49.11%)
+- Next strategies: either refactor runDiscoveryCycle to be more testable or write integration tests with full environment mock; alternatively, address quality-gate which is also high impact.

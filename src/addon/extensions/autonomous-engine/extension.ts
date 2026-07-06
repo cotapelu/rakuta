@@ -665,4 +665,18 @@ function mapPriority(p: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' {
 }
 
 // Exports for testing
- export { loadState, saveState, buildTaskPrompt, runDiscovery, runCycle, appendMetrics, updateEvolutionDocs, mapPriority, defaultState, getStatePath };
+ export {
+  loadState,
+  saveState,
+  buildTaskPrompt,
+  runGitCommand,
+  autoCommit,
+  updateProjectState,
+  updateEvolutionDocs,
+  updateAgentProfile,
+  runDiscoveryCycle,
+  appendMetrics,
+  mapPriority,
+  defaultState,
+  getStatePath,
+};
