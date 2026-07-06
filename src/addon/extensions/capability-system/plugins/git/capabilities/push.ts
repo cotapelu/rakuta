@@ -13,7 +13,7 @@ export const schema = Type.Object({
 
 export async function execute(params: { remote?: string; branch?: string; setUpstream?: boolean }, ctx: any): Promise<any> {
   const cwd = ctx.cwd || process.cwd();
-  const { remote = "origin", branch, setUpstream } = params;
+  const { remote = "origin", branch, setUpstream = false } = params;
 
   try {
     const args = ["push"];

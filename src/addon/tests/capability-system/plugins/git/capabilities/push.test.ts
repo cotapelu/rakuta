@@ -18,7 +18,7 @@ describe('git.push capability', () => {
     const result = await push.execute({}, ctx);
     expect(ctx.exec).toHaveBeenCalledWith('git', ['push', 'origin'], { cwd: '/test' });
     expect(result.isError).toBe(false);
-    expect(result.details).toEqual({ remote: 'origin', branch: undefined, setUpstream: undefined });
+    expect(result.details).toEqual({ remote: 'origin', branch: undefined, setUpstream: false });
   });
 
   it('should push with remote and branch', async () => {
@@ -26,7 +26,7 @@ describe('git.push capability', () => {
     const result = await push.execute({ remote: 'upstream', branch: 'feat' }, ctx);
     expect(ctx.exec).toHaveBeenCalledWith('git', ['push', 'upstream', 'feat'], { cwd: '/test' });
     expect(result.isError).toBe(false);
-    expect(result.details).toEqual({ remote: 'upstream', branch: 'feat', setUpstream: undefined });
+    expect(result.details).toEqual({ remote: 'upstream', branch: 'feat', setUpstream: false });
   });
 
   it('should push with setUpstream flag', async () => {
