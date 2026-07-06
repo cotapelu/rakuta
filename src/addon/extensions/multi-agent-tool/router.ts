@@ -2,6 +2,7 @@ import type { AgentToolResult, AgentToolUpdateCallback, ExtensionContext, ToolDe
 import { multiAgentRuntime } from './runtime.js';
 import { setRuntime, spawnChild, sendMessage, awaitResult, listChildren, terminateChild } from './parent-tools.js';
 import { getCurrentRuntime } from '../../runtime-context.js';
+
 import {
 	MULTI_AGENT_TOOL_DESCRIPTION,
 	MULTI_AGENT_TOOL_PROMPT_SNIPPET,
@@ -18,13 +19,14 @@ function toResult<T>(value: { content: { type: string; text: string }[]; details
 	};
 }
 
-function ensureParentConfig(): void {
+function ensureParentConfig(ctx?: ExtensionContext): void {
 	const existing = (multiAgentRuntime as any).parentConfig;
 	if (existing?.services) return;
 	try {
+		// LUÔN dùng getCurrentRuntime() - đã được set trong cli.ts
 		const runtime = getCurrentRuntime();
-		const services = (runtime as any).services;
-		const sessionManager = (runtime as any).sessionManager;
+		const services = runtime.services;
+		const sessionManager = (runtime.session as any)?.sessionManager;
 		if (services || sessionManager) {
 			multiAgentRuntime.setParentConfig({
 				cwd: runtime.cwd,
@@ -36,8 +38,9 @@ function ensureParentConfig(): void {
 				sessionManager,
 			});
 		}
-	} catch {
-		// runtime chưa sẵn sàng; spawnChild sẽ ném lỗi rõ ràng
+	} catch (e) {
+		// Runtime chưa sẵn sàng; spawnChild sẽ ném lỗi rõ ràng
+		throw e; // Ném lỗi rõ ràng hơn
 	}
 }
 
@@ -56,7 +59,7 @@ export function createMultiAgentTool(): ToolDefinition {
 			_onUpdate?: AgentToolUpdateCallback<unknown>,
 			_ctx?: ExtensionContext
 		): Promise<AgentToolResult<unknown>> {
-			ensureParentConfig();
+			ensureParentConfig(_ctx);
 			const p = params as {
 				operation: string;
 				type?: 'llm' | 'executor' | 'test-runner' | 'custom';
