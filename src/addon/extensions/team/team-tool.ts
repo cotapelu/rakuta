@@ -8,7 +8,6 @@
 
 import { bootPiclawTeam, executeTeamTasks, TeamRegistry } from "./team-manager.js";
 import type { ToolDefinition, AgentToolUpdateCallback, AgentToolResult, ExtensionContext, ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { getCurrentRuntime } from '../../runtime-context.js';
 
 interface TeamToolParams {
   teamId?: string;
@@ -172,8 +171,8 @@ export function createTeamTool(): ToolDefinition {
       }
 
       try {
-        // Get parent runtime from global context (required)
-        const parentRuntime = getCurrentRuntime();
+        // Get parent runtime from tool context (required)
+        const parentRuntime = ctx?.runtime;
         if (!parentRuntime) {
           throw new Error("No runtime context available. team_run must be called from an active agent session.");
         }
