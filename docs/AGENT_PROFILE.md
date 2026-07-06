@@ -171,3 +171,8 @@
 - Overall branch coverage remains ~76.25%.
 - Challenges: Testing `agent_end` hook proved complex due to async dependencies and mocked QualityGate interactions. May require alternative approach (e.g., integration test with temporary filesystem) or refactor for testability.
 - Remaining high‑gap modules unchanged.
+
+### Cycle 36 (2026-07-06)
+- Added 13 tests for `ast_query` capability covering all query kinds, filters (exact name, regex, parent), limit handling, and errors. Introduced a detection for arrow function name '<arrow>'.
+- Branch coverage: 76.72% (+0.16%).
+- Remaining gaps unchanged; next targets: `dependency_tree` (~34 uncovered), `analyze_ast` (~30), `call_graph` (~19). Continue systematic testing.

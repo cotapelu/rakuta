@@ -463,3 +463,12 @@
 - **Test Delta**: +4 tests covering appendMetrics and updateAgentProfile error handling (fs write/read errors).
 - **Coverage Delta**: Branches unchanged (~76.25%).
 - **Notes**: These functions are called rarely; error branches already partially covered. Next high‑gap: `capability-system/extension.ts`, `dependency_tree.ts`, `autonomous-engine/extension.ts` error paths.
+
+## [2026-07-06 23:35] Cycle 36 - Task: ast_query comprehensive tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: +13 tests covering all query kinds, filters (exact, regex, parent), limit, error handling.
+- **Coverage Delta**: Branches +0.16% (76.56%→76.72%).
+- **Notes**: ast_query uncovered branches: name regex fallback, limit abort, parent container resolution, various AST node types. Next high-gap: dependency_tree, analyze_ast, call_graph.
