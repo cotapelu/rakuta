@@ -176,3 +176,9 @@
 - Added 13 tests for `ast_query` capability covering all query kinds, filters (exact name, regex, parent), limit handling, and errors. Introduced a detection for arrow function name '<arrow>'.
 - Branch coverage: 76.72% (+0.16%).
 - Remaining gaps unchanged; next targets: `dependency_tree` (~34 uncovered), `analyze_ast` (~30), `call_graph` (~19). Continue systematic testing.
+
+### Cycle 37 (2026-07-06)
+- Added 3 tests for `analyze_ast` capability (file not found, parse error, comprehensive analysis). Covered importClause variations, export types, symbol kinds.
+- Branch coverage: 76.75% (+0.03%).
+- Challenges: Minimal coverage gain indicates many branches likely in error handling or rarely visited paths; need targeted tests for specific edge cases.
+- Next: `call_graph` (~19 branches uncovered), `dependency_tree` (~34), `autonomous-engine/extension.ts` (125).

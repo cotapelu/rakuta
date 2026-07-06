@@ -472,3 +472,12 @@
 - **Test Delta**: +13 tests covering all query kinds, filters (exact, regex, parent), limit, error handling.
 - **Coverage Delta**: Branches +0.16% (76.56%→76.72%).
 - **Notes**: ast_query uncovered branches: name regex fallback, limit abort, parent container resolution, various AST node types. Next high-gap: dependency_tree, analyze_ast, call_graph.
+
+## [2026-07-06 23:45] Cycle 37 - Task: analyze_ast comprehensive tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +3 tests covering analyze_ast error handling and comprehensive analysis (imports, exports, symbols including interface, type, enum).
+- **Coverage Delta**: Branches +0.03% (76.72%→76.75%).
+- **Notes**: analyze_ast still has significant uncovered branches (e.g., handling of various declaration types, edge cases). Next modules: call_graph (~19 uncovered), dependency_tree (~34 uncovered).
