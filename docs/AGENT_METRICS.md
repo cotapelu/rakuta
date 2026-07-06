@@ -373,3 +373,16 @@
   - Functions: unchanged
   - Lines: unchanged
 - **Notes**: No new coverage; those branches may already be covered or not counted.
+
+## [2026-07-06 19:45] Cycle 28 - Task: todos-tool branch coverage (additional)
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~20 min
+- **Status**: ✅ Success
+- **Test Delta**: +9 tests covering applyOp validation, normalizeParams edge cases, formatSummary scenarios, getLatestTodoPhasesFromEntries variations.
+- **Coverage Delta**: 
+  - Statements: 84.62% → 84.??% (estimated +0.??, detailed data N/A)
+  - Branches: 76.89% → 74.24% (-2.65%) due to inclusion of autonomous engine code in coverage (new untested modules). todos-tool branch coverage improved from ~87% to 89.02%.
+  - Functions: unchanged
+  - Lines: unchanged
+- **Notes**: Added comprehensive edge-case tests for todos-tool. The overall branch coverage drop reflects new untested autonomous engine components (125+ branches). Next critical target: autonomous-engine/extension.ts (125 branches, 0% coverage).

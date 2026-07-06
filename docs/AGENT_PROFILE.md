@@ -101,3 +101,14 @@
 - Added `todos-tool.getNextIds-nonstandard.test.ts` covering regex‑fail branches in `getNextIds`.
 - No new branch coverage (remained 76.89%).
 - Remaining high‑uncovered: `todos-tool` (~43), `team-manager` (~28), `dependency_tree` (~34), `ast_query` (~35), `call_graph` (~22).
+
+### Cycle 28 (2026-07-06)
+- Added 9 targeted branch coverage tests for `todos-tool.ts` (applyOp validation, normalizeParams edge cases, formatSummary, getLatestTodoPhasesFromEntries).
+- todos-tool branch coverage improved to 89.02%.
+- Overall branch coverage dropped to 74.24% due to inclusion of new untested autonomous engine modules in coverage. These are now the largest gap:
+  - `autonomous-engine/extension.ts`: 125 branches, 0% coverage
+  - `autonomous-engine/quality-gate.ts`: 74 branches, 0% coverage
+  - `autonomous-engine/task-discovery.ts`: 21 branches, 0% coverage
+  - `capability-system/extension.ts`: 130 branches, 24.62% coverage (98 uncovered)
+  - `capability-system/plugin-loader.ts`: 112 branches, 49.11% coverage (57 uncovered)
+- Immediate priority: Write unit tests for autonomous engine to bring coverage above 80%.
