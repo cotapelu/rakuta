@@ -429,3 +429,16 @@
   - Functions: +0.71% (83.57% → 84.28%)
   - Lines: +1.09% (83.15% → 84.24%)
 - **Notes**: autonomous-engine overall branch coverage now ~20% (extension) and 29.7% (quality-gate). Next: cover extension runDiscoveryCycle and capability-system modules.
+
+## [2026-07-06 20:40] Cycle 32 - Task: extension.runDiscoveryCycle tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: +8 tests covering runDiscoveryCycle: isRunning check, interval throttling, task discovery, sorting, truncation, promotion, message sending, state mutation.
+- **Coverage Delta**:
+  - Statements: +0.61% (82.71% → 84.32%)
+  - Branches: +0.33% (76.03% → 76.36%)
+  - Functions: +1.07% (84.28% → 85.35%)
+  - Lines: +0.58% (84.24% → 84.82%)
+- **Notes**: autonomous-engine/extension.ts branch coverage improved from ~20% to ~40% (roughly). Still need to cover remaining branches in runDiscoveryCycle (error handling, multiple saves) and other functions. Next: continue with extension error paths and shift to capability-system.
