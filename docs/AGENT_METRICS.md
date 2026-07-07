@@ -517,3 +517,12 @@
 - **Test Delta**: +3 dependency_tree edge tests (external pkg, .js fallback, .ts pref) + 7 runDiscoveryCycle tests (interval, dedup, limit, error, trigger) = +10 tests.
 - **Coverage Delta**: Branches +0.00% (remained 76.61%).
 - **Notes**: dependency_tree edge tests did not add new branches (existing coverage path sufficient). runDiscoveryCycle newly exercised many branches but net unchanged likely due to rounding and test file overhead. Remaining high‑gap: autonomous-engine/extension.ts (125 branches, 40% covered), capability-system/extension.ts (130, 25%), plugin-loader (112, 56%).
+
+## [2026-07-06 12:32] Cycle 42 - Task: subtool-loader error handling
+- **Type**: Tests (T)
+- **Priority**: LOW
+- **Duration**: ~15 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test covering bash tool exception branch.
+- **Coverage Delta**: Branches +0.03% (76.61% → 76.64%).
+- **Notes**: Additionally removed incomplete team-manager test file. Next high‑gap: autonomous-engine/extension.ts (125), capability-system/extension.ts (130), plugin-loader (112).
