@@ -571,3 +571,12 @@
 - **Test Delta**: +1 test covering SDK tool error path (read tool rejection).
 - **Coverage Delta**: Branches 0.00% (remained 76.89%).
 - **Notes**: Also attempted autoCommit and QualityGate tests but removed due to mocking complexities; will revisit later with simpler approach.
+
+## [2026-07-06 14:37] Cycle 48 - Task: plugin-loader unload/reload tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +2 tests covering unloadPlugin (with multiple capabilities) and reloadPlugin.
+- **Coverage Delta**: Branches +0.05% (76.89% → 76.94%).
+- **Notes**: Fixed manifest description issues. Next: continue with capability-system/extension (130 branches uncovered) and quality‑gate error paths.

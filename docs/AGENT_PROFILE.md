@@ -227,3 +227,7 @@
 ### Cycle 47 (2026-07-06)
 - Added 1 test for subtool-loader error handling (read tool rejection). Coverage unchanged at 76.89%.
 - Did not resolve autoCommit and QualityGate test difficulties; will refactor approach later.
+
+### Cycle 48 (2026-07-06)
+- Added 2 tests for PluginLoader lifecycle (unload, reload). Branch coverage: 76.94% (+0.05%).
+- Still far from 80% target; remaining high-gap modules: autonomous-engine/extension (125), capability-system/extension (130), plugin-loader (still ~50 uncovered), quality-gate (74). Need systematic testing of error paths in these.

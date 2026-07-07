@@ -220,4 +220,86 @@ describe('PluginLoader', () => {
       expect(mockRegistry.unregister).toHaveBeenCalled();
     });
   });
+
+  describe('unloadPlugin', () => {
+    it('unloads an existing plugin and unregisters its capabilities', async () => {
+      const pluginsDir = join(testRoot, 'plugins_multi');
+      const { mkdir } = await import('fs/promises');
+      await mkdir(pluginsDir);
+      const pluginDir = join(pluginsDir, 'multi');
+      await mkdir(pluginDir);
+      writeJSON(join(pluginDir, 'manifest.json'), {
+        id: 'multi',
+        name: 'Multi',
+        version: '1.0.0',
+        description: 'Test plugin',
+        tags: [],
+        capabilities: [
+          { id: 'cap1', name: 'Cap1', description: 'Capability 1', inputSchema: { type: 'object' }, execute: 'c1.js' },
+          { id: 'cap2', name: 'Cap2', description: 'Capability 2', inputSchema: { type: 'object' }, execute: 'c2.js' }
+        ]
+      });
+      await writeFile(join(pluginDir, 'c1.js'), `export const schema = {}; export async function execute() {}`);
+      await writeFile(join(pluginDir, 'c2.js'), `export const schema = {}; export async function execute() {}`);
+
+      const loader = new PluginLoader({ pluginsDir });
+      await loader.loadPlugin('multi');
+
+      let stats = loader.getStats();
+      expect(stats.totalPlugins).toBe(1);
+      expect(stats.totalCapabilities).toBe(2);
+      let loaded = loader.getLoadedPlugins();
+      expect(loaded.length).toBe(1);
+
+      loader.unloadPlugin('multi');
+
+      stats = loader.getStats();
+      expect(stats.totalPlugins).toBe(0);
+      expect(stats.totalCapabilities).toBe(0);
+      loaded = loader.getLoadedPlugins();
+      expect(loaded.length).toBe(0);
+      // Two unregister calls (one per capability)
+      expect(mockRegistry.unregister).toHaveBeenCalledTimes(2);
+    });
+
+    it('unloadPlugin does nothing if plugin not loaded', async () => {
+      const pluginsDir = join(testRoot, 'plugins_nl');
+      const { mkdir } = await import('fs/promises');
+      await mkdir(pluginsDir);
+      const loader = new PluginLoader({ pluginsDir });
+      expect(() => loader.unloadPlugin('nonexistent')).not.toThrow();
+      expect(mockRegistry.unregister).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reloadPlugin', () => {
+    it('reloads a plugin successfully', async () => {
+      const pluginsDir = join(testRoot, 'plugins_reload');
+      const { mkdir } = await import('fs/promises');
+      await mkdir(pluginsDir);
+      const pluginDir = join(pluginsDir, 'reloadme');
+      await mkdir(pluginDir);
+      writeJSON(join(pluginDir, 'manifest.json'), {
+        id: 'reloadme',
+        name: 'Reload Me',
+        version: '1.0.0',
+        description: 'Test plugin',
+        tags: [],
+        capabilities: [{ id: 'cap', name: 'Cap', description: 'Test capability', inputSchema: { type: 'object' }, execute: 'cap.js' }]
+      });
+      await writeFile(join(pluginDir, 'cap.js'), `export const schema = {}; export async function execute() {}`);
+
+      const loader = new PluginLoader({ pluginsDir });
+      await loader.loadPlugin('reloadme');
+
+      const loadedBefore = loader.getLoadedPlugins();
+      expect(loadedBefore.length).toBe(1);
+      const plugin = loadedBefore[0];
+      const reloaded = await plugin.reload();
+      expect(reloaded).toBeDefined();
+      const loadedAfter = loader.getLoadedPlugins();
+      expect(loadedAfter.length).toBe(1);
+      expect(loadedAfter[0].manifest.id).toBe('reloadme');
+    });
+  });
 });
