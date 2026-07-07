@@ -490,3 +490,12 @@
 - **Test Delta**: +15 tests: call_graph (6), dependency_tree (5), team-widget (4).
 - **Coverage Delta**: Branches -0.30% (from 76.75% to 76.45% due to added test file branches). Production coverage likely increased.
 - **Notes**: Added comprehensive tests for file-based capabilities and UI widget. Next focus: error handling in autonomous-engine/extension.ts and plugin-loader.
+
+## [2026-07-06 (-0400)] Cycle 39 - Task: plugin-loader tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +6 tests covering PluginLoader loadAll (non-existent dir, empty dir, valid plugin), manifest errors, missing execute, duplicate unloading.
+- **Coverage Delta**: Branches +0.11% (76.45% → 76.56%).
+- **Notes**: plugin-loader has many remaining branches (~56 uncovered). Future tests should cover watch mode, reload timers, capability rendering errors.
