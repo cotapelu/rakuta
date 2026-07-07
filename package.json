@@ -7,7 +7,9 @@
   ],
   "description": "Tau Coding Agent CLI - Professional AI coding assistant",
   "pi": {
-    "extensions": ["dist/addon/index.js"]
+    "extensions": [
+      "dist/addon/index.js"
+    ]
   },
   "type": "module",
   "main": "dist/index.js",
@@ -43,6 +45,7 @@
     "@vitest/coverage-v8": "^4.1.5",
     "c8": "^8.0.0",
     "eslint": "^9.0.0",
+    "husky": "^9.1.7",
     "tsx": "^4.21.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.5"

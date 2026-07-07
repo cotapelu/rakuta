@@ -1,0 +1,33 @@
+# CODEOWNERS
+# This file defines who owns which parts of the codebase.
+# Add your GitHub username or team names to appropriate paths.
+# Reviewers will be automatically requested based on these rules.
+
+# Default owner for all files (fallback)
+*   @your-org/engineers
+
+# Core infrastructure
+/src/main.ts @lead-dev
+/src/cli.ts @lead-dev
+/src/addon/runtime-context.ts @lead-dev
+/src/addon/logger.ts @lead-dev
+
+# Extensions
+/src/addon/extensions/autonomous-engine/ @autonomous-team
+/src/addon/extensions/capability-system/ @platform-team
+/src/addon/extensions/team/ @team-collaboration
+/src/addon/extensions/tools/ @tools-team
+
+# Tests
+/src/**/*.test.ts @qa-lead
+/src/addon/tests/** @qa-lead
+
+# CI/CD
+/.github/ @devops-team
+/Makefile @devops-team
+/package.json @devops-team
+
+# Documentation
+/README.md @tech-writer
+/docs/ @tech-writer
+/GOAL.md @tech-writer

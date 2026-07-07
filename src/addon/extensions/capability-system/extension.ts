@@ -249,6 +249,7 @@ function createCapabilityRouterTool(api: any) {
 
   return {
     name: "capability",
+    id: "capability.router",
     label: "Capability Router",
     description: `Execute any of ${allCaps.length} registered capabilities across ${byPlugin.size} plugins (git, dev, security, system, etc.). Discover available operations with system.capabilities().`,
     promptSnippet: "{ capability: 'system.capabilities', params: {} }",

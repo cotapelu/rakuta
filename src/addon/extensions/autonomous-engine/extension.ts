@@ -213,6 +213,61 @@ async function runGitCommand(cwd: string, args: string[]): Promise<{ stdout: str
   }
 }
 
+async function runSystemAudit(cwd: string): Promise<{ passed: boolean; report: string }> {
+  try {
+    // Lint
+    let lintCode = 0, lintOut = '', lintErr = '';
+    try {
+      const result = await execFileAsync('npm', ['run', 'lint'], { cwd });
+      lintCode = 0; lintOut = result.stdout; lintErr = result.stderr;
+    } catch (e: any) {
+      lintCode = e.code || 1; lintOut = e.stdout || ''; lintErr = e.stderr || String(e);
+    }
+    const lintOutput = (lintOut + lintErr).trim();
+    const lintOk = lintCode === 0 && !/\berror\b/i.test(lintOutput);
+
+    // Typecheck
+    let typeCode = 0, typeOut = '', typeErr = '';
+    try {
+      const result = await execFileAsync('npm', ['run', 'typecheck'], { cwd });
+      typeCode = 0; typeOut = result.stdout; typeErr = result.stderr;
+    } catch (e: any) {
+      typeCode = e.code || 1; typeOut = e.stdout || ''; typeErr = e.stderr || String(e);
+    }
+    const typeOutput = (typeOut + typeErr).trim();
+    const typeOk = typeCode === 0;
+
+    // Security audit (high)
+    let auditCode = 0, auditOut = '', auditErr = '';
+    try {
+      const result = await execFileAsync('npm', ['audit', '--audit-level=high'], { cwd });
+      auditCode = 0; auditOut = result.stdout; auditErr = result.stderr;
+    } catch (e: any) {
+      auditCode = e.code || 1; auditOut = e.stdout || ''; auditErr = e.stderr || String(e);
+    }
+    const auditOutput = (auditOut + auditErr).trim();
+    const auditOk = auditCode === 0;
+
+    const passed = lintOk && typeOk && auditOk;
+    const report = `# System Audit
+
+## Lint
+${lintOk ? '✅ No lint errors' : `❌ Lint errors:\n${lintOutput || 'See output'}`}
+
+## Type Check
+${typeOk ? '✅ No type errors' : `❌ Type errors:\n${typeOutput || 'See output'}`}
+
+## Security Audit
+${auditOk ? '✅ No high severity vulnerabilities' : `❌ High severity vulnerabilities:\n${auditOutput || 'See output'}`}
+`;
+
+    return { passed, report };
+  } catch (error) {
+    logger.error('System audit failed', { error });
+    return { passed: false, report: `❌ Audit execution error: ${error}` };
+  }
+}
+
 async function autoCommit(cwd: string, task: TaskQueueItem, state: EngineState): Promise<void> {
   try {
     // Check git status
@@ -482,21 +537,39 @@ export default function autonomousEngineExtension(pi: ExtensionAPI) {
       const gateResult = await qualityGate.runGate();
 
       if (gateResult.passed && gateResult.coverage.allAboveThreshold) {
-        logger.log(`Task ${currentTask.id} verified successfully (score: ${gateResult.score})`);
-        state.tasksCompleted++;
-        state.consecutiveFailures = 0;
+        // Run System Audit
+        const auditRes = await runSystemAudit(cwd);
+        if (auditRes.passed) {
+          logger.log(`Task ${currentTask.id} verified successfully (score: ${gateResult.score}) [audit passed]`);
+          state.tasksCompleted++;
+          state.consecutiveFailures = 0;
 
-        // Log metrics
-        await appendMetrics(cwd, state, currentTask, gateResult.coverage, gateResult.testResults);
+          // Log metrics
+          await appendMetrics(cwd, state, currentTask, gateResult.coverage, gateResult.testResults);
 
-        // Auto-commit if enabled
-        if (state.config.autoCommit) {
-          await autoCommit(cwd, currentTask, state);
+          // Auto-commit if enabled
+          if (state.config.autoCommit) {
+            await autoCommit(cwd, currentTask, state);
+          }
+
+          // Update tracking files
+          await updateProjectState(cwd, state, currentTask, true, gateResult.coverage ? { statements: gateResult.coverage.statements, branches: gateResult.coverage.branches } : null);
+          await updateEvolutionDocs(cwd, state, currentTask, true);
+        } else {
+          logger.warn(`Task ${currentTask.id} audit failed:\n${auditRes.report}`);
+          state.tasksFailed++;
+          state.consecutiveFailures++;
+
+          // Emergency brake: too many consecutive failures
+          if (state.consecutiveFailures >= state.config.maxConsecutiveFailures) {
+            logger.warn(`Consecutive failures (${state.consecutiveFailures}) exceeded max (${state.config.maxConsecutiveFailures}). Disabling autonomous mode.`);
+            state.isRunning = false;
+            stopAutonomousInterval(cwd);
+          }
+
+          const reason = `Audit failed:\n${auditRes.report}`;
+          await updateAgentProfile(cwd, currentTask, false, reason);
         }
-
-        // Update tracking files
-        await updateProjectState(cwd, state, currentTask, true, gateResult.coverage ? { statements: gateResult.coverage.statements, branches: gateResult.coverage.branches } : null);
-        await updateEvolutionDocs(cwd, state, currentTask, true);
       } else {
         logger.warn(`Task ${currentTask.id} verification failed (score: ${gateResult.score}, violations: ${gateResult.violations.length})`);
         state.tasksFailed++;
@@ -664,6 +737,21 @@ function mapPriority(p: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' {
   }
 }
 
+function assessRisk(task: TaskQueueItem, coverageDelta: { statements: number; branches: number } | null): 'Low' | 'Medium' | 'High' {
+  // Simple heuristic: violations of high priority are high risk
+  if (task.type === 'VIOLATION_FIX') {
+    if (task.priority === 1) return 'High'; // CRITICAL
+    if (task.priority === 2) return 'Medium'; // HIGH
+    return 'Low';
+  }
+  // Proactive improvements: based on action keywords
+  const action = task.action.toLowerCase();
+  if (action.includes('security') || action.includes('encrypt') || action.includes('auth') || action.includes('vuln')) return 'High';
+  if (action.includes('refactor') || action.includes('optimize') || action.includes('performance')) return 'Medium';
+  if (action.includes('test') || action.includes('coverage') || action.includes('document') || action.includes('readme')) return 'Low';
+  return 'Medium';
+}
+
 // Exports for testing
  export {
   loadState,
@@ -677,6 +765,7 @@ function mapPriority(p: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' {
   runDiscoveryCycle,
   appendMetrics,
   mapPriority,
+  assessRisk,
   defaultState,
   getStatePath,
 };

@@ -1,15 +1,17 @@
 const logLevel = process.env.PI_LOG_LEVEL as 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | undefined;
 const logFormat = process.env.PI_LOG_FORMAT as 'pretty' | 'json' | undefined;
 
-const enabledLevels = logLevel ? new Set([logLevel]) : null;
+type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 
-function isEnabled(level: string): boolean {
+const enabledLevels: Set<LogLevel> | null = logLevel ? new Set<LogLevel>([logLevel]) : null;
+
+function isEnabled(level: LogLevel): boolean {
   if (!enabledLevels) return false;
-  return enabledLevels.has(level as any);
+  return enabledLevels.has(level);
 }
 
-function makePrettyLogger(level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal') {
-  return (...args: any[]) => {
+function makePrettyLogger(level: LogLevel) {
+  return (...args: unknown[]): void => {
     if (isEnabled(level)) {
       switch (level) {
         case 'trace':
@@ -30,33 +32,38 @@ function makePrettyLogger(level: 'trace' | 'debug' | 'info' | 'warn' | 'error' |
         case 'fatal':
           console.error(`[${level.toUpperCase()}]`, ...args);
           break;
+        default:
+          // This should never happen if all cases are exhaustive
+          throw new Error(`Unhandled log level: ${level}`);
       }
     }
   };
 }
 
-function makeJsonLogger(level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal') {
-  return (...args: any[]) => {
+function makeJsonLogger(level: LogLevel) {
+  return (...args: unknown[]): void => {
     if (isEnabled(level)) {
       const msg = args.length > 0 ? args[0] : undefined;
       const rest = args.slice(1);
-      const entry: any = {
+      const entry: { timestamp: string; level: LogLevel; message?: unknown; meta?: unknown } = {
         timestamp: new Date().toISOString(),
         level,
         message: msg,
-        ...(rest.length > 0 ? { meta: rest } : {}),
       };
+      if (rest.length > 0) {
+        entry.meta = rest;
+      }
       console.log(JSON.stringify(entry));
     }
   };
 }
 
-const noop = () => {};
+const noop = (): void => undefined;
 
 const createLogger =
   logFormat === 'json'
-    ? (level: string) => makeJsonLogger(level as any)
-    : (level: string) => makePrettyLogger(level as any);
+    ? (level: string) => makeJsonLogger(level as LogLevel)
+    : (level: string) => makePrettyLogger(level as LogLevel);
 
 const logger = {
   trace: logLevel ? createLogger('trace') : noop,
@@ -68,5 +75,3 @@ const logger = {
 };
 
 export { logger };
-
-
