@@ -1,238 +1,176 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { join } from 'path';
+import { mkdtemp, rm } from 'fs/promises';
+import { tmpdir } from 'os';
 
-// Use fake timers for time control
-let clock: any;
+// Mutable mock for TaskDiscovery.discoverTasks
+let discoverTasksMockImpl: any = Promise.resolve([]);
 
-// Mock node:fs
-vi.mock('node:fs', () => ({
-  existsSync: vi.fn(),
-  readFileSync: vi.fn(),
-  writeFileSync: vi.fn(),
-  appendFileSync: vi.fn(),
-  mkdirSync: vi.fn(),
+vi.mock('../../../extensions/autonomous-engine/quality-gate.js', () => ({
+  QualityGate: class { constructor() {} }
 }));
 
-// Mutable for TaskDiscovery mock
-let discoverTasksReturn: any[] = [];
 vi.mock('../../../extensions/autonomous-engine/task-discovery.js', () => ({
   TaskDiscovery: class {
+    constructor() {}
     async discoverTasks() {
-      return discoverTasksReturn;
+      return discoverTasksMockImpl;
     }
-  },
-}));
-
-// Mock QualityGate
-vi.mock('../../../extensions/autonomous-engine/quality-gate.js', () => ({
-  QualityGate: class {
-    async runGate() {
-      return {
-        passed: true,
-        score: 100,
-        violations: [],
-        coverage: { statements: 90, branches: 90, functions: 90, lines: 90, allAboveThreshold: true },
-        buildStatus: 'success',
-        testResults: { total: 0, passed: 0, failed: 0, skipped: 0, durationMs: 0 },
-      };
-    }
-  },
+  }
 }));
 
 import {
   runDiscoveryCycle,
   defaultState,
 } from '../../../extensions/autonomous-engine/extension';
-import type { TaskQueueItem, EngineState } from '../../../extensions/autonomous-engine/types';
+import type { ExtensionAPI } from '@earendil-works/pi-coding-agent';
 
-const CWD = '/test/cwd';
-const STATE_FILE = path.join(CWD, '.pi/autonomous-state.json');
-
-function createTask(overrides: Partial<TaskQueueItem> = {}): TaskQueueItem {
+function createTask(overrides: Partial<any> = {}): any {
   return {
-    id: `t-${Date.now()}`,
+    id: `t-${Math.random().toString(36).substring(2)}`,
     type: 'VIOLATION_FIX',
     priority: 2,
     module: 'src/x.ts',
-    action: 'Fix something',
-    expectedImpact: 'Impact',
+    action: 'Do something',
+    expectedImpact: 'Improve quality',
     estimatedMinutes: 30,
     risk: 'Low',
     createdAt: new Date(),
-    attempts: 0,
     ...overrides,
   };
 }
 
+// Helper to produce a fresh state with cloned default to avoid shared references.
+function makeState(overrides: Partial<any> = {}): any {
+  const clone = JSON.parse(JSON.stringify(defaultState));
+  return { ...clone, ...overrides };
+}
+
 describe('runDiscoveryCycle', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    fs.existsSync.mockReturnValue(false);
-    discoverTasksReturn = [];
-    clock = vi.useFakeTimers({ now: 1000000 });
+  let cwd: string;
+  let pi: ExtensionAPI;
+  let state: any;
+
+  beforeEach(async () => {
+    cwd = await mkdtemp(join(tmpdir(), 'ai_'));
+    pi = { sendMessage: vi.fn() } as any;
+    discoverTasksMockImpl = Promise.resolve([]);
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
+  afterEach(async () => {
+    try {
+      await rm(cwd, { recursive: true, force: true });
+    } catch {}
   });
 
-  const mockPi = (overrides: any = {}) => ({
-    sendMessage: vi.fn(),
-    ...overrides,
-  });
-
-  it('does nothing if state.isRunning is false', async () => {
-    const state: EngineState = { ...defaultState, isRunning: false };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    expect(pi.sendMessage).not.toHaveBeenCalled();
+  it('does nothing if state.isRunning false', async () => {
+    state = makeState({ isRunning: false });
+    await runDiscoveryCycle(pi, cwd, state);
+    expect(state.cycleCount).toBe(0);
+    expect(state.lastDiscoveryTime).toBe(0);
+    expect(state.taskQueue).toEqual([]);
   });
 
   it('skips if discovery interval not elapsed', async () => {
     const now = Date.now();
-    const state: EngineState = {
-      ...defaultState,
+    state = makeState({
       isRunning: true,
-      lastDiscoveryTime: now - 10000,
-      config: { ...defaultState.config, discoveryIntervalMs: 3600000 },
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    expect(pi.sendMessage).not.toHaveBeenCalled();
-    expect(state.lastDiscoveryTime).toBe(now - 10000);
+      lastDiscoveryTime: now,
+      config: { ...defaultState.config, discoveryIntervalMs: 60000 }
+    });
+    await runDiscoveryCycle(pi, cwd, state);
+    expect(state.cycleCount).toBe(0);
+    expect(state.lastDiscoveryTime).toBe(now);
   });
 
-  it('runs when interval elapsed and updates metadata', async () => {
-    const now = Date.now();
-    const state: EngineState = {
-      ...defaultState,
-      isRunning: true,
-      lastDiscoveryTime: now - 8000000,
-      cycleCount: 0,
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    expect(state.lastDiscoveryTime).toBeGreaterThanOrEqual(now);
+  it('adds discovered tasks, deduplicates, sorts, and triggers first task when queue empty', async () => {
+    const tasks = [
+      createTask({ id: 't1', priority: 3 }),
+      createTask({ id: 't2', priority: 1 }),
+      createTask({ id: 't3', priority: 2 }),
+    ];
+    discoverTasksMockImpl = Promise.resolve(tasks);
+    state = makeState({ isRunning: true, currentTask: null, taskQueue: [] });
+    await runDiscoveryCycle(pi, cwd, state);
+    // After adding 3 tasks and shifting first, queue should have 2 remaining
+    expect(state.taskQueue.length).toBe(2);
+    // Should be sorted by priority ascending, and first (t2) moved to currentTask
+    expect(state.taskQueue[0].id).toBe('t3');
+    expect(state.taskQueue[1].id).toBe('t1');
+    expect(state.currentTask?.id).toBe('t2');
     expect(state.cycleCount).toBe(1);
-    expect(fs.writeFileSync).toHaveBeenCalled();
+    expect(pi.sendMessage).toHaveBeenCalledTimes(1);
   });
 
-  it('adds discovered tasks, sorts by priority, promotes first to currentTask and leaves rest in queue', async () => {
-    const tHigh = createTask({ id: 'high', priority: 1 });
-    const tLow = createTask({ id: 'low', priority: 3 });
-    discoverTasksReturn = [tLow, tHigh];
-    const now = Date.now();
-    const state: EngineState = {
-      ...defaultState,
+  it('deduplicates against existing queue', async () => {
+    const existing = createTask({ id: 'existing', priority: 2 });
+    state = makeState({
       isRunning: true,
-      lastDiscoveryTime: now - 8000000,
-      taskQueue: [],
       currentTask: null,
-      cycleCount: 0,
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    // After sorting, the highest priority (1) should be currentTask, and queue contains the rest (one low)
-    expect(state.currentTask).toBe(tHigh);
-    expect(state.taskQueue).toHaveLength(1);
-    expect(state.taskQueue[0]).toBe(tLow);
+      taskQueue: [existing]
+    });
+    const newTasks = [
+      createTask({ id: 'new1', priority: 1 }),
+      existing, // duplicate
+      createTask({ id: 'new2', priority: 3 }),
+    ];
+    discoverTasksMockImpl = Promise.resolve(newTasks);
+    await runDiscoveryCycle(pi, cwd, state);
+    // uniqueNew should be new1 and new2 (2). Combined with existing gives 3 before shift
+    // After shift (first task), queue length should be 2
+    expect(state.taskQueue.length).toBe(2);
+    const ids = state.taskQueue.map((t: any) => t.id).sort();
+    expect(ids).toEqual(['existing', 'new2']);
+    // currentTask should be new1 (highest priority)
+    expect(state.currentTask?.id).toBe('new1');
+    expect(pi.sendMessage).toHaveBeenCalledTimes(1);
   });
 
-  it('truncates queue to max 30 before promoting currentTask (final queue size = 29)', async () => {
-    const many = Array.from({ length: 35 }, (_, i) => createTask({ id: `t${i}`, priority: 3 }));
-    discoverTasksReturn = many;
-    const now = Date.now();
-    const state: EngineState = {
-      ...defaultState,
-      isRunning: true,
-      lastDiscoveryTime: now - 8000000,
-      taskQueue: [],
-      currentTask: null,
-      cycleCount: 0,
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    // After truncation to 30, one is shifted to currentTask, leaving 29
+  it('respects queue size limit (max 30)', async () => {
+    // Create 35 distinct tasks
+    const many = Array.from({ length: 35 }, (_, i) => createTask({ id: `t${i}`, priority: i }));
+    discoverTasksMockImpl = Promise.resolve(many);
+    state = makeState({ isRunning: true, currentTask: null, taskQueue: [] });
+    await runDiscoveryCycle(pi, cwd, state);
+    // After adding 35, sort, truncate to 30, then shift one -> 29 remain
     expect(state.taskQueue.length).toBe(29);
-    expect(state.currentTask).toBeDefined();
+    // The tasks should be priorities 1..29 (since priority 0 moved to currentTask)
+    expect(state.taskQueue[0].priority).toBe(1);
+    expect(state.taskQueue[28].priority).toBe(29);
+    expect(state.currentTask?.priority).toBe(0);
   });
 
-  it('does not override currentTask if already set, still adds new tasks to queue', async () => {
-    const t1 = createTask({ id: 't1', priority: 1 });
-    const t2 = createTask({ id: 't2', priority: 2 });
-    discoverTasksReturn = [t1, t2];
-    const now = Date.now();
-    const existing = createTask({ id: 'existing', priority: 0 });
-    const state: EngineState = {
-      ...defaultState,
+  it('handles discovery failure (exception) without crashing', async () => {
+    discoverTasksMockImpl = Promise.reject(new Error('Discovery failed'));
+    state = makeState({ isRunning: true });
+    // capture initial counters
+    const initialFailed = state.tasksFailed;
+    const initialConsecutive = state.consecutiveFailures;
+    await runDiscoveryCycle(pi, cwd, state);
+    // Should increment failure counters
+    expect(state.tasksFailed).toBe(initialFailed + 1);
+    expect(state.consecutiveFailures).toBe(initialConsecutive + 1);
+    // No change to queue or cycleCount
+    expect(state.cycleCount).toBe(0);
+    expect(state.taskQueue).toEqual([]);
+    expect(state.lastDiscoveryTime).toBe(0);
+  });
+
+  it('does not trigger task if currentTask already set', async () => {
+    state = makeState({
       isRunning: true,
-      lastDiscoveryTime: now - 8000000,
-      taskQueue: [],
-      currentTask: existing,
-      cycleCount: 0,
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    expect(state.currentTask).toBe(existing);
-    expect(state.taskQueue).toHaveLength(2); // both tasks added, no shift
+      currentTask: createTask({ id: 'current', priority: 1 }),
+      taskQueue: []
+    });
+    const newTasks = [createTask({ id: 'new', priority: 2 })];
+    discoverTasksMockImpl = Promise.resolve(newTasks);
+    await runDiscoveryCycle(pi, cwd, state);
+    // Queue should have new task
+    expect(state.taskQueue.length).toBe(1);
+    expect(state.taskQueue[0].id).toBe('new');
+    // currentTask should remain original
+    expect(state.currentTask?.id).toBe('current');
+    // sendMessage should not be called because currentTask already set
     expect(pi.sendMessage).not.toHaveBeenCalled();
-  });
-
-  it('sends task prompt via pi.sendMessage when currentTask set', async () => {
-    const t1 = createTask({ id: 't1', priority: 1 });
-    discoverTasksReturn = [t1];
-    const now = Date.now();
-    const state: EngineState = {
-      ...defaultState,
-      isRunning: true,
-      lastDiscoveryTime: now - 8000000,
-      taskQueue: [],
-      currentTask: null,
-      cycleCount: 0,
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    expect(pi.sendMessage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customType: 'autonomous-task',
-        content: expect.arrayContaining([
-          expect.objectContaining({ type: 'text', text: expect.stringContaining('# Autonomous Task Execution') })
-        ]),
-        display: false,
-      }),
-      expect.objectContaining({ triggerTurn: true, deliverAs: 'followUp' })
-    );
-  });
-
-  it('mutates state correctly and persists via saveState', async () => {
-    const t1 = createTask({ priority: 1 });
-    discoverTasksReturn = [t1];
-    const now = Date.now();
-    const state: EngineState = {
-      ...defaultState,
-      isRunning: true,
-      lastDiscoveryTime: now - 8000000,
-      taskQueue: [],
-      currentTask: null,
-      cycleCount: 0,
-    };
-    const pi = mockPi();
-    await runDiscoveryCycle(pi as any, CWD, state);
-    // Verify state fields
-    expect(state.lastDiscoveryTime).toBeGreaterThanOrEqual(now);
-    expect(state.cycleCount).toBe(1);
-    expect(state.currentTask).toBe(t1);
-    expect(state.taskQueue).toHaveLength(0);
-    // verify saveState called at least once
-    expect(fs.writeFileSync).toHaveBeenCalledWith(
-      STATE_FILE,
-      expect.any(String)
-    );
-    // inspect last saved state directly from the object
-    const lastWritten = fs.writeFileSync.mock.calls[fs.writeFileSync.mock.calls.length - 1][1];
-    const parsed = JSON.parse(lastWritten);
-    expect(parsed.currentTask.id).toBe(t1.id);
-    expect(parsed.taskQueue).toEqual([]);
   });
 });

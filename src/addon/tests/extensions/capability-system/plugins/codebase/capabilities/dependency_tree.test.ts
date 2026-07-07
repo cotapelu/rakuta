@@ -69,4 +69,62 @@ describe('dependency_tree capability', () => {
       expect(result.content[0].text).toContain('Parse error');
     });
   });
+
+  describe('import resolution edge cases', () => {
+    it('ignores external packages (non-relative)', async () => {
+      await createFile(`import 'some-pkg'; export {}`, 'A.ts');
+      const result: any = await execute({ files: ['A.ts'] }, { cwd: testDir });
+      expect(result.isError).toBe(false);
+      expect(result.details?.edges.length).toBe(0);
+    });
+
+    it('resolves import without extension via .ts fallback', async () => {
+      await createFile(`export const val = 1;`, 'mod.ts');
+      await createFile(`import { val } from './mod'; export {}`, 'A.ts');
+      const result: any = await execute({ files: ['A.ts', 'mod.ts'] }, { cwd: testDir });
+      expect(result.isError).toBe(false);
+      const edges = result.details?.edges;
+      expect(edges.length).toBe(1);
+      expect(edges[0].from).toBe('A.ts');
+      expect(edges[0].to).toBe('mod.ts');
+      expect(edges[0].symbols).toContain('val');
+    });
+
+    it('resolves .js fallback when .ts absent', async () => {
+      await createFile(`export const j = 2;`, 'mod.js');
+      await createFile(`import { j } from './mod'; export {}`, 'A.ts');
+      const result: any = await execute({ files: ['A.ts', 'mod.js'] }, { cwd: testDir });
+      expect(result.isError).toBe(false);
+      const edges = result.details?.edges;
+      expect(edges.length).toBe(1);
+      expect(edges[0].to).toBe('mod.js');
+      expect(edges[0].symbols).toContain('j');
+    });
+
+    it('prefers .ts over .js when both exist', async () => {
+      await createFile(`export const tsVal = 1;`, 'mod.ts');
+      await createFile(`export const jsVal = 2;`, 'mod.js');
+      await createFile(`import { tsVal } from './mod'; export {}`, 'A.ts');
+      const result: any = await execute({ files: ['A.ts', 'mod.ts', 'mod.js'] }, { cwd: testDir });
+      expect(result.isError).toBe(false);
+      const edges = result.details?.edges;
+      expect(edges.length).toBe(1);
+      expect(edges[0].to).toBe('mod.ts');
+      expect(edges[0].symbols).toContain('tsVal');
+    });
+
+    it('handles file with only imports (no exports) as node', async () => {
+      await createFile(`import { a } from './A';`, 'B.ts');
+      await createFile(`export const a = 1;`, 'A.ts');
+      const result: any = await execute({ files: ['A.ts', 'B.ts'] }, { cwd: testDir });
+      expect(result.isError).toBe(false);
+      const nodes = result.details?.nodes;
+      expect(nodes.length).toBe(2);
+      const nodeB = nodes.find((n: any) => n.file === 'B.ts');
+      expect(nodeB?.exports?.length).toBe(0);
+      const edges = result.details?.edges;
+      expect(edges.length).toBe(1);
+      expect(edges[0].from).toBe('B.ts');
+    });
+  });
 });
