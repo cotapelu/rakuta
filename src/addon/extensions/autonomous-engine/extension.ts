@@ -282,11 +282,12 @@ async function autoCommit(cwd: string, task: TaskQueueItem, state: EngineState):
     // Stage all changes
     await runGitCommand(cwd, ['add', ...files]);
 
-    const message = `feat(autonomous): ${task.action} [${task.module}]\n\n` +
+    const message = `chore: evolution round - ${task.action} (${task.module})\n\n` +
+      `Cycle: ${state.cycleCount}\n` +
       `Task ID: ${task.id}\n` +
       `Type: ${task.type}\n` +
-      `Priority: ${task.priority}\n` +
-      `Cycle: ${state.cycleCount}\n`;
+      `Priority: ${mapPriority(task.priority)}\n`;
+
 
     await runGitCommand(cwd, ['commit', '-m', message]);
     state.lastGitCommit = `Cycle ${state.cycleCount}: ${task.action}`;
@@ -723,6 +724,8 @@ ${task.estimatedMinutes ? `- **Cost**: ~${task.estimatedMinutes}m\n` : ''}`;
     } else {
       writeFileSync(METRICS_FILE, `# Agent Metrics\n\n> Auto-maintained by autonomous loop per GOAL.md Section 8.2.\n\n## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}\n- **Type**: ${task.type}\n- **Priority**: ${mapPriority(task.priority)}\n- **Status**: ✅ Success\n`);
     }
+    // Update TODO.md with completed task (best effort)
+    await appendTodoCompletion(cwd, task, state.cycleCount, timestamp);
   } catch (error) {
     logger.error('Failed to log metrics', { error });
   }
@@ -752,6 +755,17 @@ function assessRisk(task: TaskQueueItem, coverageDelta: { statements: number; br
   return 'Medium';
 }
 
+async function appendTodoCompletion(cwd: string, task: TaskQueueItem, cycle: number, timestamp: string): Promise<void> {
+  try {
+    const todoPath = path.join(cwd, 'TODO.md');
+    if (!existsSync(todoPath)) return; // No TODO.md to update
+    const line = `- [x] Cycle ${cycle}: ${task.action} (${task.module}) - ${mapPriority(task.priority)} - ${timestamp}\n`;
+    appendFileSync(todoPath, line);
+  } catch (error) {
+    logger.error('Failed to update TODO.md', { error });
+  }
+}
+
 // Exports for testing
  export {
   loadState,
@@ -766,6 +780,7 @@ function assessRisk(task: TaskQueueItem, coverageDelta: { statements: number; br
   appendMetrics,
   mapPriority,
   assessRisk,
+  appendTodoCompletion,
   defaultState,
   getStatePath,
 };
