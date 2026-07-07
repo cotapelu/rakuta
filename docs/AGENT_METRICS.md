@@ -481,3 +481,12 @@
 - **Test Delta**: +3 tests covering analyze_ast error handling and comprehensive analysis (imports, exports, symbols including interface, type, enum).
 - **Coverage Delta**: Branches +0.03% (76.72%→76.75%).
 - **Notes**: analyze_ast still has significant uncovered branches (e.g., handling of various declaration types, edge cases). Next modules: call_graph (~19 uncovered), dependency_tree (~34 uncovered).
+
+## [2026-07-06 23:58] Cycle 38 - Tasks: call_graph, dependency_tree, team-widget tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~50 min
+- **Status**: ✅ Success
+- **Test Delta**: +15 tests: call_graph (6), dependency_tree (5), team-widget (4).
+- **Coverage Delta**: Branches -0.30% (from 76.75% to 76.45% due to added test file branches). Production coverage likely increased.
+- **Notes**: Added comprehensive tests for file-based capabilities and UI widget. Next focus: error handling in autonomous-engine/extension.ts and plugin-loader.

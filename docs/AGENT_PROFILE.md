@@ -182,3 +182,8 @@
 - Branch coverage: 76.75% (+0.03%).
 - Challenges: Minimal coverage gain indicates many branches likely in error handling or rarely visited paths; need targeted tests for specific edge cases.
 - Next: `call_graph` (~19 branches uncovered), `dependency_tree` (~34), `autonomous-engine/extension.ts` (125).
+
+### Cycle 38 (2026-07-06)
+- Added 15 tests covering call_graph (6), dependency_tree (5), and team-widget (4). These covered basic happy paths, cross-file resolution, cycle detection, and widget rendering.
+- Overall branch coverage: 76.45% (slight decrease due to test file branch overhead).
+- Remaining high-gap: autonomous-engine/extension.ts (125), capability-system/plugin-loader.ts (112), capability-system/extension.ts (130). Will target error handling and initialization flows next.

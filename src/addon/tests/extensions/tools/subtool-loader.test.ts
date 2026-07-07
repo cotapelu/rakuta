@@ -45,6 +45,13 @@ vi.mock('@earendil-works/pi-coding-agent', () => ({
 import {
   createSubLoaderToolDefinition,
 } from '../../../extensions/tools/subtool-loader';
+import {
+  createReadToolDefinition,
+  createLsToolDefinition,
+  createFindToolDefinition,
+  createGrepToolDefinition,
+  createBashToolDefinition,
+} from '@earendil-works/pi-coding-agent';
 import type { ExtensionContext } from '@earendil-works/pi-coding-agent';
 
 const CWD = '/test';
