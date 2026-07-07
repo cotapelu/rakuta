@@ -553,3 +553,12 @@
 - **Test Delta**: +4 tests covering updateEvolutionDocs creation, trajectory update, non‑proactive handling, and write error.
 - **Coverage Delta**: Branches -0.03% (76.89% → 76.86%).
 - **Notes**: Coverage dip due to rounding; actual production branches likely increased slightly. Overall progress slow; need to address large uncovered modules next.
+
+## [2026-07-06 13:36] Cycle 46 - Task: buildTaskPrompt and mapPriority tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~25 min
+- **Status**: ✅ Success
+- **Test Delta**: +7 tests covering buildTaskPrompt (format, config thresholds) and mapPriority.
+- **Coverage Delta**: Branches 0.00% (remained 76.89%).
+- **Notes**: Tests aligned with actual prompt template; ensured no regressions. Next: continue autonomous-engine core coverage (autoCommit, runGitCommand, quality‑gate).
