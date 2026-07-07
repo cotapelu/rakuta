@@ -526,3 +526,12 @@
 - **Test Delta**: +1 test covering bash tool exception branch.
 - **Coverage Delta**: Branches +0.03% (76.61% → 76.64%).
 - **Notes**: Additionally removed incomplete team-manager test file. Next high‑gap: autonomous-engine/extension.ts (125), capability-system/extension.ts (130), plugin-loader (112).
+
+## [2026-07-06 12:56] Cycle 43 - Task: team-widget edge tests + plugin-loader malformed manifest
+- **Type**: Tests (T)
+- **Priority**: LOW
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +2 team-widget edge tests (zero agents, all working) +1 plugin-loader malformed manifest test.
+- **Coverage Delta**: Branches 0.00% (remained 76.64%).
+- **Notes**: These tests improve robustness but did not increase coverage as branches already covered indirectly. Next: target autonomous-engine/extension (processQueue, updateProjectState), capability-system/extension.

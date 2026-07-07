@@ -74,6 +74,40 @@ describe('team-widget', () => {
       // working includes 'working' and 'in_progress'
       expect(lines[2]).toContain(`Agents: 2 (idle: 1, working: 1)`);
     });
+
+    it('handles zero agents', () => {
+      const status = {
+        agents: [],
+        tasks: [],
+        completedTasks: 0,
+        failedTasks: 0,
+        pendingTasks: 0,
+        totalTasks: 0,
+        isComplete: true
+      };
+      const ui: ExtensionUIContext = { theme, setWidget: () => {} } as any;
+      const lines = buildTeamLines(ui, 'team0', status).map(l => String(l));
+      expect(lines[2]).toContain('Agents: 0 (idle: 0, working: 0)');
+    });
+
+    it('counts working agents including in_progress', () => {
+      const status = {
+        agents: [
+          { id: 'a1', status: 'idle' },
+          { id: 'a2', status: 'in_progress' },
+          { id: 'a3', status: 'working' }
+        ],
+        tasks: [],
+        completedTasks: 0,
+        failedTasks: 0,
+        pendingTasks: 0,
+        totalTasks: 0,
+        isComplete: false
+      } as any;
+      const ui: ExtensionUIContext = { theme, setWidget: () => {} } as any;
+      const lines = buildTeamLines(ui, 'team1', status).map(l => String(l));
+      expect(lines[2]).toContain('Agents: 3 (idle: 1, working: 2)');
+    });
   });
 
   describe('refreshWidget', () => {

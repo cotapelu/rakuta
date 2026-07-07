@@ -149,6 +149,24 @@ describe('PluginLoader', () => {
       expect(stats.errors).toHaveLength(1);
       expect(stats.errors[0].error).toContain('Missing execute function');
     });
+
+    it('records errors for malformed manifest JSON', async () => {
+      const pluginsDir = join(testRoot, 'plugins');
+      const { mkdir } = await import('fs/promises');
+      await mkdir(pluginsDir);
+
+      const pluginDir = join(pluginsDir, 'badjson');
+      await mkdir(pluginDir);
+      // Write invalid JSON
+      await writeFile(join(pluginDir, 'manifest.json'), '{ invalid json');
+
+      const loader = new PluginLoader({ pluginsDir });
+      const stats = await loader.loadAll();
+
+      expect(stats.totalPlugins).toBe(0);
+      expect(stats.errors).toHaveLength(1);
+      expect(stats.errors[0].error).toMatch(/JSON|Syntax/);
+    });
   });
 
   describe('duplicate plugin handling', () => {

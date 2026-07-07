@@ -207,3 +207,7 @@
 - Added 1 test for subtool-loader error handling (bash throw). Branch coverage: 76.64% (+0.03%).
 - Deleted incomplete team-manager test to keep suite green.
 - Remaining gaps unchanged. Consider next: plugin-loader watch mode, autonomous-engine processQueue, capability-system extension router.
+
+### Cycle 43 (2026-07-06)
+- Added 3 tests: team-widget edge cases (2) and plugin-loader malformed manifest (1). Coverage unchanged at 76.64%.
+- Focus shifting back to autonomous-engine/extension to cover processQueue and updateProjectState error paths.
