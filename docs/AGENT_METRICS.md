@@ -562,3 +562,12 @@
 - **Test Delta**: +7 tests covering buildTaskPrompt (format, config thresholds) and mapPriority.
 - **Coverage Delta**: Branches 0.00% (remained 76.89%).
 - **Notes**: Tests aligned with actual prompt template; ensured no regressions. Next: continue autonomous-engine core coverage (autoCommit, runGitCommand, quality‑gate).
+
+## [2026-07-06 14:15] Cycle 47 - Task: subtool-loader error handling test
+- **Type**: Tests (T)
+- **Priority**: LOW
+- **Duration**: ~10 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test covering SDK tool error path (read tool rejection).
+- **Coverage Delta**: Branches 0.00% (remained 76.89%).
+- **Notes**: Also attempted autoCommit and QualityGate tests but removed due to mocking complexities; will revisit later with simpler approach.

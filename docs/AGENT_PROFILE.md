@@ -223,3 +223,7 @@
 ### Cycle 46 (2026-07-06)
 - Added 7 tests for buildTaskPrompt and mapPriority. Coverage unchanged at 76.89%.
 - Remaining high‑gap modules: autonomous-engine/extension (125), capability-system/extension (130), plugin-loader (112). Future work: test quality‑gate error paths, autoCommit, runGitCommand.
+
+### Cycle 47 (2026-07-06)
+- Added 1 test for subtool-loader error handling (read tool rejection). Coverage unchanged at 76.89%.
+- Did not resolve autoCommit and QualityGate test difficulties; will refactor approach later.

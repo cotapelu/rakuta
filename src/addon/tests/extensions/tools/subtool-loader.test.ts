@@ -175,4 +175,14 @@ describe('subtool-loader', () => {
       expect(capturedGrepArgs).toEqual({ pattern: 'TODO', path: '/src', limit: 10, glob: '*.ts' });
     });
   });
+
+  it('catches error from SDK tool and returns isError for read', async () => {
+    // Override createReadToolDefinition to reject
+    (createReadToolDefinition as any).mockImplementation(() => ({
+      execute: vi.fn().mockRejectedValue(new Error('read failed'))
+    }));
+    const result = await tool.execute('call1', { subtool: 'read', args: { path: '/x' } }, null, () => {}, makeCtx());
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('read failed');
+  });
 });
