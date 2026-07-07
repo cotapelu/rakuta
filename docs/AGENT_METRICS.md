@@ -499,3 +499,12 @@
 - **Test Delta**: +6 tests covering PluginLoader loadAll (non-existent dir, empty dir, valid plugin), manifest errors, missing execute, duplicate unloading.
 - **Coverage Delta**: Branches +0.11% (76.45% → 76.56%).
 - **Notes**: plugin-loader has many remaining branches (~56 uncovered). Future tests should cover watch mode, reload timers, capability rendering errors.
+
+## [2026-07-06 23:59] Cycle 40 - Task: subtool-loader caching test
+- **Type**: Tests (T)
+- **Priority**: LOW
+- **Duration**: ~10 min
+- **Status**: ✅ Success
+- **Test Delta**: +1 test covering tool caching branch.
+- **Coverage Delta**: Branches +0.05% (76.56% → 76.61%).
+- **Notes**: Subtool-loader cache now exercised. Remaining branches still in large modules.

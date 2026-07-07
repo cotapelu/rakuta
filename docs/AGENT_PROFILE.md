@@ -192,3 +192,8 @@
 - Added 6 tests for PluginLoader covering initialization, manifest validation, and duplicate handling.
 - Branch coverage: 76.56% (+0.11%).
 - Next high‑gap modules: autonomous-engine/extension.ts (125 branches), capability-system/extension.ts (130), and plugin-loader still ~56 uncovered. Continue systematic testing.
+
+### Cycle 40 (2026-07-06)
+- Added 1 test for subtool-loader caching.
+- Branch coverage: 76.61% (+0.05%).
+- Coverage progress slow; still need to address high‑gap modules. Consider refactoring autonomous-engine/extension.ts for testability or adding integration tests.
