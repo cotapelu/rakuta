@@ -58,8 +58,10 @@ describe('registerAllBuiltinTools', () => {
     const tools = registerAllBuiltinTools('/test/cwd');
     tools.forEach(tool => {
       expect(tool).toHaveProperty('name');
+      expect(tool).toHaveProperty('label');
       expect(tool).toHaveProperty('description');
-      expect(tool).toHaveProperty('inputSchema');
+      expect(tool).toHaveProperty('parameters');
+      expect(tool).toHaveProperty('execute');
     });
   });
 });
