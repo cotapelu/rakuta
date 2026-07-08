@@ -6,6 +6,7 @@
 
 import { setCurrentRuntime, clearCurrentRuntime } from "./addon/runtime-context.js";
 import registerAllAddon from "./addon/registry.js";
+import { registerAllBuiltinTools } from "./tools/builtin-tools.js";
 
 import {
   createAgentSessionRuntime,
@@ -64,6 +65,7 @@ export default async function main() {
     const sessionResult = await createAgentSessionFromServices({
       services,
       sessionManager,
+      customTools: registerAllBuiltinTools(cwd),
     });
 
     return {
