@@ -726,6 +726,8 @@ async function appendMetrics(
     const formatDelta = (d: number) => (d >= 0 ? `+${d.toFixed(2)}%` : `${d.toFixed(2)}%`);
 
     const testDelta = testResults.total - (state.lastTestTotal || 0);
+    const failureRate = testResults.total > 0 ? (testResults.failed / testResults.total) * 100 : 0;
+    const regression = (stmtDelta < 0) || (branchDelta < 0) || (funcDelta < 0) || (lineDelta < 0);
 
     // Build Coverage Delta lines
     const coverageDeltaLines = prev
@@ -747,6 +749,10 @@ async function appendMetrics(
 ${coverageDeltaLines}
 - **Performance**: N/A
 - **Security**: ${auditPassed ? '✅ Audit passed' : '❌ Audit failed'}
+- **Test Failure Rate**: ${failureRate.toFixed(1)}%
+- **Rollback Count**: 0
+- **Regressions**: ${regression ? 'Yes' : 'No'}
+- **MTTR**: N/A
 ${task.estimatedMinutes ? `- **Cost**: ~${task.estimatedMinutes}m` : ''}`;
 
     if (existsSync(METRICS_FILE)) {
