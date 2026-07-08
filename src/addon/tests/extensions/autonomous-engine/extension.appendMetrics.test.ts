@@ -47,7 +47,7 @@ describe('appendMetrics', () => {
     const state = { ...defaultState, cycleCount: 1 };
     const coverage = { statements: 85, branches: 80, functions: 90, lines: 88 };
     const testResults = { total: 10, passed: 9, failed: 1, skipped: 0, durationMs: 100 };
-    await appendMetrics(CWD, state, task, coverage, testResults);
+    await appendMetrics(CWD, state, task, coverage, testResults, true);
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       METRICS_FILE,
       expect.stringContaining('# Agent Metrics')
@@ -65,7 +65,7 @@ describe('appendMetrics', () => {
     (fs.readFileSync as any).mockReturnValue(existing);
     const task = createTask();
     const state = { ...defaultState, cycleCount: 2 };
-    await appendMetrics(CWD, state, task, { statements: 90, branches: 90, functions: 90, lines: 90 }, { total: 5, passed: 5, failed: 0, skipped: 0, durationMs: 50 });
+    await appendMetrics(CWD, state, task, { statements: 90, branches: 90, functions: 90, lines: 90 }, { total: 5, passed: 5, failed: 0, skipped: 0, durationMs: 50 }, true);
     expect(fs.appendFileSync).toHaveBeenCalledWith(
       METRICS_FILE,
       expect.stringContaining('Cycle 2')

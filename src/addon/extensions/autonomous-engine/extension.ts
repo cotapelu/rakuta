@@ -30,6 +30,8 @@ interface EngineState {
   lastDiscoveryTime: number;
   consecutiveFailures: number;
   lastGitCommit: string | null;
+  lastCoverage?: { statements: number; branches: number; functions: number; lines: number };
+  lastTestTotal?: number;
 }
 
 interface ProjectState {
@@ -546,7 +548,7 @@ export default function autonomousEngineExtension(pi: ExtensionAPI) {
           state.consecutiveFailures = 0;
 
           // Log metrics
-          await appendMetrics(cwd, state, currentTask, gateResult.coverage, gateResult.testResults);
+          await appendMetrics(cwd, state, currentTask, gateResult.coverage, gateResult.testResults, auditRes.passed);
 
           // Auto-commit if enabled
           if (state.config.autoCommit) {
@@ -703,34 +705,66 @@ async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineSta
   logger.log(`=== Cycle completed in ${duration}s ===`);
 }
 
-async function appendMetrics(cwd: string, state: EngineState, task: TaskQueueItem, coverage: { statements: number; branches: number; functions: number; lines: number } | undefined, testResults: { total: number; passed: number; failed: number; skipped: number; durationMs: number }): Promise<void> {
+async function appendMetrics(
+  cwd: string,
+  state: EngineState,
+  task: TaskQueueItem,
+  coverage: { statements: number; branches: number; functions: number; lines: number },
+  testResults: { total: number; passed: number; failed: number; skipped: number; durationMs: number },
+  auditPassed: boolean
+): Promise<void> {
   try {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-    const log = `\n## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}
+    // Compute deltas
+    const prev = state.lastCoverage;
+    const stmtDelta = prev ? (coverage.statements - prev.statements) : 0;
+    const branchDelta = prev ? (coverage.branches - prev.branches) : 0;
+    const funcDelta = prev ? (coverage.functions - prev.functions) : 0;
+    const lineDelta = prev ? (coverage.lines - prev.lines) : 0;
+
+    const formatDelta = (d: number) => (d >= 0 ? `+${d.toFixed(2)}%` : `${d.toFixed(2)}%`);
+
+    const testDelta = testResults.total - (state.lastTestTotal || 0);
+
+    // Build Coverage Delta lines
+    const coverageDeltaLines = prev
+      ? `  - Statements: ${formatDelta(stmtDelta)} (${prev.statements.toFixed(2)}%→${coverage.statements.toFixed(2)}%)\n` +
+        `  - Branches: ${formatDelta(branchDelta)} (${prev.branches.toFixed(2)}%→${coverage.branches.toFixed(2)}%)\n` +
+        `  - Functions: ${formatDelta(funcDelta)} (${prev.functions.toFixed(2)}%→${coverage.functions.toFixed(2)}%)\n` +
+        `  - Lines: ${formatDelta(lineDelta)} (${prev.lines.toFixed(2)}%→${coverage.lines.toFixed(2)}%)`
+      : `  - Statements: N/A\n  - Branches: N/A\n  - Functions: N/A\n  - Lines: N/A`;
+
+    const log = `
+## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}
 - **Type**: ${task.type === 'VIOLATION_FIX' ? 'Violation Fix' : 'Proactive Improvement'}
 - **Priority**: ${mapPriority(task.priority)}
+- **Risk**: ${assessRisk(task, prev ? { statements: prev.statements, branches: prev.branches } : null)}
 - **Duration**: (estimated ${task.estimatedMinutes}m)
 - **Status**: ✅ Success
-- **Test Delta**: +0 tests
-- **Coverage Delta**: Statements ${coverage ? coverage.statements + '%' : 'N/A'}, Branches ${coverage ? coverage.branches + '%' : 'N/A'}
-- **Quality Gate Score**: (verified)
-- **Tests**: ${testResults.passed}/${testResults.total} passed
-- **Build**: (verified)
-${task.estimatedMinutes ? `- **Cost**: ~${task.estimatedMinutes}m\n` : ''}`;
+- **Test Delta**: ${testDelta >= 0 ? '+' : ''}${testDelta} tests (total ${testResults.total})
+- **Coverage Delta**:
+${coverageDeltaLines}
+- **Performance**: N/A
+- **Security**: ${auditPassed ? '✅ Audit passed' : '❌ Audit failed'}
+${task.estimatedMinutes ? `- **Cost**: ~${task.estimatedMinutes}m` : ''}`;
 
     if (existsSync(METRICS_FILE)) {
       appendFileSync(METRICS_FILE, log);
     } else {
       writeFileSync(METRICS_FILE, `# Agent Metrics\n\n> Auto-maintained by autonomous loop per GOAL.md Section 8.2.\n\n## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}\n- **Type**: ${task.type}\n- **Priority**: ${mapPriority(task.priority)}\n- **Status**: ✅ Success\n`);
     }
+
+    // Update state for next delta computation
+    state.lastCoverage = coverage;
+    state.lastTestTotal = testResults.total;
+
     // Update TODO.md with completed task (best effort)
     await appendTodoCompletion(cwd, task, state.cycleCount, timestamp);
   } catch (error) {
     logger.error('Failed to log metrics', { error });
   }
 }
-
 function mapPriority(p: number): 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' {
   switch (p) {
     case 1: return 'CRITICAL';
