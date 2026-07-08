@@ -759,8 +759,12 @@ async function appendTodoCompletion(cwd: string, task: TaskQueueItem, cycle: num
   try {
     const todoPath = path.join(cwd, 'TODO.md');
     if (!existsSync(todoPath)) return; // No TODO.md to update
-    const line = `- [x] Cycle ${cycle}: ${task.action} (${task.module}) - ${mapPriority(task.priority)} - ${timestamp}\n`;
-    appendFileSync(todoPath, line);
+    let entry = `- [x] Cycle ${cycle}: ${task.action} (${task.module}) - ${mapPriority(task.priority)} - ${timestamp}`;
+    if (task.expectedImpact && task.expectedImpact.trim().length > 0) {
+      entry += `\n  Follow-up: ${task.expectedImpact.trim()}`;
+    }
+    entry += '\n';
+    appendFileSync(todoPath, entry);
   } catch (error) {
     logger.error('Failed to update TODO.md', { error });
   }
