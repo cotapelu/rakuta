@@ -184,4 +184,17 @@ describe('SystemAudit', () => {
     // This may be detected as missing retry in Failure Scenarios dimension
     expect(report.findings.some(f => f.dimension.includes('Failure'))).toBe(true);
   });
+
+  test('detects PII logged directly (Information Disclosure)', async () => {
+    await writeFileAsync('pii-log.ts', `
+      function logUser(user) {
+        console.log('User email: ' + user.email + ' phone: ' + user.phone);
+      }
+    `);
+
+    const auditor = new SystemAudit(fixtureDir);
+    const report = await auditor.runFullAudit();
+
+    expect(report.findings.some(f => f.dimension === 'Security (STRIDE)' && f.rootCause === 'PII logged directly')).toBe(true);
+  });
 });
