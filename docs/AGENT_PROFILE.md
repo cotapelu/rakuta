@@ -270,14 +270,29 @@
 - Per‑module improvement: capability-system/extension.ts branch coverage from 21.5% → 63.1%.
 - Next: continue with remaining high‑uncovered modules (autonomous-engine/extension.ts, capability-system/plugin-loader.ts, autonomous-engine/quality-gate.ts).
 
+
+### Cycle 55 (2026-07-09 20:00) - Task: Quality-gate extra coverage
+- Added comprehensive unit tests for QualityGate covering runBuild, runLint, getCoverage (alt file, missing file, fallback keys), runTests (JSON parsing, fallback, errors), classifyType mapping, calculateScore edge cases.
+- Tests: +26 tests
+- Coverage: Branches 76.68% (+0.88%)
+- Per-module improvement: autonomous-engine/quality-gate.ts branch coverage from 29.7% → 77.0% (17 uncovered).
+- Next: continue with capability-system/plugin-loader.ts and other modules.
+
+### Cycle 56 (2026-07-09 20:30) - Task: Plugin-loader extra coverage
+- Added extra unit tests for PluginLoader covering createExecuteHandler details injection, startWatchMode root watcher events, scheduleNewPluginLoad and reloadPlugin debouncing, and waitForInitialization.
+- Tests: +11 tests
+- Coverage: Branches 77.09% (+0.41%)
+- Per-module improvement: capability-system/plugin-loader.ts branch coverage from 52.7% → 67.9% (36 uncovered).
+- Next: continue with other high‑uncovered modules.
+
 ## Current Weaknesses (2026-07-09)
 - **system-audit.ts**: Branch coverage 64.1% (214/334, 120 uncovered), many pattern branches remain.
-- **Overall branch coverage**: 75.8% (below 80% target)
+- **Overall branch coverage**: 77.09% (below 80% target)
 - **High‑uncovered modules** (by uncovered branches):
   - autonomous-engine/extension.ts: 90 uncovered (182 total, 50.5% coverage)
   - capability-system/extension.ts: 48 uncovered (130 total, 63.1% coverage)
-  - autonomous-engine/quality-gate.ts: 52 uncovered (74 total, 29.7% coverage)
-  - capability-system/plugin-loader.ts: 53 uncovered (112 total, 52.7% coverage)
+  - autonomous-engine/quality-gate.ts: 17 uncovered (74 total, 77.0% coverage)
+  - capability-system/plugin-loader.ts: 36 uncovered (112 total, 67.9% coverage)
   - system-audit.ts: 120 uncovered (334 total, 64.1% coverage)
   - autonomous-engine/task-discovery.ts: 22 uncovered (58 total, 62.1% coverage)
   - dependency_tree.ts: 34 uncovered (141 total, 75.9%)
