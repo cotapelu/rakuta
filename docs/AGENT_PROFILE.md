@@ -244,10 +244,22 @@
 - Coverage: Branches 73.75% (+0.44%)
 - Still below 80%; continue systematic testing of remaining patterns (JWT, EoP, replay, webhook), scalability edge cases (memory leak, blocking I/O, large allocations), and high‑uncovered modules.
 
+### Cycle 51 (2026-07-09 17:35)
+- Added unit tests for SystemAudit helper methods (findFiles, searchCode, hasTimeoutConfigured, matchPattern, extractFunctionBlock) covering 16 tests.
+- Fixed searchCode minOccurrences bug (incorrect final return when count below threshold).
+- Test Delta: +16 tests
+- Coverage: Branches 73.86% (+0.11% from 73.75%)
+- Next: target high‑uncovered modules (extension.ts, capability-system/extension.ts, quality-gate.ts) and continue improving system-audit coverage.
+
 ## Current Weaknesses (2026-07-09)
-- **system-audit.ts**: Branch coverage ~73.75% (151 uncovered branches), still far below target; need extensive testing of helper‑based false branches and remaining security/scalability patterns.
-- **Overall branch coverage**: 73.75% (below 80% target)
-- **High‑uncovered modules**: quality-gate.ts (74 branches, ~30% cov), autonomous-engine/extension.ts (182 branches, ~40% cov), task-discovery.ts (58 branches, ~62% cov).
-- **Remaining Security gaps**: Need tests for JWT verification, elevation of privilege, replay attack, webhook signature.
-- **Remaining Scalability gaps**: Need tests for memory leak, blocking I/O in async, large object allocations.
+- **system-audit.ts**: Branch coverage improved (~66% estimated) but still far from target; remaining branches in helper methods and some pattern checks.
+- **Overall branch coverage**: 73.86% (below 80% target)
+- **High‑uncovered modules** (by uncovered branches):
+  - autonomous-engine/extension.ts: 108 uncovered (40.7% coverage)
+  - capability-system/extension.ts: 102 uncovered (21.5% coverage)
+  - autonomous-engine/quality-gate.ts: 52 uncovered (29.7% coverage)
+  - capability-system/plugin-loader.ts: 53 uncovered (52.7% coverage)
+  - autonomous-engine/task-discovery.ts: 22 uncovered (62.1% coverage)
+- **Remaining Security gaps in system-audit**: JWT verification, elevation of privilege, replay attack, webhook signature.
+- **Remaining Scalability gaps**: Memory leak, blocking I/O in async, large object allocations.
 - **ESLint warnings**: ~15 `any` and default-case issues to address.

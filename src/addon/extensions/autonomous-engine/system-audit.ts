@@ -1174,6 +1174,9 @@ export class SystemAudit {
         if (options.minOccurrences && count >= options.minOccurrences) return true;
       }
     }
+    if (options.minOccurrences) {
+      return count >= options.minOccurrences;
+    }
     return count > 0;
   }
 
