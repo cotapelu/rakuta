@@ -8,8 +8,8 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@extensions/*": ["src/addon/extensions/*"],
-      "@typescript-eslint/parser": ["node_modules/@typescript-eslint/parser/dist/index.js"]
+      "@extensions/*": ["./src/addon/extensions/*"],
+      "@typescript-eslint/parser": ["./node_modules/@typescript-eslint/parser/dist/index.js"]
     },
     "types": ["node", "vitest"],
     "strict": true,
@@ -17,7 +17,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/tests/**/*", "src/**/__tests__/**", "src/benchmarks/**"]
