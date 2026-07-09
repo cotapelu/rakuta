@@ -837,7 +837,7 @@ export class SystemAudit {
       }
 
       // JWT Verification: Check for JWT without signature verification
-      if (/(jwt\.verify|token\.verify)/i.test(content) && !/RS256|ES256|algorithm/i.test(content)) {
+      if (/(jwt\.verify|token\.verify)/i.test(content) && !/(RS256|ES256|algorithm)/i.test(content)) {
         findings.push({
           dimension: 'Security (STRIDE)',
           severity: 'HIGH',

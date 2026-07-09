@@ -445,3 +445,6 @@ function getPluginsPath(): string {
 function isDevMode(): boolean {
   return process.env.NODE_ENV === 'development' || process.env.PICLAW_DEV === '1';
 }
+
+// Export for unit testing
+export { createCapabilityRouterTool, truncateToVisualLines, keyHint, getPluginsPath, isDevMode };

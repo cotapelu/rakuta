@@ -3,17 +3,32 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Verify Fix",
+      "name": "Cycle 54: Test Capability System",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Build and start application to verify system plugin loads without errors",
-          "status": "completed"
+          "content": "Write comprehensive unit tests for src/addon/extensions/capability-system/extension.ts",
+          "status": "in_progress"
+        },
+        {
+          "id": "task-2",
+          "content": "Run test suite and verify coverage improvement",
+          "status": "pending"
+        },
+        {
+          "id": "task-3",
+          "content": "Update docs (AGENT_METRICS.md, AGENT_PROFILE.md, EVOLUTION.md)",
+          "status": "pending"
+        },
+        {
+          "id": "task-4",
+          "content": "Commit Cycle 54",
+          "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 2,
+  "nextTaskId": 5,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-09T14:33:42.202Z"
+  "updatedAt": "2026-07-09T19:22:34.235Z"
 }

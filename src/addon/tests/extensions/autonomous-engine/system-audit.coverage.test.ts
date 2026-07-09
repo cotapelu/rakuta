@@ -55,6 +55,50 @@ describe('SystemAudit - Additional Coverage for Critical Branches', () => {
       const report = await auditor.runFullAudit();
       expect(report.findings.some(f => f.dimension === 'Security (STRIDE)' && f.exploit.includes('DoS'))).toBe(true);
     });
+
+    test('detects JWT without signature verification', async () => {
+      await writeFileAsync('jwt.ts', `
+        import jwt from 'jsonwebtoken';
+        function decode(token: string) {
+          jwt.verify(token, 'secret');
+        }
+      `);
+      const auditor = new SystemAudit(fixtureDir);
+      const report = await auditor.runFullAudit();
+      expect(report.findings.some(f => f.dimension === 'Security (STRIDE)' && f.exploit.includes('JWT'))).toBe(true);
+    });
+
+    test('detects elevation of privilege risk', async () => {
+      await writeFileAsync('eop.ts', `
+        function adminPanel() {
+          const area = '/admin';
+        }
+      `);
+      const auditor = new SystemAudit(fixtureDir);
+      const report = await auditor.runFullAudit();
+      expect(report.findings.some(f => f.dimension === 'Security (STRIDE)' && f.exploit.includes('privileged'))).toBe(true);
+    });
+
+    test('detects replay attack risk', async () => {
+      await writeFileAsync('replay.ts', `
+        function processRequest(nonce) {
+        }
+      `);
+      const auditor = new SystemAudit(fixtureDir);
+      const report = await auditor.runFullAudit();
+      expect(report.findings.some(f => f.dimension === 'Security (STRIDE)' && f.exploit.includes('replays'))).toBe(true);
+    });
+
+    test('detects unverified webhook', async () => {
+      await writeFileAsync('webhook.ts', `
+        app.post('/webhook', (req, res) => {
+          res.send('ok');
+        });
+      `);
+      const auditor = new SystemAudit(fixtureDir);
+      const report = await auditor.runFullAudit();
+      expect(report.findings.some(f => f.dimension === 'Security (STRIDE)' && f.exploit.includes('webhook'))).toBe(true);
+    });
   });
 
   describe('True branches for previously untriggered Scalability checks', () => {

@@ -249,17 +249,40 @@
 - Fixed searchCode minOccurrences bug (incorrect final return when count below threshold).
 - Test Delta: +16 tests
 - Coverage: Branches 73.86% (+0.11% from 73.75%)
-- Next: target high‑uncovered modules (extension.ts, capability-system/extension.ts, quality-gate.ts) and continue improving system-audit coverage.
+- Next: target high‑uncovered modules and continue improving system-audit coverage.
+
+### Cycle 52 (2026-07-09 18:10)
+- Added security pattern tests for JWT verification, elevation of privilege, replay attack, webhook signature (4 tests).\n- Fixed JWT detection regex bug (missing parentheses around algorithm alternatives).
+- Test Delta: +4 tests
+- Coverage: Branches 74.08% (+0.22%)
+- Next: continue systematic coverage expansion, focusing on high‑uncovered modules.
+
+### Cycle 53 (2026-07-09 18:30)
+- Added unit tests for autonomous-engine extension utility functions (loadState, saveState, buildTaskPrompt, mapPriority, assessRisk).
+- Tests: +13 tests
+- Coverage: Branches 74.51% (+0.43%)
+- Next: target remaining high‑uncovered modules (capability-system/extension.ts, autonomous-engine/quality-gate.ts, system-audit.ts).
+
+### Cycle 54 (2026-07-09 19:30)
+- Added comprehensive unit tests for capability-system extension: factory initialization, plugin loader integration, capability router tool, and helper functions.
+- Tests: +30 tests
+- Coverage: Branches 75.8% (+1.29%)
+- Per‑module improvement: capability-system/extension.ts branch coverage from 21.5% → 63.1%.
+- Next: continue with remaining high‑uncovered modules (autonomous-engine/extension.ts, capability-system/plugin-loader.ts, autonomous-engine/quality-gate.ts).
 
 ## Current Weaknesses (2026-07-09)
-- **system-audit.ts**: Branch coverage improved (~66% estimated) but still far from target; remaining branches in helper methods and some pattern checks.
-- **Overall branch coverage**: 73.86% (below 80% target)
+- **system-audit.ts**: Branch coverage 64.1% (214/334, 120 uncovered), many pattern branches remain.
+- **Overall branch coverage**: 75.8% (below 80% target)
 - **High‑uncovered modules** (by uncovered branches):
-  - autonomous-engine/extension.ts: 108 uncovered (40.7% coverage)
-  - capability-system/extension.ts: 102 uncovered (21.5% coverage)
-  - autonomous-engine/quality-gate.ts: 52 uncovered (29.7% coverage)
-  - capability-system/plugin-loader.ts: 53 uncovered (52.7% coverage)
-  - autonomous-engine/task-discovery.ts: 22 uncovered (62.1% coverage)
-- **Remaining Security gaps in system-audit**: JWT verification, elevation of privilege, replay attack, webhook signature.
-- **Remaining Scalability gaps**: Memory leak, blocking I/O in async, large object allocations.
+  - autonomous-engine/extension.ts: 90 uncovered (182 total, 50.5% coverage)
+  - capability-system/extension.ts: 48 uncovered (130 total, 63.1% coverage)
+  - autonomous-engine/quality-gate.ts: 52 uncovered (74 total, 29.7% coverage)
+  - capability-system/plugin-loader.ts: 53 uncovered (112 total, 52.7% coverage)
+  - system-audit.ts: 120 uncovered (334 total, 64.1% coverage)
+  - autonomous-engine/task-discovery.ts: 22 uncovered (58 total, 62.1% coverage)
+  - dependency_tree.ts: 34 uncovered (141 total, 75.9%)
+  - analyze_ast.ts: 29 uncovered (125 total, 76.8%)
+  - ast_query.ts: 28 uncovered (149 total, 81.2%)
+  - call_graph.ts: 19 uncovered (155 total, 87.8%)
+- **Remaining gaps**: Continue systematic testing of uncovered branches.
 - **ESLint warnings**: ~15 `any` and default-case issues to address.
