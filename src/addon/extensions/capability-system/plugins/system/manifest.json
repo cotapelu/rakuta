@@ -2,5 +2,46 @@
   "id": "system",
   "name": "System Audit",
   "description": "Provides system-level audit capabilities across security, performance, and compliance.",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "capabilities": [
+    {
+      "id": "audit",
+      "name": "System Audit",
+      "description": "Perfom a basic system audit: lint, security, typecheck. Returns a markdown report.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "execute": "capabilities/audit.ts",
+      "renderer": null,
+      "promptGuidelines": [
+        "Use system.audit to check lint, typecheck, and security audit.",
+        "Example: { capability: 'system.audit', params: {} }"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "metrics",
+      "name": "System Metrics",
+      "description": "Collects and returns system-level metrics (codebase metrics, performance stats).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "execute": "capabilities/metrics.ts",
+      "renderer": null,
+      "promptGuidelines": [
+        "Use system.metrics to get codebase metrics (lines, functions, complexity).",
+        "Example: { capability: 'system.metrics', params: {} }"
+      ],
+      "dependencies": []
+    }
+  ],
+  "settings": {
+    "enabledByDefault": true
+  }
 }
