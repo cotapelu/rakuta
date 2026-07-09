@@ -3,6 +3,7 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 import { QualityGate } from "./quality-gate.js";
 import { TaskDiscovery } from "./task-discovery.js";
 import { DEFAULT_CONFIG, type AutonomousEngineConfig, type TaskQueueItem, type ImprovementType } from "./types.js";
+import { SystemAudit } from "./system-audit.js";
 import * as path from "node:path";
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from "node:fs";
 import { execFile } from "node:child_process";
@@ -217,55 +218,12 @@ async function runGitCommand(cwd: string, args: string[]): Promise<{ stdout: str
 
 async function runSystemAudit(cwd: string): Promise<{ passed: boolean; report: string }> {
   try {
-    // Lint
-    let lintCode = 0, lintOut = '', lintErr = '';
-    try {
-      const result = await execFileAsync('npm', ['run', 'lint'], { cwd });
-      lintCode = 0; lintOut = result.stdout; lintErr = result.stderr;
-    } catch (e: any) {
-      lintCode = e.code || 1; lintOut = e.stdout || ''; lintErr = e.stderr || String(e);
-    }
-    const lintOutput = (lintOut + lintErr).trim();
-    const lintOk = lintCode === 0 && !/\berror\b/i.test(lintOutput);
-
-    // Typecheck
-    let typeCode = 0, typeOut = '', typeErr = '';
-    try {
-      const result = await execFileAsync('npm', ['run', 'typecheck'], { cwd });
-      typeCode = 0; typeOut = result.stdout; typeErr = result.stderr;
-    } catch (e: any) {
-      typeCode = e.code || 1; typeOut = e.stdout || ''; typeErr = e.stderr || String(e);
-    }
-    const typeOutput = (typeOut + typeErr).trim();
-    const typeOk = typeCode === 0;
-
-    // Security audit (high)
-    let auditCode = 0, auditOut = '', auditErr = '';
-    try {
-      const result = await execFileAsync('npm', ['audit', '--audit-level=high'], { cwd });
-      auditCode = 0; auditOut = result.stdout; auditErr = result.stderr;
-    } catch (e: any) {
-      auditCode = e.code || 1; auditOut = e.stdout || ''; auditErr = e.stderr || String(e);
-    }
-    const auditOutput = (auditOut + auditErr).trim();
-    const auditOk = auditCode === 0;
-
-    const passed = lintOk && typeOk && auditOk;
-    const report = `# System Audit
-
-## Lint
-${lintOk ? '✅ No lint errors' : `❌ Lint errors:\n${lintOutput || 'See output'}`}
-
-## Type Check
-${typeOk ? '✅ No type errors' : `❌ Type errors:\n${typeOutput || 'See output'}`}
-
-## Security Audit
-${auditOk ? '✅ No high severity vulnerabilities' : `❌ High severity vulnerabilities:\n${auditOutput || 'See output'}`}
-`;
-
-    return { passed, report };
+    const auditor = new SystemAudit(cwd);
+    const fullReport = await auditor.runFullAudit();
+    const report = auditor.formatReport(fullReport);
+    return { passed: fullReport.passed, report };
   } catch (error) {
-    logger.error('System audit failed', { error });
+    logger.error('Comprehensive system audit failed', { error });
     return { passed: false, report: `❌ Audit execution error: ${error}` };
   }
 }

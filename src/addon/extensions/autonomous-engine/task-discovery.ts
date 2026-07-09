@@ -3,6 +3,7 @@ import { TaskQueueItem, Violation, ImprovementType, CoverageMetrics } from "./ty
 import * as path from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { QualityGate } from "./quality-gate.js";
+import { SystemAudit } from "./system-audit.js";
 
 const logger = createLogger('TaskDiscovery');
 
@@ -27,7 +28,7 @@ export class TaskDiscovery {
       tasks.push(...this.tasksFromViolations(gateResult.violations));
     } else {
       logger.log('No violations - proactive analysis');
-      tasks.push(...this.proactiveAnalysis(gateResult.coverage));
+      tasks.push(...(await this.proactiveAnalysis(gateResult.coverage)));
     }
 
     // Sort by priority (lower number = higher priority)
@@ -92,7 +93,7 @@ export class TaskDiscovery {
     }
   }
 
-  private proactiveAnalysis(coverage: CoverageMetrics): TaskQueueItem[] {
+  private async proactiveAnalysis(coverage: CoverageMetrics): Promise<TaskQueueItem[]> {
     const tasks: TaskQueueItem[] = [];
     const now = Date.now();
 
@@ -256,7 +257,83 @@ export class TaskDiscovery {
       attempts: 0,
     });
 
+    // System health audit (critical & high findings) — GOAL.md Section 11
+    try {
+      const auditor = new SystemAudit(this.cwd);
+      const report = await auditor.runFullAudit();
+      for (const finding of report.findings) {
+        if (finding.severity === 'CRITICAL' || finding.severity === 'HIGH') {
+          const priority = finding.severity === 'CRITICAL' ? 1 : 2;
+          const moduleName = finding.location !== 'codebase'
+            ? finding.location.split(/[\\/]/).pop()?.replace(/\.[^.]*$/, '') || 'codebase'
+            : 'codebase';
+          tasks.push({
+            id: `audit-${finding.dimension.replace(/\s+/g, '-')}-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+            type: 'PROACTIVE_IMPROVEMENT' as ImprovementType,
+            priority,
+            improvementType: this.mapDimensionToType(finding.dimension),
+            module: moduleName,
+            action: `[AUDIT] ${finding.fix}`,
+            expectedImpact: `Fix ${finding.dimension} issue: ${finding.rootCause}`,
+            estimatedMinutes: this.estimateMinutes(finding.severity, finding.dimension),
+            risk: this.mapSeverityToRisk(finding.severity),
+            createdAt: new Date(),
+            attempts: 0,
+          });
+        }
+      }
+    } catch (error) {
+      logger.warn('System audit health check failed during proactive analysis', { error });
+    }
+
     return tasks;
+  }
+
+  // Helper to map audit dimension to ImprovementType
+  private mapDimensionToType(dimension: string): ImprovementType {
+    switch (dimension) {
+      case 'Security (STRIDE)':
+      case 'Security':
+        return 'SECURITY';
+      case 'Scalability':
+      case 'Performance':
+        return 'PERFORMANCE';
+      case 'Observability & Monitoring':
+        return 'OBSERVABILITY';
+      case 'Caching & Consistency':
+      case 'Database & Data Integrity':
+        return 'REFACTOR'; // often requires architectural changes
+      case 'Business Logic Integrity':
+      case 'End-to-End Flow':
+      case 'Concurrency & Race Condition':
+      case 'Idempotency':
+      case 'Failure Scenarios':
+        return 'REFACTOR';
+      default:
+        return 'REFACTOR';
+    }
+  }
+
+  private mapSeverityToRisk(severity: string): 'Low' | 'Medium' | 'High' {
+    switch (severity) {
+      case 'CRITICAL':
+      case 'HIGH':
+        return 'High';
+      case 'MEDIUM':
+        return 'Medium';
+      case 'LOW':
+      default:
+        return 'Low';
+    }
+  }
+
+  private estimateMinutes(severity: string, dimension: string): number {
+    const base = severity === 'CRITICAL' ? 120 : severity === 'HIGH' ? 90 : 60;
+    // Certain dimensions tend to be larger effort
+    if (dimension.includes('Scalability') || dimension.includes('Database') || dimension.includes('Concurrency')) {
+      return base * 2; // more complex
+    }
+    return base;
   }
 }
 

@@ -95,25 +95,25 @@ describe('TaskDiscovery', () => {
   });
 
   describe('proactiveAnalysis', () => {
-    it('adds coverage tasks if below thresholds', () => {
+    it('adds coverage tasks if below thresholds', async () => {
       const coverage: CoverageMetrics = { statements: 70, branches: 72, functions: 80, lines: 75, allAboveThreshold: false };
       // Access private method via any
-      const tasks = (discovery as any).proactiveAnalysis(coverage);
+      const tasks = await (discovery as any).proactiveAnalysis(coverage);
       // Should include at least coverage improvement tasks for branches and statements? The code: if branches <85 add; if statements <85 add. Both are true, so two coverage tasks.
       const coverageTasks = tasks.filter((t: any) => t.improvementType === 'TESTS');
       expect(coverageTasks.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('does not add coverage tasks if above thresholds', () => {
+    it('does not add coverage tasks if above thresholds', async () => {
       const coverage: CoverageMetrics = { statements: 90, branches: 90, functions: 90, lines: 90, allAboveThreshold: true };
-      const tasks = (discovery as any).proactiveAnalysis(coverage);
+      const tasks = await (discovery as any).proactiveAnalysis(coverage);
       const coverageTasks = tasks.filter((t: any) => t.improvementType === 'TESTS');
       expect(coverageTasks.length).toBe(0);
     });
 
-    it('always adds security tasks (secrets, tls, jwt)', () => {
+    it('always adds security tasks (secrets, tls, jwt)', async () => {
       const coverage: CoverageMetrics = { statements: 90, branches: 90, functions: 90, lines: 90, allAboveThreshold: true };
-      const tasks = (discovery as any).proactiveAnalysis(coverage);
+      const tasks = await (discovery as any).proactiveAnalysis(coverage);
       const securityTasks = tasks.filter((t: any) => t.improvementType === 'SECURITY');
       expect(securityTasks.length).toBe(3);
       const actions = securityTasks.map((t: any) => t.action);
