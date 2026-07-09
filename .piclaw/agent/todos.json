@@ -3,32 +3,37 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Cycle 54: Test Capability System",
+      "name": "Cycle 55: Quality-gate coverage",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Write comprehensive unit tests for src/addon/extensions/capability-system/extension.ts",
+          "content": "Write extra unit tests for autonomous-engine/quality-gate.ts to cover remaining branches",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Run test suite and verify coverage improvement",
+          "content": "Focus on runBuild, runLint, getCoverage (alt file, no file) and runTests",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Update docs (AGENT_METRICS.md, AGENT_PROFILE.md, EVOLUTION.md)",
+          "content": "Run test suite and verify coverage improvement",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Commit Cycle 54",
+          "content": "Update docs (AGENT_METRICS.md, AGENT_PROFILE.md, EVOLUTION.md)",
+          "status": "pending"
+        },
+        {
+          "id": "task-5",
+          "content": "Commit Cycle 55",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 5,
+  "nextTaskId": 6,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-09T19:22:34.235Z"
+  "updatedAt": "2026-07-09T19:43:45.147Z"
 }
