@@ -93,3 +93,10 @@
   - Add tests for `autoCommit` and metric update functions with mock Git and file system.
   - Continue systematic dimension coverage for system-audit.
 - **Debt Reduction**: Slow progress; still ~2.4% to 80% goal. Need 2–3 more focused cycles.
+
+## Cycle 61–62 (2026-07-14) — Final Push and Diminishing Returns
+- **Health Score**: plateauing; coverage ~77.6% after intense effort.
+- **What worked**: Pattern-based tests for system-audit (security, scalability, observability, remaining dimensions) delivered good branch coverage per test. Capability-system router and plugin-loader tests covered large swaths of logic with minimal code.
+- **What didn’t**: Core `autonomous-engine/extension.ts` orchestration proved resistant to unit testing due to heavy integration (fs, git, child_process, logger). Integration tests complex and flaky; branch coverage impact low.
+- **Remaining debt**: ~80 branches in `extension.ts`, ~90 in `system-audit.ts`, ~20 in `capability-system/extension.ts`.
+- **Recommendation**: Accept ~78% coverage as sufficient given complexity; allocate future effort to refactoring these modules for testability rather than chasing coverage.
