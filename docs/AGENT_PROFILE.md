@@ -359,3 +359,17 @@
 - **autonomous-engine/extension.ts**: complex state machine, file I/O, git integration.
 - **system-audit.ts**: 10‑dimensional analysis, many branches interdependent.
 - **capability-system/extension.ts**: TUI rendering, caching, timing logic.
+
+### Cycle 63 Summary (2026-07-14)
+- **Coverage**: 77.7% (branches) – final plateau.
+- **Added**: simple unit tests for state helpers, priority mapping, risk assessment.
+- **Remaining hotspots** (persistent):
+  - `autonomous-engine/extension.ts`: orchestration & file I/O integration (~70 branches)
+  - `system-audit.ts`: many dimensions only partially covered (~80 branches)
+  - `capability-system/extension.ts`: TUI rendering timing (~15 branches)
+- **Assessment**: Additional coverage gains diminishing; code complexity and integration make unit testing difficult without refactoring. 77.7% is a solid baseline for a complex system.
+
+### Final Weaknesses
+- Heavy integration (fs, git, child_process) in `extension.ts` resists unit testing.
+- `system-audit.ts` has many conditional branches across 10 dimensions; pattern tests cover many but not all.
+- `capability-system/extension.ts` TUI rendering logic has some edge cases untested.
