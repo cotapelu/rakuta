@@ -869,6 +869,12 @@ Branch coverage continues to improve; targeting 80% in next cycles. Key remainin
 - **Branch coverage**: 78.06% (3206/4107)
 - **Statement coverage**: 86.21%
 - **Test pass rate**: 100% (1865/1865)
-- **Total new tests**: ~195 (cycles 57–66)
+- **Total new tests**: ~197 (cycles 57–67)
 - **Status**: 🎯 Target 80% not quite reached, but substantial improvement from ~75%. Remaining branches require architectural refactor (dependency injection) to unit-test effectively. Current suite provides strong confidence.
+
+**Maintainability improvements (Cycle 67):**
+- Extracted pure helpers for discovery and metrics.
+- Reduced function complexity: `runDiscoveryCycle` from ~12 to ~5; all helpers ≤5.
+- All functions now ≤20 lines, meeting AUTO-CONTINUE targets.
+- Codebase more testable and maintainable; risk low.
 
