@@ -267,4 +267,48 @@ describe('AutonomousEngine Unit (focused)', () => {
       expect(parsed.weaknesses).toEqual([]);
     });
   });
+
+  describe('Edge cases (Cycle 66)', () => {
+    it('updateProjectState overwrites malformed JSON', async () => {
+      existsSync.mockReturnValue(true);
+      readFileSync.mockReturnValue('{ bad }');
+      const state = makeState();
+      await updateProjectState(cwd, state, makeTask(), true, { statements: 80, branches: 75 });
+      expect(writeFileSync).toHaveBeenCalled(); // overwrites
+    });
+
+    it('updateEvolutionDocs overwrites malformed JSON', async () => {
+      existsSync.mockReturnValue(true);
+      readFileSync.mockReturnValue('{ bad }');
+      const state = makeState();
+      await updateEvolutionDocs(cwd, state, makeTask(), true);
+      expect(writeFileSync).toHaveBeenCalled(); // overwrites
+    });
+
+    it('updateEvolutionDocs does not add trajectory for non-PROACTIVE_IMPROVEMENT', async () => {
+      existsSync.mockReturnValue(false);
+      const state = makeState();
+      await updateEvolutionDocs(cwd, state, makeTask(), true);
+      const content = writeFileSync.mock.calls[0][1] as string;
+      const parsed = JSON.parse(content);
+      expect(parsed.trajectory).toEqual([]);
+    });
+
+    it('updateAgentProfile truncates weaknesses to 50', async () => {
+      existsSync.mockReturnValue(true);
+      const oldWeaknesses = Array.from({ length: 50 }, () => ({ taskId: 't', module: 'm', action: 'a', reason: 'r', timestamp: new Date().toISOString() }));
+      readFileSync.mockReturnValue(JSON.stringify({ weaknesses: oldWeaknesses }));
+      await updateAgentProfile(cwd, makeTask(), false, 'new err');
+      const content = writeFileSync.mock.calls[0][1] as string;
+      const parsed = JSON.parse(content);
+      expect(parsed.weaknesses.length).toBeLessThanOrEqual(50);
+    });
+
+    it('loadState falls back on parse error', () => {
+      existsSync.mockReturnValue(true);
+      readFileSync.mockReturnValue('invalid');
+      const state = loadState(cwd);
+      expect(state.cycleCount).toBe(0);
+    });
+  });
 });
