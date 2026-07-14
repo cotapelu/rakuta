@@ -128,3 +128,14 @@
 - **Plateau**: Further coverage gains diminishing; remaining branches are in deep integration.
 - **Path forward**: Consider dependency injection for fs/git to enable unit tests of orchestration.
 
+## Cycle 67 (2026-07-14) — Maintainability Refactor
+- **Health Score**: stable; coverage unchanged but code quality improved
+- **Key improvements**:
+  - Extracted pure helpers for discovery (`shouldRunDiscovery`, `deduplicateAndSort`, `hasReadyTask`, `buildSkipReason`)
+  - Extracted pure helpers for metrics (`computeCoverageDelta`, `computeFailureRate`, `computeTestDelta`, `hasRegression`, `buildMetricsLog`)
+  - Reduced complexity: `runDiscoveryCycle` from ~12 to ~5; all helpers ≤5.
+  - All refactored functions now ≤20 lines, meeting AUTO-CONTINUE targets.
+- **Tests added**: 2 test files covering helpers (discovery, metrics) with comprehensive edge cases.
+- **Impact**: Improved maintainability and testability without breaking changes. All tests pass (1865/1865). Coverage stable at 78.06%.
+- **Next**: Optional refactors remain (system-audit extraction, full DI), but no low‑risk high‑gain items identified.
+

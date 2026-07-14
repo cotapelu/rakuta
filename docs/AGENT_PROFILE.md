@@ -393,3 +393,12 @@
   - `system-audit.ts`: multi-dimension logic only partially covered.
 - **Next**: Optional refactor for testability if higher coverage needed.
 
+
+### Cycle 67 Improvements (2026-07-14)
+- Refactored `autonomous-engine/extension.ts`:
+  - Extracted pure helpers for discovery and metrics
+  - Reduced complexity: `runDiscoveryCycle` from ~12 to ~5; all helpers ≤5.
+  - All refactored functions now ≤20 lines.
+  - Added unit tests for helpers (discovery, metrics) covering edge cases.
+- Impact: Improved maintainability and testability without breaking changes. All tests pass (1865/1865). Coverage stable at 78.06%.
+- No new weaknesses introduced; optional high-risk refactors deferred.
