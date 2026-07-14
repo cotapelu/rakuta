@@ -285,6 +285,21 @@
 - Per-module improvement: capability-system/plugin-loader.ts branch coverage from 52.7% → 67.9% (36 uncovered).
 - Next: continue with other high‑uncovered modules.
 
+
+### Cycle 55 (2026-07-09 20:00) - Task: Quality-gate extra coverage
+- Added comprehensive unit tests for QualityGate covering runBuild, runLint, getCoverage (alt file, missing file, fallback keys), runTests (JSON parsing, fallback, errors), classifyType mapping, calculateScore edge cases.
+- Tests: +26 tests
+- Coverage: Branches 76.68% (+0.88%)
+- Per-module improvement: autonomous-engine/quality-gate.ts branch coverage from 29.7% → 77.0% (17 uncovered).
+- Next: continue with capability-system/plugin-loader.ts and other modules.
+
+### Cycle 56 (2026-07-09 20:30) - Task: Plugin-loader extra coverage
+- Added extra unit tests for PluginLoader covering createExecuteHandler details injection, startWatchMode root watcher events, scheduleNewPluginLoad and reloadPlugin debouncing, and waitForInitialization.
+- Tests: +11 tests
+- Coverage: Branches 77.09% (+0.41%)
+- Per-module improvement: capability-system/plugin-loader.ts branch coverage from 52.7% → 67.9% (36 uncovered).
+- Next: continue with other high‑uncovered modules.
+
 ## Current Weaknesses (2026-07-09)
 - **system-audit.ts**: Branch coverage 64.1% (214/334, 120 uncovered), many pattern branches remain.
 - **Overall branch coverage**: 77.09% (below 80% target)
@@ -301,3 +316,13 @@
   - call_graph.ts: 19 uncovered (155 total, 87.8%)
 - **Remaining gaps**: Continue systematic testing of uncovered branches.
 - **ESLint warnings**: ~15 `any` and default-case issues to address.
+
+### Cycle 58 Updates (2026-07-14)
+- **Coverage Trend**: Branch coverage increased by ~0.7% through system-audit pattern tests and autonomous engine utility tests.
+- **Remaining Weaknesses** (high-uncovered):
+  - `autonomous-engine/extension.ts`: 90 uncovered (agent_end event handler complexity)
+  - `capability-system/extension.ts`: 48 uncovered
+  - `capability-system/plugin-loader.ts`: 36 uncovered
+  - `autonomous-engine/quality-gate.ts`: 17 uncovered
+- **Improved Modules**: `system-audit.ts` coverage up; core utility functions in extension well-covered.
+- **Focus Next**: Refactor agent_end for testability or write integration tests; cover remaining capability-system branches; finalize quality-gate edge cases.

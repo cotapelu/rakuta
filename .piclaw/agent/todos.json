@@ -3,32 +3,37 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Cycle 56: Plugin-loader coverage",
+      "name": "Cycle 57: Autonomous engine extension coverage",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Verify plugin-loader.extra.test.ts passes and covers remaining branches",
+          "content": "Analyze uncovered branches in autonomous-engine/extension.ts (runDiscoveryCycle, updateProjectState, event handlers)",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Run full test suite and coverage measurement",
+          "content": "Write targeted unit tests for remaining branches (error handling, state mutations, edge cases)",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Update docs (AGENT_METRICS.md, AGENT_PROFILE.md, EVOLUTION.md)",
+          "content": "Run full test suite and verify coverage improvement",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Commit Cycle 56",
+          "content": "Update docs (AGENT_METRICS.md, AGENT_PROFILE.md, EVOLUTION.md)",
+          "status": "pending"
+        },
+        {
+          "id": "task-5",
+          "content": "Commit Cycle 57",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 5,
+  "nextTaskId": 6,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-09T20:36:27.091Z"
+  "updatedAt": "2026-07-09T20:54:54.894Z"
 }
