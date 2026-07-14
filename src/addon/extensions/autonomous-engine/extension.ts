@@ -2,12 +2,27 @@ import { createLogger } from "../utils/logger.js";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { QualityGate } from "./quality-gate.js";
 import { TaskDiscovery } from "./task-discovery.js";
-import { DEFAULT_CONFIG, type AutonomousEngineConfig, type TaskQueueItem, type ImprovementType } from "./types.js";
+import { DEFAULT_CONFIG, type AutonomousEngineConfig, type TaskQueueItem } from "./types.js";
 import { SystemAudit } from "./system-audit.js";
 import * as path from "node:path";
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import {
+  shouldRunDiscovery,
+  getRemainingTime,
+  deduplicateAndSort,
+  hasReadyTask,
+  buildSkipReason,
+} from "./helpers/discovery-helpers.js";
+import {
+  computeCoverageDelta,
+  computeFailureRate,
+  computeTestDelta,
+  hasRegression,
+  buildMetricsLog,
+  mapPriority as mapPriorityHelper,
+} from "./helpers/metrics-helpers.js";
 
 type IntervalHandle = ReturnType<typeof setInterval>;
 
@@ -603,11 +618,10 @@ export default function autonomousEngineExtension(pi: ExtensionAPI) {
 async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineState): Promise<void> {
   if (!state.isRunning) return;
 
-  // Check discovery interval (skip if too soon)
   const now = Date.now();
-  if (state.lastDiscoveryTime && now - state.lastDiscoveryTime < state.config.discoveryIntervalMs) {
-    const remaining = state.config.discoveryIntervalMs - (now - state.lastDiscoveryTime);
-    logger.log(`Discovery skipped (interval not elapsed). Next in ${Math.round(remaining/1000)}s`);
+  if (!shouldRunDiscovery(state, now)) {
+    const remaining = getRemainingTime(state, now);
+    logger.log(buildSkipReason(remaining));
     return;
   }
 
@@ -617,18 +631,12 @@ async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineSta
   try {
     const qualityGate = new QualityGate(cwd);
     const taskDiscovery = new TaskDiscovery(cwd, qualityGate);
-
-    // Discover tasks
     const newTasks = await taskDiscovery.discoverTasks();
 
-    // Deduplicate
     const existingIds = new Set(state.taskQueue.map(t => t.id));
-    const uniqueNew = newTasks.filter(t => !existingIds.has(t.id));
+    const uniqueSorted = deduplicateAndSort(newTasks, existingIds);
 
-    state.taskQueue.push(...uniqueNew);
-    state.taskQueue.sort((a, b) => a.priority - b.priority);
-
-    // Limit queue size
+    state.taskQueue.push(...uniqueSorted);
     if (state.taskQueue.length > 30) {
       state.taskQueue = state.taskQueue.slice(0, 30);
     }
@@ -637,13 +645,11 @@ async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineSta
     state.cycleCount++;
     saveState(cwd, state);
 
-    logger.log(`Discovery added ${uniqueNew.length} tasks. Queue size: ${state.taskQueue.length}`);
+    logger.log(`Discovery added ${uniqueSorted.length} tasks. Queue size: ${state.taskQueue.length}`);
 
-    // If there's no current task, trigger first one
-    if (state.currentTask === null && state.taskQueue.length > 0) {
+    if (hasReadyTask(state)) {
       state.currentTask = state.taskQueue.shift()!;
       saveState(cwd, state);
-
       const prompt = buildTaskPrompt(state.currentTask, state.config);
       pi.sendMessage(
         {
@@ -679,57 +685,32 @@ async function appendMetrics(
 ): Promise<void> {
   try {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-
-    // Compute deltas
     const prev = state.lastCoverage;
-    const stmtDelta = prev ? (coverage.statements - prev.statements) : 0;
-    const branchDelta = prev ? (coverage.branches - prev.branches) : 0;
-    const funcDelta = prev ? (coverage.functions - prev.functions) : 0;
-    const lineDelta = prev ? (coverage.lines - prev.lines) : 0;
+    const coverageDeltaLines = computeCoverageDelta(prev, coverage);
+    const testDelta = computeTestDelta(state.lastTestTotal, testResults.total);
+    const failureRate = computeFailureRate(testResults);
+    const regression = hasRegression(prev, coverage);
 
-    const formatDelta = (d: number) => (d >= 0 ? `+${d.toFixed(2)}%` : `${d.toFixed(2)}%`);
-
-    const testDelta = testResults.total - (state.lastTestTotal || 0);
-    const failureRate = testResults.total > 0 ? (testResults.failed / testResults.total) * 100 : 0;
-    const regression = (stmtDelta < 0) || (branchDelta < 0) || (funcDelta < 0) || (lineDelta < 0);
-
-    // Build Coverage Delta lines
-    const coverageDeltaLines = prev
-      ? `  - Statements: ${formatDelta(stmtDelta)} (${prev.statements.toFixed(2)}%→${coverage.statements.toFixed(2)}%)\n` +
-        `  - Branches: ${formatDelta(branchDelta)} (${prev.branches.toFixed(2)}%→${coverage.branches.toFixed(2)}%)\n` +
-        `  - Functions: ${formatDelta(funcDelta)} (${prev.functions.toFixed(2)}%→${coverage.functions.toFixed(2)}%)\n` +
-        `  - Lines: ${formatDelta(lineDelta)} (${prev.lines.toFixed(2)}%→${coverage.lines.toFixed(2)}%)`
-      : `  - Statements: N/A\n  - Branches: N/A\n  - Functions: N/A\n  - Lines: N/A`;
-
-    const log = `
-## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}
-- **Type**: ${task.type === 'VIOLATION_FIX' ? 'Violation Fix' : 'Proactive Improvement'}
-- **Priority**: ${mapPriority(task.priority)}
-- **Risk**: ${assessRisk(task, prev ? { statements: prev.statements, branches: prev.branches } : null)}
-- **Duration**: (estimated ${task.estimatedMinutes}m)
-- **Status**: ✅ Success
-- **Test Delta**: ${testDelta >= 0 ? '+' : ''}${testDelta} tests (total ${testResults.total})
-- **Coverage Delta**:
-${coverageDeltaLines}
-- **Performance**: N/A
-- **Security**: ${auditPassed ? '✅ Audit passed' : '❌ Audit failed'}
-- **Test Failure Rate**: ${failureRate.toFixed(1)}%
-- **Rollback Count**: 0
-- **Regressions**: ${regression ? 'Yes' : 'No'}
-- **MTTR**: N/A
-${task.estimatedMinutes ? `- **Cost**: ~${task.estimatedMinutes}m` : ''}`;
+    const log = buildMetricsLog(
+      timestamp,
+      state.cycleCount,
+      task,
+      assessRisk(task, prev ? { statements: prev.statements, branches: prev.branches } : null),
+      coverageDeltaLines,
+      testDelta,
+      testResults,
+      auditPassed,
+      regression
+    );
 
     if (existsSync(METRICS_FILE)) {
       appendFileSync(METRICS_FILE, log);
     } else {
-      writeFileSync(METRICS_FILE, `# Agent Metrics\n\n> Auto-maintained by autonomous loop per GOAL.md Section 8.2.\n\n## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}\n- **Type**: ${task.type}\n- **Priority**: ${mapPriority(task.priority)}\n- **Status**: ✅ Success\n`);
+      writeFileSync(METRICS_FILE, `# Agent Metrics\n\n> Auto-maintained by autonomous loop per GOAL.md Section 8.2.\n\n## [${timestamp}] Cycle ${state.cycleCount} - Task: ${task.action}\n- **Type**: ${task.type}\n- **Priority**: ${mapPriorityHelper(task.priority)}\n- **Status**: ✅ Success\n`);
     }
 
-    // Update state for next delta computation
     state.lastCoverage = coverage;
     state.lastTestTotal = testResults.total;
-
-    // Update TODO.md with completed task (best effort)
     await appendTodoCompletion(cwd, task, state.cycleCount, timestamp);
   } catch (error) {
     logger.error('Failed to log metrics', { error });

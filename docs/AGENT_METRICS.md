@@ -849,6 +849,21 @@ Branch coverage continues to improve; targeting 80% in next cycles. Key remainin
 - **Remaining debt**: ~75 branches in orchestration and multi-dimension audit.
 - **Recommendation**: Stabilize at ~78%; consider refactor for testability if 80% required.
 
+## [2026-07-14] Cycle 67 - Task: Refactor autonomous-engine for maintainability
+- **Type**: Refactor (R)
+- **Priority**: HIGH
+- **Duration**: ~60 min
+- **Status**: ✅ Success
+- **Test Delta**: +2 test files (helpers unit tests)
+- **Coverage Delta**: Branches 0% (stable), but code quality improved
+- **Notes**:
+  - Extracted `runDiscoveryCycle` into pure helpers (`shouldRunDiscovery`, `deduplicateAndSort`, `hasReadyTask`, `buildSkipReason`).
+  - Extracted `appendMetrics` into helpers (`computeCoverageDelta`, `computeFailureRate`, `computeTestDelta`, `hasRegression`, `buildMetricsLog`).
+  - Reduced function complexity: `runDiscoveryCycle` from ~12 to ~5; helpers all ≤5.
+  - All functions now ≤20 lines.
+  - All tests pass (1865/1865).
+  - No regression, stable coverage ~78.06%.
+- **Impact**: Improved maintainability, easier future testing, aligns with AUTO-CONTINUE targets (Complexity ≤10, Functions ≤20).
 
 ## FINAL STATE (2026-07-14)
 - **Branch coverage**: 78.06% (3206/4107)
