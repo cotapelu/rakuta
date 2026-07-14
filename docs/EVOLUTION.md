@@ -78,3 +78,18 @@
   - Explore simplifying agent_end or using dependency injection to enable unit testing.
   - Cover remaining plugin-loader edge cases (error handling during watch, plugin validation failures).
 - **Debt Reduction**: Progress steady; still ~2.5% branch coverage to 80% goal. Expect 2–3 more cycles.
+
+## Cycle 60 (2026-07-14) — Observability & State Coverage
+- **Health Score**: stable; coverage +0.1% (77.51% → 77.61%)
+- **New coverage areas**:
+  - SystemAudit: scalability patterns (O(n²), N+1, blocking I/O, allocations) and observability gaps (logs, metrics, tracing, correlation, health, alerts).
+  - AutonomousEngine: state load/save edge cases; assessRisk decision matrix; mapPriority.
+- **Remaining high‑uncovered**:
+  - `autonomous-engine/extension.ts`: core discovery cycle, autoCommit, updateProjectState/EvolutionDocs/AgentProfile functions still have many branches untested.
+  - `autonomous-engine/system-audit.ts`: other dimensions (business logic, concurrency, database integrity, caching, idempotency, failure scenarios) largely untested.
+  - `capability-system/extension.ts`: final ~25 branches (timing display, cache invalidation).
+- **Next actions**:
+  - Write integration test for `runDiscoveryCycle` to cover orchestration logic.
+  - Add tests for `autoCommit` and metric update functions with mock Git and file system.
+  - Continue systematic dimension coverage for system-audit.
+- **Debt Reduction**: Slow progress; still ~2.4% to 80% goal. Need 2–3 more focused cycles.

@@ -336,3 +336,12 @@
   - `autonomous-engine/system-audit.ts`: ~100 uncovered (scalability & observability branches)
 - **Improvements**: quality-gate coverage now >70% (from ~30). New unit tests avoid heavy integration; caching branches covered in router; debounce logic covered.
 - **Focus Next**: Write system-audit scalability & observability pattern tests; consider extracting agent_end verification logic for unit testing; target remaining branches in extension.ts.
+
+### Cycle 60 Updates (2026-07-14)
+- **Coverage Trend**: +0.1% (77.51% → 77.61%)
+- **New Tests**: system-audit scalability & observability patterns; extension state utils (loadState, assessRisk, mapPriority).
+- **Remaining Weaknesses**:
+  - `autonomous-engine/extension.ts`: 80–90 uncovered branches remain (core discovery cycle, autoCommit, metric updates).
+  - `capability-system/extension.ts`: ~25 uncovered after router tests.
+  - `autonomous-engine/system-audit.ts`: ~90 uncovered (other dimensions: business logic, concurrency, caching, failure scenarios).
+- **Focus Next**: Target `autonomous-engine/extension.ts` core paths with integration-style tests; continue filling system-audit dimension coverage.
