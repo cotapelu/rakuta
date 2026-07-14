@@ -373,3 +373,13 @@
 - Heavy integration (fs, git, child_process) in `extension.ts` resists unit testing.
 - `system-audit.ts` has many conditional branches across 10 dimensions; pattern tests cover many but not all.
 - `capability-system/extension.ts` TUI rendering logic has some edge cases untested.
+
+### Cycle 65 Summary (2026-07-14)
+- **Coverage**: ~78% (branches)
+- **Test Pass Rate**: 100% (1860/1860)
+- **Changes**: Fixed failing tests in extension.state and extension.router.timing; added 19 unit tests for engine core; improved runGitCommand reliability.
+- **Weaknesses** (persistent):
+  - `autonomous-engine/extension.ts`: integration-heavy code remains hard to unit-test.
+  - `system-audit.ts`: complex multi-dimension logic only partially covered.
+- **Next**: Optional refactor for testability if coverage target must be met; otherwise maintain and improve test quality.
+

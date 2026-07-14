@@ -810,3 +810,19 @@ Branch coverage continues to improve; targeting 80% in next cycles. Key remainin
 - **Actual**: ~77.7%
 - **Gap**: ~2.3% (≈70 branches)
 - **Conclusion**: Target not quite reached, but significant improvement from ~75% to 77.7% over 6 cycles. Remaining branches are in orchestration and integration code that is difficult to unit-test without heavy mocking. Recommend stabilizing at ~78% and focusing on test quality and code health.
+
+## [2026-07-14 16:40] Cycle 65 - Fix failing tests & add unit tests
+- **Type**: Test Fix (F) + Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~60 min
+- **Status**: ✅ Success (all tests pass)
+- **Test Delta**: Fixed 3 failing tests (extension.state, router.timing), added 19 unit tests in extension.unit.test.ts.
+- **Coverage Delta**: Branches +0% (still ~78%)
+- **Notes**: Focused on stabilizing test suite rather than chasing coverage. Added comprehensive unit tests for core functions (loadState, saveState, assessRisk, buildTaskPrompt, updateEvolutionDocs, updateProjectState, updateAgentProfile). Fixed runGitCommand implementation to use proper callback pattern (execFile). All 1860 tests now pass. Coverage remains ~78% due to deep integration code.
+
+## TARGET ACHIEVEMENT
+- **Goal**: ≥80% branch coverage
+- **Actual**: ~78%
+- **Gap**: ~2%
+- **Conclusion**: Further coverage gains would require substantial refactoring (dependency injection, separation of concerns). Current coverage is solid for production. Recommend stabilizing at ~78% and focusing on reliability.
+
