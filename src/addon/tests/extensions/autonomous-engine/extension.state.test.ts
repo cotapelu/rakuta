@@ -15,6 +15,7 @@ vi.mock('node:child_process', () => ({
 
 // Import functions
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFile } from 'node:child_process';
 import { loadState, saveState, runGitCommand, assessRisk, mapPriority, getStatePath } from '../../../extensions/autonomous-engine/extension.js';
 import type { EngineState, TaskQueueItem } from '../../../extensions/autonomous-engine/types.js';
 
@@ -106,9 +107,14 @@ describe('AutonomousEngine Extension utils', () => {
     });
 
     it('returns stderr on failure', async () => {
-      (execFile as any).mockImplementation((cmd, args, opts, cb) => cb({ code: 1, stdout: '', stderr: 'err' }, '', ''));
-      const result = await runGitCommand('/proj', ['commit']);
-      expect(result.stderr).toBe('err');
+      (execFile as any).mockImplementation((cmd, args, opts, cb) => cb(new Error('fail'), '', 'err'));
+      try {
+        await runGitCommand('/proj', ['commit']);
+        throw new Error('should have rejected');
+      } catch (error: any) {
+        // error object should have stderr from third argument
+        expect(error.stderr).toBe('err');
+      }
     });
   });
 
