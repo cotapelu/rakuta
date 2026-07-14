@@ -13,12 +13,14 @@ Last update: 2026-07-14 16:55 UTC
 - [x] Update all metrics and state files
 
 ## Active / Follow-ups
-- [ ] Optional: Refactor `autonomous-engine/extension.ts` to extract fs/git wrappers (to reach 80%)
-- [ ] Optional: Extract system-audit dimension checks into pure functions
-- [ ] Optional: Add unit tests for `runDiscoveryCycle` edge cases (if complexity manageable)
+- [ ] Optional (High-risk): Refactor `autonomous-engine/extension.ts` (dependency injection) to unlock remaining branches for 80% coverage
+- [ ] Optional (Medium-risk): Extract `system-audit` dimension checks into pure functions for granular testing
+- [ ] Optional (Low-risk): Add unit tests for `runDiscoveryCycle` edge cases (if complexity manageable)
 
 ## Blocked
 None.
 
 ## Notes
-All tests pass. Branch coverage ~78.1%. Remaining branches are in integration-heavy code; further improvement requires architectural changes. Current test suite provides strong confidence.
+All tests pass. Branch coverage ~78.06% (3206/4107). Remaining branches are in deep orchestration; reaching 80% requires high-risk architectural refactor. Current suite provides strong confidence. Optional refactors deferred due to risk/reward trade-off.
+
+**Session status:** COMPLETE (as of 2026-07-14). Continuous loop paused; resume only if business mandates >80% coverage or new actionable low-risk tasks emerge.
