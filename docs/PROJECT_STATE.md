@@ -8,13 +8,15 @@ Last update: 2026-07-14 16:55 UTC
 - **Cycle 60**: system-audit pattern tests (security, scalability, observability); extension.state tests.
 - **Cycle 61–65**: focused unit tests for loadState/saveState/mapPriority/assessRisk/buildTaskPrompt; updateEvolutionDocs, updateProjectState, updateAgentProfile; fixed failing tests.
 - **Cycle 66**: added edge case tests for malformed JSON handling and truncation; coverage up to 78.1%.
-- **Cycle 68**: unit tests for runDiscoveryCycle edge cases (early returns, task triggering, error handling).
+- **Cycle 67**: Refactored autonomous-engine/extension.ts: extracted pure helpers (discovery, metrics) to reduce complexity and improve maintainability; functions ≤20 lines, complexity ≤10.
+- **Cycle 68**: Added unit tests for runDiscoveryCycle edge cases (early returns, task triggering, error handling).
+- **Cycle 69**: Added unit tests for autoCommit edge cases (git command errors, empty status, push failures, commit message formatting).
 
 ## Overall Metrics
-- **Branch coverage**: ~78.2% (target 80%)
+- **Branch coverage**: ~78.3% (target 80%)
 - **Statement coverage**: ~86%
-- **Test suite**: 1867 passing tests (+2)
-- **Total new tests in campaign**: ~197
+- **Test suite**: 1869 passing tests (+2)
+- **Total new tests in campaign**: ~199
 
 ## Critical Gaps (Remaining Uncovered Branches ~75)
 - `autonomous-engine/extension.ts` (~55 branches): core orchestration (runDiscoveryCycle full flow, autoCommit error handling) – fs/git integration resists unit testing.
