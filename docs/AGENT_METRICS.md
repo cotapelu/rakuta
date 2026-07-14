@@ -764,3 +764,12 @@ Branch coverage continues to improve; targeting 80% in next cycles. Key remainin
   - `extension.state.test.ts` (risk assessment, state I/O)
 - **Coverage Delta**: Branches +0.1% (77.51% → 77.61%)
 - **Notes**: System-audit scalability & observability pattern tests successfully detect issues in sample code. State utils tests cover loadState/saveState edge cases and assessRisk branching. Some tests (runGitCommand, updateAgentProfile) require minor mocking adjustments. Overall branch coverage still below 80% target; next focus remains `autonomous-engine/extension.ts` core logic and remaining `capability-system` branches.
+
+## [2026-07-14 15:15] Cycle 61 - Task: Final push toward 80% coverage
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~60 min
+- **Status**: ✅ Partial (tests added, some failing)
+- **Test Delta**: +~20 tests (integration for runDiscoveryCycle, extension state)
+- **Coverage Delta**: Branches +0.0% (unchanged ~77.61%)
+- **Notes**: Integration tests for autonomous engine orchestration created; some mocking issues cause failures. Coverage remains below target; remaining high-leverage modules: autonomous-engine/extension.ts core, system-audit other dimensions, capability-system final branches. Next cycle: simplify tests to target uncovered branches directly.
