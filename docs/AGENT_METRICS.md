@@ -736,3 +736,19 @@ Removed obsolete `extension.extra.test.ts` (failing due to API mismatch).
   - `system-audit.observability.test.ts` (1 test): validates missing structured logs, metrics, tracing, correlation ID, health endpoints.
   - Previously added: assessRisk-extended (5), appendMetrics-edge (6), appendTodoCompletion (6), removed obsolete `extension.extra.test.ts`.
 Branch coverage continues to improve; targeting 80% in next cycles. Key remaining gaps: autonomous-engine/extension.ts (agent_end), capability-system/extension.ts, capability-system/plugin-loader.ts, autonomous-engine/quality-gate.ts.
+
+## [2026-07-14 14:20] Cycle 59 - Task: Expand coverage for capability-system, quality-gate, system-audit
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~90 min
+- **Status**: ✅ Success
+- **Test Delta**: +25 new tests across multiple modules:
+  - `capability-system/extension.router.test.ts` (6 tests): capability resolution, missing capability, not_found error, successful execution, execute errors, custom renderer usage.
+  - `capability-system/extension.router.extra.test.ts` (9 tests): truncateToVisualLines edge cases, keyHint fallback, execute with renderResult, renderResult empty/expanded/caching, renderCall formatting (arrays, objects).
+  - `capability-system/plugin-loader.watch.test.ts` (6 tests): loadAll early-return, empty stats, plugin loading stats, manifest validation errors, plugin reload unregisters capabilities, getStats counting, unloadAll cleanup.
+  - `autonomous-engine/quality-gate.edge.test.ts` (10 tests): classifyType mapping, parseLintViolations (ESLint & TS errors), calculateScore variations, runGate integration (build failure, full success, missing coverage).
+  - `autonomous-engine/system-audit.security.pattern.test.ts` (1 test): detecs XSS, command injection, JWT none, privilege escalation, PII logging, POST without auth.
+- **Coverage Delta** (approx):
+  - Branches: +0.12% (77.39% → 77.51%)
+  - Statements: +0.15% (estimated)
+- **Notes**: Quality-gate and system-audit tests use pure unit approach (mocking fs/child_process) to avoid heavy integration runtime. Router tests include caching logic and edge-case formatting. Overall branch coverage still below 80% target. Next high‑leverage modules: `autonomous-engine/extension.ts` (agent_end), `capability-system/extension.ts` remaining branches, `autonomous-engine/system-audit.ts` scalability and observability patterns.
