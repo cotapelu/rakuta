@@ -826,3 +826,26 @@ Branch coverage continues to improve; targeting 80% in next cycles. Key remainin
 - **Gap**: ~2%
 - **Conclusion**: Further coverage gains would require substantial refactoring (dependency injection, separation of concerns). Current coverage is solid for production. Recommend stabilizing at ~78% and focusing on reliability.
 
+
+## [2026-07-14 16:50] Cycle 66 - Edge case tests
+- **Type**: Tests (T)
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: +5 tests in extension.unit.test.ts (malformed JSON, trajectory, truncation, loadState parse error)
+- **Coverage Delta**: Branches +0.03% (78.03% → 78.06%)
+- **Notes**: All tests pass; coverage plateau due to integration-heavy orchestration code. Further gains would require refactoring.
+
+## CAMPAIGN SUMMARY (Cycles 57–66)
+- **Total new tests**: ~195
+- **Coverage improvement**: +3.1% (from ~75% to 78.1%)
+- **Test pass rate**: 100% (1865/1865)
+- **Key achievements**:
+  - Capability system well-tested
+  - Autonomous engine core helpers unit-tested
+  - System audit pattern tests added
+  - runGitCommand fixed for proper error propagation
+  - Edge cases for file operations covered
+- **Remaining debt**: ~75 branches in orchestration and multi-dimension audit.
+- **Recommendation**: Stabilize at ~78%; consider refactor for testability if 80% required.
+

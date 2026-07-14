@@ -120,3 +120,11 @@
 - **Remaining debt**: ~80 branches in core orchestration remain untested due to integration complexity.
 - **Recommendation**: Accept ~78% as practical limit; consider extracting git/fs abstractions if future need for >80%.
 
+
+## Cycle 66 (2026-07-14) — Edge Cases & Plateau
+- **Coverage**: 78.1% (up from 78.0%)
+- **Health**: All tests pass; no regressions.
+- **Additions**: Edge case tests for malformed JSON, trajectory, and truncation.
+- **Plateau**: Further coverage gains diminishing; remaining branches are in deep integration.
+- **Path forward**: Consider dependency injection for fs/git to enable unit tests of orchestration.
+
