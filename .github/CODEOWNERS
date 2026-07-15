@@ -13,7 +13,6 @@
 /src/addon/logger.ts @lead-dev
 
 # Extensions
-/src/addon/extensions/autonomous-engine/ @autonomous-team
 /src/addon/extensions/capability-system/ @platform-team
 /src/addon/extensions/team/ @team-collaboration
 /src/addon/extensions/tools/ @tools-team

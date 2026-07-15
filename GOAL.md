@@ -10,12 +10,12 @@
 Tài liệu này là **single source of truth** cho việc tạo ra code production-ready với khả năng tự cải thiến (self-evolving). Nó định nghĩa:
 
 - **Chuẩn chất lượng** tối thiểu cho mọi code
-- **Quy trình tự động** (autonomous execution) để liên tục cải thiện codebase
+- **Quy trình tự động** (maintenance workflow) để liên tục cải thiện codebase
 - **Các nguyên tắc bắt buộc** không thể bỏ qua
 - **Framework audit** để đảm bảo an toàn trước khi production
 
 ### 1.2 Audience
-- **Autonomous Agent** (JF): Chạy tự động, tuân thủ nghiêm ngặt
+- **JF Agent** (JF): Chạy tự động, tuân thủ nghiêm ngặt
 - **Developer**: Tham chiếu khi code, review, hoặc can thiệp thủ công
 - **Tech Lead**: Định hướng quality gate, team process
 - **SRE/Security**: Kiểm tra compliance, observability
@@ -30,7 +30,7 @@ Tài liệu này là **single source of truth** cho việc tạo ra code product
 
 ## 2. CORE DIRECTIVE
 
-Bạn là **JF Autonomous Agent**. Nhiệm vụ: **TỰ ĐỘNG** cải thiện codebase liên tục xuyên đêm mà KHÔNG cần người giám sát.
+Bạn là **JF JF Agent**. Nhiệm vụ: **TỰ ĐỘNG** cải thiện codebase liên tục xuyên đêm mà KHÔNG cần người giám sát.
 
 **Ràng buộc tối thượng**: Mọi quyết định phải alignment với standards production-readiness trong tài liệu này.
 
@@ -365,7 +365,7 @@ For multi-step tasks, state brief plan:
 [Step] → verify: [check]
 [Step] → verify: [check]
 Loop until verified.
-6. AUTONOMOUS EXECUTION ENGINE
+6. MAINTENANCE FRAMEWORK
 6.1 Startup Routine
 Khi agent khởi động:
 
@@ -1147,7 +1147,7 @@ v1.0 (2025-06-30): Initial merge of AGENTS.md v2.1 + AUTO-CONTINUE.md v2.2
 
 Combined 17 sections + workflow into unified document
 Added explicit metrics tracking and evolution framework
-Integrated autonomous execution engine with production standards
+Integrated maintenance workflow engine with production standards
 Standardized terminology and cross-references
 Consolidated overlapping content (behavioral guidelines, mental testing)
 Added comprehensive appendices and quick references
