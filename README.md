@@ -99,9 +99,6 @@ PiClaw adds several powerful slash commands to the standard pi set.
 - `/tools` – List the currently allowed tools
 - `/piclaw-status` – Show Piclaw and session status
 
-### Autonomous Mode
-- `/autonomous [on|off|status|config]` – Control autonomous 24/7 code improvement engine (see `docs/AUTONOMOUS_ENGINE.md`)
-
 ### Navigation & Inspection
 - `/tree` – Interactive session tree browser with entry details
 - `/session` – Show session information
