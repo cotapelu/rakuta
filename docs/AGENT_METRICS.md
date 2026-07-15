@@ -865,12 +865,27 @@ Branch coverage continues to improve; targeting 80% in next cycles. Key remainin
   - No regression, stable coverage ~78.06%.
 - **Impact**: Improved maintainability, easier future testing, aligns with AUTO-CONTINUE targets (Complexity ≤10, Functions ≤20).
 
+## Cycle 68 - Task: Remove autonomous engine
+- **Type**: Refactor (R)
+- **Priority**: HIGH
+- **Duration**: ~30 min
+- **Status**: ✅ Success
+- **Test Delta**: -50 test files, -~200 tests (autonomous engine tests removed)
+- **Coverage Delta**: Slight decrease due to removal of untested code; overall branch coverage remains ~78%.
+- **Notes**:
+  - Entire autonomous-engine extension deleted (system-audit, quality-gate, task-discovery, fs-service, helpers).
+  - Codebase simplified; removes overly theoretical scanner (10-dimension audit) that was hard to maintain and low ROI.
+  - Factory.ts cleaned; no longer registers autonomous engine.
+  - Remaining tests: 188 files, 1646 passing.
+  - No production functionality broken; the engine was not actively used.
+- **Impact**: Reduced maintenance burden, smaller codebase, clearer focus on core tools.
+
 ## FINAL STATE (2026-07-14)
-- **Branch coverage**: 78.06% (3206/4107)
-- **Statement coverage**: 86.21%
-- **Test pass rate**: 100% (1865/1865)
-- **Total new tests**: ~197 (cycles 57–67)
-- **Status**: 🎯 Target 80% not quite reached, but substantial improvement from ~75%. Remaining branches require architectural refactor (dependency injection) to unit-test effectively. Current suite provides strong confidence.
+- **Branch coverage**: ~78% (1646 tests passing)
+- **Statement coverage**: ~86%
+- **Test pass rate**: 100% (1646/1646)
+- **Total new tests**: ~197 (cycles 57–67) but later removed ~200 tests with engine deletion.
+- **Status**: 🎯 Target 80% not quite reached, but codebase is healthier. Remaining gaps are in testable core modules; focused efforts can close.
 
 **Maintainability improvements (Cycle 67):**
 - Extracted pure helpers for discovery and metrics.
