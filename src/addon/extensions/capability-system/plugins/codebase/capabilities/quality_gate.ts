@@ -466,9 +466,24 @@ async function computeInputValidationScore(cwd: string, files: string[]): Promis
   };
 }
 
-// Coverage score from vitest coverage-final.json
+// Coverage score from vitest coverage data
 function computeCoverageScore(cwd: string): CategoryScore {
   try {
+    // First try coverage-summary.json (overall summary from 'c8' reporter)
+    const summaryPath = join(cwd, 'coverage', 'coverage-summary.json');
+    if (existsSync(summaryPath)) {
+      const summaryContent = readFileSync(summaryPath, 'utf-8');
+      const summary = JSON.parse(summaryContent) as any;
+      // Expected structure: { total: { branches: { pct: number, ... }, ... } }
+      const total = summary.total || summary; // depending on format
+      const branches = total.branches || total;
+      const pct = branches.pct || branches.percent || 0;
+      const percent = typeof pct === 'number' ? pct : parseFloat(pct) || 0;
+      const score = percent >= 80 ? 10 : Math.round((percent / 80) * 10);
+      return { score, max: 10, details: `Branch coverage: ${percent.toFixed(1)}%`, percent };
+    }
+
+    // Fallback: parse coverage-final.json per-file
     const covPath = join(cwd, 'coverage', 'coverage-final.json');
     if (!existsSync(covPath)) {
       return { score: 0, max: 10, details: 'No coverage data found (run npm test)', percent: 0 };
@@ -478,7 +493,7 @@ function computeCoverageScore(cwd: string): CategoryScore {
     let totalBranches = 0;
     let coveredBranches = 0;
     for (const file of Object.values(cov) as any[]) {
-      const branchHits = file.b;
+      const branchHits = file.b as Record<string, number> | undefined;
       if (branchHits) {
         for (const key in branchHits) {
           totalBranches++;
