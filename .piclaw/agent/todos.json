@@ -1,7 +1,39 @@
 {
   "version": 1,
-  "phases": [],
-  "nextTaskId": 1,
-  "nextPhaseId": 1,
-  "updatedAt": "2026-07-15T15:14:33.424Z"
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Maintenance",
+      "tasks": [
+        {
+          "id": "task-1",
+          "content": "Monitor test coverage trends and identify gaps",
+          "status": "in_progress"
+        },
+        {
+          "id": "task-2",
+          "content": "Address ESLint warnings (reduce any usage)",
+          "status": "pending"
+        },
+        {
+          "id": "task-3",
+          "content": "Improve type safety across core modules",
+          "status": "pending"
+        },
+        {
+          "id": "task-4",
+          "content": "Ensure 100% test pass rate on all commits",
+          "status": "pending"
+        },
+        {
+          "id": "task-5",
+          "content": "Document any new findings in AGENT_PROFILE.md",
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "nextTaskId": 6,
+  "nextPhaseId": 2,
+  "updatedAt": "2026-07-15T15:26:30.718Z"
 }
