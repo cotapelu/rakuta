@@ -69,21 +69,21 @@ export function buildMetricsLog(
   const failureRate = computeFailureRate(testResults);
   const log = `
 ## [${timestamp}] Cycle ${cycleCount} - Task: ${task.action}
-- **Type**: ${task.type === 'VIOLATION_FIX' ? 'Violation Fix' : 'Proactive Improvement'}
-- **Priority**: ${mapPriority(task.priority)}
-- **Risk**: ${risk}
-- **Duration**: (estimated ${task.estimatedMinutes ? task.estimatedMinutes + 'm' : 'N/A'})
-- **Status**: ✅ Success
-- **Test Delta**: ${testDelta >= 0 ? '+' : ''}${testDelta} tests (total ${testResults.total})
-- **Coverage Delta**:
+- Type: ${task.type === 'VIOLATION_FIX' ? 'Violation Fix' : 'Proactive Improvement'}
+- Priority: ${mapPriority(task.priority)}
+- Risk: ${risk}
+- Duration: (estimated ${task.estimatedMinutes ? task.estimatedMinutes + 'm' : 'N/A'})
+- Status: ✅ Success
+- Test Delta: ${testDelta >= 0 ? '+' : ''}${testDelta} tests (total ${testResults.total})
+- Coverage Delta:
 ${coverageDeltaLines}
-- **Performance**: N/A
-- **Security**: ${auditPassed ? '✅ Audit passed' : '❌ Audit failed'}
-- **Test Failure Rate**: ${failureRate.toFixed(1)}%
-- **Rollback Count**: 0
-- **Regressions**: ${regression ? 'Yes' : 'No'}
-- **MTTR**: N/A
-${task.estimatedMinutes ? `- **Cost**: ~${task.estimatedMinutes}m` : ''}`;
+- Performance: N/A
+- Security: ${auditPassed ? '✅ Audit passed' : '❌ Audit failed'}
+- Test Failure Rate: ${failureRate.toFixed(1)}%
+- Rollback Count: 0
+- Regressions: ${regression ? 'Yes' : 'No'}
+- MTTR: N/A
+${task.estimatedMinutes ? `- Cost: ~${task.estimatedMinutes}m` : ''}`;
   return log;
 }
 

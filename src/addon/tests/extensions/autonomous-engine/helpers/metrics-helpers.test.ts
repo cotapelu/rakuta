@@ -6,7 +6,7 @@ import {
   hasRegression,
   buildMetricsLog,
   mapPriority,
-} from '../../../autonomous-engine/helpers/metrics-helpers.js';
+} from '../../../../extensions/autonomous-engine/helpers/metrics-helpers.js';
 
 describe('metrics-helpers', () => {
   describe('computeCoverageDelta', () => {

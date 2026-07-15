@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies at top-level
-vi.mock('../../../extensions/autonomous-engine/quality-gate', () => ({
+vi.mock('../../../extensions/autonomous-engine/quality-gate.js', () => ({
   QualityGate: vi.fn(),
 }));
 
-vi.mock('../../../extensions/autonomous-engine/task-discovery', () => ({
+vi.mock('../../../extensions/autonomous-engine/task-discovery.js', () => ({
   TaskDiscovery: vi.fn(),
 }));
 
-vi.mock('../../../extensions/autonomous-engine/services/fs-service', () => ({
+vi.mock('../../../extensions/autonomous-engine/services/fs-service.js', () => ({
   saveState: vi.fn(),
 }));
 
@@ -47,8 +47,8 @@ describe('runDiscoveryCycle (edge cases)', () => {
     saveStateSpy = vi.spyOn(fsService, 'saveState').mockResolvedValue(undefined);
 
     // Get mock constructors from vi mocks
-    const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate');
-    const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+    const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate.js');
+    const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
 
     // Setup fresh mocks for each test
     const mockGateInstance = {
@@ -74,7 +74,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
     it('returns immediately if state.isRunning is false', async () => {
       state.isRunning = false;
       await runDiscoveryCycle(pi, CWD, state);
-      const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate');
+      const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate.js');
       expect(QualityGate).not.toHaveBeenCalled();
       expect(pi.sendMessage).not.toHaveBeenCalled();
     });
@@ -82,7 +82,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
     it('skips discovery if shouldRunDiscovery returns false (time not reached)', async () => {
       state.lastDiscoveryTime = Date.now() - 500;
       await runDiscoveryCycle(pi, CWD, state);
-      const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate');
+      const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate.js');
       expect(QualityGate).not.toHaveBeenCalled();
       expect(state.cycleCount).toBe(0);
     });
@@ -96,7 +96,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
         discoveredAt: Date.now(),
       }));
       await runDiscoveryCycle(pi, CWD, state);
-      const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate');
+      const { QualityGate } = require('../../../extensions/autonomous-engine/quality-gate.js');
       expect(QualityGate).not.toHaveBeenCalled();
     });
   });
@@ -108,7 +108,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
         { id: 't1', priority: 2, action: 'B', context: {}, discoveredAt: Date.now() },
         { id: 't3', priority: 1, action: 'C', context: {}, discoveredAt: Date.now() },
       ];
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue(newTasks),
       }));
@@ -135,7 +135,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
         context: {},
         discoveredAt: Date.now(),
       }));
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue(manyTasks),
       }));
@@ -144,7 +144,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
     });
 
     it('increments cycleCount and updates lastDiscoveryTime', async () => {
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue([]),
       }));
@@ -155,7 +155,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
     });
 
     it('saves state after adding tasks', async () => {
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue([]),
       }));
@@ -166,7 +166,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
 
   describe('task triggering', () => {
     it('does not trigger task if no ready task after discovery', async () => {
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue([]),
       }));
@@ -181,7 +181,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
         { id: 'high', priority: 1, action: 'High', context: {}, discoveredAt: Date.now() },
         { id: 'medium', priority: 3, action: 'Medium', context: {}, discoveredAt: Date.now() },
       ];
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue(newTasks),
       }));
@@ -206,7 +206,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
       const newTasks: TaskQueueItem[] = [
         { id: 't1', priority: 1, action: 'A', context: {}, discoveredAt: Date.now() },
       ];
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue(newTasks),
       }));
@@ -220,7 +220,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
   describe('error handling', () => {
     it('handles discoverTasks rejection', async () => {
       const error = new Error('Discovery failed');
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockRejectedValue(error),
       }));
@@ -232,7 +232,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
 
     it('does not crash if saveState fails in happy path', async () => {
       saveStateSpy.mockRejectedValue(new Error('FS error'));
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockResolvedValue([]),
       }));
@@ -241,7 +241,7 @@ describe('runDiscoveryCycle (edge cases)', () => {
 
     it('still records failure even if saveState fails in catch block', async () => {
       const error = new Error('Discovery error');
-      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery');
+      const { TaskDiscovery } = require('../../../extensions/autonomous-engine/task-discovery.js');
       (TaskDiscovery as any).mockImplementation(() => ({
         discoverTasks: vi.fn().mockRejectedValue(error),
       }));

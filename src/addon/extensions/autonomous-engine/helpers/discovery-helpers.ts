@@ -1,4 +1,5 @@
 import type { TaskQueueItem } from "../types.js";
+import { DEFAULT_CONFIG } from "../types.js";
 
 /**
  * Determine if discovery should run based on interval.
@@ -28,11 +29,17 @@ export function getRemainingTime(
 /**
  * Deduplicate and sort tasks by priority.
  */
+const MAX_QUEUE_SIZE = DEFAULT_CONFIG.maxQueueSize;
+
 export function deduplicateAndSort(
   newTasks: TaskQueueItem[],
   existingIds: Set<string>
 ): TaskQueueItem[] {
-  return newTasks.filter(t => !existingIds.has(t.id)).sort((a, b) => a.priority - b.priority);
+  const deduped = newTasks.filter(t => !existingIds.has(t.id)).sort((a, b) => a.priority - b.priority);
+  if (deduped.length > MAX_QUEUE_SIZE) {
+    return deduped.slice(0, MAX_QUEUE_SIZE);
+  }
+  return deduped;
 }
 
 /**

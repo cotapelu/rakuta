@@ -5,8 +5,8 @@ import {
   deduplicateAndSort,
   hasReadyTask,
   buildSkipReason,
-} from '../../../autonomous-engine/helpers/discovery-helpers.js';
-import type { TaskQueueItem } from '../../../autonomous-engine/types.js';
+} from '../../../../extensions/autonomous-engine/helpers/discovery-helpers.js';
+import type { TaskQueueItem } from '../../../../extensions/autonomous-engine/types.js';
 
 describe('discovery-helpers', () => {
   describe('shouldRunDiscovery', () => {
