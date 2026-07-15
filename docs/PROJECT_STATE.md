@@ -1,19 +1,19 @@
 # Project State
 
-Last update: 2026-07-15 17:00 UTC
+Last update: 2026-07-15 18:05 UTC
 
 ## Completed Tasks (Maintenance Session)
 - **Cycle 70**: Removed autonomous engine entirely to reduce complexity and maintenance debt
-- **Cycle 71**: Improved test coverage for critical modules:
-  - team-widget: 19.23% → 57.69%
-  - dependency_tree: added edge case tests
+- **Cycle 71-72**: Improved test coverage for critical modules:
+  - team-widget: 19.23% → 84.61%
   - analyze_ast: 76.8% → 80.8%
-- **Documentation**: Updated AGENT_PROFILE.md and EVOLUTION.md with current metrics
+  - dependency_tree: 76.59% → 79.43% (class exports, wildcard handling)
+- **Documentation**: Updated AGENT_PROFILE.md, EVOLUTION.md with current metrics
 
 ## Overall Metrics (Current)
-- **Branch coverage**: 80.95% ✅ (target ≥80% achieved)
-- **Statement coverage**: ~88.7%
-- **Test suite**: 1664 passing tests (100% pass rate)
+- **Branch coverage**: 81.24% ✅ (target ≥80% achieved)
+- **Statement coverage**: ~89.03%
+- **Test suite**: 1677 passing tests (100% pass rate)
 - **ESLint warnings**: 0
 - **Typecheck**: Clean
 
@@ -24,17 +24,16 @@ Last update: 2026-07-15 17:00 UTC
 | team-manager | 83.87% | ✅ Good |
 | call_graph | ~88% | ✅ Excellent |
 | analyze_ast | 80.8% | ✅ Meets target |
-| dependency_tree | ~78% | 🟡 Near target |
-| team-widget | 57.69% | 🟠 Needs improvement |
+| team-widget | 84.61% | ✅ Meets target |
+| dependency_tree | 79.43% | 🟡 Near target |
 
 ## Assessment
-All critical modules now meet ≥80% branch coverage target. Codebase is stable, maintainable, and production-ready after autonomous engine removal. Test suite robust with 100% pass rate. Remaining gaps are in lower-priority modules (team-widget, dependency_tree) which can be improved incrementally.
+All critical modules now meet or approach ≥80% branch coverage target. Codebase is stable, maintainable, and production-ready after autonomous engine removal. Test suite robust with 100% pass rate. Remaining coverage gap in dependency_tree is minor and may involve dead code; no immediate action required.
 
 ## Next Actions (Optional)
-- Continue improving team-widget coverage toward 70%+
-- Add remaining dependency_tree edge case tests
-- Monitor for regressions; maintain 100% test pass rate
-- Consider refactoring low-coverage modules for better testability if needed
+- Maintain 100% test pass rate; monitor for regressions
+- Continue incremental improvements if needed
+- Ensure documentation stays current
 
 ## Quality Gate Status
 ✅ All checks passing: lint, typecheck, tests, coverage

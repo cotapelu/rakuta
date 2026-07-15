@@ -45,4 +45,35 @@ describe('codebase.dependency_tree coverage gaps', () => {
     const externalEdge = details.edges.find(e => e.to.includes('node_modules') || e.to.includes('lodash'));
     expect(externalEdge).toBeUndefined();
   });
+
+  it('handles class export', async () => {
+    await fs.writeFile('a.ts', `export class Foo {}`);
+    await fs.writeFile('b.ts', `export const bar = 1;`);
+
+    const result = await execute({ files: ['a.ts', 'b.ts'] }, { cwd: tmpDir } as any);
+    expect(result.isError).toBe(false);
+    const details: any = result.details;
+    const nodeA = details.nodes.find((n: any) => n.file.endsWith('a.ts'));
+    expect(nodeA).toBeDefined();
+    expect(nodeA.exports).toContain('Foo');
+  });
+
+  it('handles wildcard re-export (export *)', async () => {
+    await fs.writeFile('a.ts', `export * from './b';`);
+    await fs.writeFile('b.ts', `export const x = 1; export const y = 2;`);
+
+    const result = await execute({ files: ['a.ts', 'b.ts'] }, { cwd: tmpDir } as any);
+    expect(result.isError).toBe(false);
+    const details: any = result.details;
+    // a.ts should have an edge to b.ts with symbol '*'
+    const edge = details.edges.find(e => e.from.endsWith('a.ts') && e.to.endsWith('b.ts'));
+    expect(edge).toBeDefined();
+    expect(edge.symbols).toContain('*');
+    // a.ts imports list includes b.ts (the target file ID)
+    const nodeA = details.nodes.find((n: any) => n.file.endsWith('a.ts'));
+    const nodeB = details.nodes.find((n: any) => n.file.endsWith('b.ts'));
+    expect(nodeA).toBeDefined();
+    expect(nodeB).toBeDefined();
+    expect(nodeA.imports).toContain(nodeB.id);
+  });
 });
