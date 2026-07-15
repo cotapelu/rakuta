@@ -3,37 +3,32 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Fix Import Paths in Failing Tests",
+      "name": "Coverage Push - SystemAudit",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Fix extension.autoCommit.edge.test.ts import paths (remove services/ and use direct extension import)",
+          "content": "Read system-audit.ts fully and identify uncovered branches (business logic, concurrency, database, caching, idempotency, failure)",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Fix extension.runDiscoveryCycle.edge.test.ts import paths (remove services/ and use direct extension import)",
+          "content": "Write unit tests for missing dimension checks (business logic integrity, concurrency & race conditions, database & data integrity, caching consistency, idempotency, failure scenarios)",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Fix discovery-helpers.test.ts import path (add extensions segment)",
+          "content": "Run tests and measure coverage delta",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Fix metrics-helpers.test.ts import path (add extensions segment)",
-          "status": "pending"
-        },
-        {
-          "id": "task-5",
-          "content": "Run tests to verify fixes",
+          "content": "If coverage improves ≥0.5%, commit and plan next module (autonomous-engine/extension.ts agent_end)",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 6,
+  "nextTaskId": 5,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-14T22:41:49.965Z"
+  "updatedAt": "2026-07-15T13:54:35.127Z"
 }
