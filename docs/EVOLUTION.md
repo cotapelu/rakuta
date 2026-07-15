@@ -1,31 +1,35 @@
-# Evolution Roadmap (3-6 months)
+# Evolution Roadmap (Current State)
 
-## Current Trajectory (2026-07-15)
-- **Overall branch coverage**: ~78% (target: ≥80%)
-- **Test health**: 100% pass rate (188 files, 1646+ tests)
-- **Focus modules** (by uncovered branches):
-  - `todos-tool`: ~75% coverage, ~86 uncovered
-  - `team-manager`: ~83% coverage, remaining gaps
-  - `dependency_tree`: ~76% coverage, ~34 uncovered
-  - `analyze_ast`: ~77% coverage, ~29 uncovered
-  - `ast_query`: ~81% coverage, ~28 uncovered
-- **Code quality**: ~15 ESLint `any` / default-case warnings to address
+## Status (2026-07-15)
+- **Overall branch coverage**: 80.49% ✅ (target achieved)
+- **Test health**: 100% pass (1646/1646)
+- **Code quality**: Clean typecheck, 0 ESLint warnings
+- **Architecture**: Simplified (autonomous engine removed)
 
-## Upcoming Refactors (Next 2-3 iterations)
-- **Coverage push**: Target +2% to reach 80% by focusing on high-uncovered core modules
-- **TypeScript strictness**: Reduce `any` usage by 50% through proper typing
-- **Testability improvements**: Consider dependency injection for fs/git to enable more unit tests in integration-heavy code
+## Completed
+- ✅ Remove autonomous engine and all references (Cycle 70)
+- ✅ Reach ≥80% branch coverage overall
+- ✅ Stabilize test suite at 100% pass rate
+- ✅ Clean up documentation and configuration
 
-## Infrastructure Evolution
-- None planned; focus on codebase health and test coverage
+## Current Focus
+Address low-coverage outliers:
+1. **team-widget.ts** (19.23% branches) - Critical priority
+2. **dependency_tree.ts** (75.88% branches) - Medium priority
+3. **analyze_ast.ts** (76.8% branches) - Medium priority
 
-## Debt Reduction Plan
-- **Coverage**: +2% in 2-3 iterations (~0.7% per iteration)
-- **ESLint**: Reduce warnings from ~15 to ~8
-- **Maintainability**: Keep functions ≤20 lines, complexity ≤10
+## Next Actions (1-2 iterations)
+- Write comprehensive unit tests for team-widget lifecycle and state management
+- Add targeted tests for dependency_tree edge cases (file resolution, cycle detection)
+- Add targeted tests for analyze_ast (import/export variations, symbol resolution)
+- Re-run coverage to validate improvements
+- Update AGENT_PROFILE.md with progress
 
-## Historical Note
-The autonomous engine and 10-dimensional audit framework were removed in Cycle 70 to reduce complexity and maintenance debt. The codebase is now simpler and more focused on core tools.
+## Long-Term
+- Maintain ≥80% coverage
+- Continue improving type safety where needed
+- Monitor for regressions in core modules
+- Keep codebase simple and maintainable
 
-## Conclusion
-The system is stable, well-tested, and maintainable. Future evolution will prioritize incremental improvements in test coverage and code quality over ambitious new features.
+## No Major Refactors Planned
+Current architecture is solid. Focus on incremental test coverage improvements rather than sweeping changes.
