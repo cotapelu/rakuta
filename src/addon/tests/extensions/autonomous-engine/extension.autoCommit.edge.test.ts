@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock dependencies
-vi.mock('../../../extensions/autonomous-engine/services/git-service', () => ({
+vi.mock('../../../extensions/autonomous-engine/services/git-service.js', () => ({
   runGitCommand: vi.fn(),
 }));
 
-vi.mock('../../../extensions/autonomous-engine/helpers/metrics-helpers', () => ({
+vi.mock('../../../extensions/autonomous-engine/helpers/metrics-helpers.js', () => ({
   computeCoverageDelta: vi.fn(),
   computeFailureRate: vi.fn(),
   computeTestDelta: vi.fn(),
@@ -21,7 +21,7 @@ vi.mock('../../../extensions/autonomous-engine/helpers/metrics-helpers', () => (
   }),
 }));
 
-vi.mock('../../../extensions/autonomous-engine/services/fs-service', () => ({
+vi.mock('../../../extensions/autonomous-engine/services/fs-service.js', () => ({
   saveState: vi.fn(),
   loadState: vi.fn(),
 }));
@@ -38,8 +38,8 @@ vi.mock('node:path', () => ({
 }));
 
 import { autoCommit } from '../../../extensions/autonomous-engine/extension';
-import { runGitCommand } from '../../../extensions/autonomous-engine/services/git-service';
-import { saveState, loadState } from '../../../extensions/autonomous-engine/services/fs-service';
+import { runGitCommand } from '../../../extensions/autonomous-engine/services/git-service.js';
+import { saveState, loadState } from '../../../extensions/autonomous-engine/services/fs-service.js';
 import { existsSync, readFileSync, appendFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import type { EngineState, TaskQueueItem } from '../../../extensions/autonomous-engine/types';

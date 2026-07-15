@@ -6,8 +6,8 @@ import { DEFAULT_CONFIG, type AutonomousEngineConfig, type TaskQueueItem } from 
 import { SystemAudit } from "./system-audit.js";
 import * as path from "node:path";
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from "node:fs";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import { runGitCommand } from "./services/git-service.js";
+import { loadState, saveState, getStatePath, defaultState, type EngineState } from "./services/fs-service.js";
 import {
   shouldRunDiscovery,
   getRemainingTime,
@@ -26,7 +26,6 @@ import {
 
 type IntervalHandle = ReturnType<typeof setInterval>;
 
-const execFileAsync = promisify(execFile);
 const logger = createLogger('AutonomousEngine');
 
 const STATE_FILE = '.pi/autonomous-state.json';
@@ -35,20 +34,7 @@ const PROFILE_FILE = 'docs/AGENT_PROFILE.md';
 const EVOLUTION_FILE = 'docs/EVOLUTION.md';
 const PROJECT_STATE_FILE = 'docs/PROJECT_STATE.md';
 
-interface EngineState {
-  config: AutonomousEngineConfig;
-  taskQueue: TaskQueueItem[];
-  isRunning: boolean;
-  cycleCount: number;
-  tasksCompleted: number;
-  tasksFailed: number;
-  currentTask: TaskQueueItem | null;
-  lastDiscoveryTime: number;
-  consecutiveFailures: number;
-  lastGitCommit: string | null;
-  lastCoverage?: { statements: number; branches: number; functions: number; lines: number };
-  lastTestTotal?: number;
-}
+
 
 interface ProjectState {
   lastUpdate: string;
@@ -102,49 +88,11 @@ interface TrajectoryChange {
   timestamp: string;
 }
 
-const defaultState: EngineState = {
-  config: DEFAULT_CONFIG,
-  taskQueue: [],
-  isRunning: false,
-  cycleCount: 0,
-  tasksCompleted: 0,
-  tasksFailed: 0,
-  currentTask: null,
-  lastDiscoveryTime: 0,
-  consecutiveFailures: 0,
-  lastGitCommit: null,
-};
 
-function getStatePath(cwd: string): string {
-  return path.join(cwd, STATE_FILE);
-}
 
-function loadState(cwd: string): EngineState {
-  try {
-    const statePath = getStatePath(cwd);
-    if (existsSync(statePath)) {
-      const raw = readFileSync(statePath, 'utf-8');
-      const saved = JSON.parse(raw);
-      return { ...defaultState, ...saved, config: { ...DEFAULT_CONFIG, ...saved.config } };
-    }
-  } catch (error) {
-    logger.error('Failed to load state', { error });
-  }
-  return defaultState;
-}
 
-function saveState(cwd: string, state: EngineState): void {
-  try {
-    const statePath = getStatePath(cwd);
-    const dir = path.dirname(statePath);
-    if (!existsSync(dir)) {
-      mkdirSync(dir, { recursive: true });
-    }
-    writeFileSync(statePath, JSON.stringify(state, null, 2));
-  } catch (error) {
-    logger.error('Failed to save state', { error });
-  }
-}
+
+
 
 function buildTaskPrompt(task: TaskQueueItem, config: AutonomousEngineConfig): string {
   return `# Autonomous Task Execution (AUTO-CONTINUE v2.1)
@@ -222,20 +170,7 @@ Important: Your response will be parsed automatically. No extra commentary outsi
 `;
 }
 
-async function runGitCommand(cwd: string, args: string[]): Promise<{ stdout: string; stderr: string }> {
-  return new Promise((resolve, reject) => {
-    execFile('git', args, { cwd }, (error, stdout, stderr) => {
-      if (error) {
-        // Attach stdout/stderr to error for catch block
-        error.stdout = stdout;
-        error.stderr = stderr;
-        reject(error);
-      } else {
-        resolve({ stdout, stderr });
-      }
-    });
-  });
-}
+
 
 async function runSystemAudit(cwd: string): Promise<{ passed: boolean; report: string }> {
   try {
@@ -253,7 +188,7 @@ async function autoCommit(cwd: string, task: TaskQueueItem, state: EngineState):
   try {
     // Check git status
     const { stdout } = await runGitCommand(cwd, ['status', '--porcelain']);
-    const files = stdout.split('\n').filter(line => line.trim()).map(line => line.slice(3).trim());
+    const files = stdout.split('\n').filter(line => line.trim()).map(line => line.slice(2).trimStart());
 
     if (files.length === 0) {
       logger.warn('No files to commit');
@@ -615,7 +550,13 @@ export default function autonomousEngineExtension(pi: ExtensionAPI) {
   });
 }
 
-async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineState): Promise<void> {
+async function runDiscoveryCycle(
+  pi: ExtensionAPI,
+  cwd: string,
+  state: EngineState,
+  QualityGateCtor: typeof QualityGate = QualityGate,
+  TaskDiscoveryCtor: typeof TaskDiscovery = TaskDiscovery
+): Promise<void> {
   if (!state.isRunning) return;
 
   const now = Date.now();
@@ -629,27 +570,29 @@ async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineSta
   const cycleStart = Date.now();
 
   try {
-    const qualityGate = new QualityGate(cwd);
-    const taskDiscovery = new TaskDiscovery(cwd, qualityGate);
+    const qualityGate = new QualityGateCtor(cwd);
+    const taskDiscovery = new TaskDiscoveryCtor(cwd, qualityGate);
     const newTasks = await taskDiscovery.discoverTasks();
+    logger.log(`Discovered tasks: ${JSON.stringify(newTasks)}`);
 
     const existingIds = new Set(state.taskQueue.map(t => t.id));
     const uniqueSorted = deduplicateAndSort(newTasks, existingIds);
 
     state.taskQueue.push(...uniqueSorted);
+    state.taskQueue.sort((a, b) => a.priority - b.priority || a.createdAt.getTime() - b.createdAt.getTime());
     if (state.taskQueue.length > 30) {
       state.taskQueue = state.taskQueue.slice(0, 30);
     }
 
     state.lastDiscoveryTime = Date.now();
     state.cycleCount++;
-    saveState(cwd, state);
+    await saveState(cwd, state);
 
     logger.log(`Discovery added ${uniqueSorted.length} tasks. Queue size: ${state.taskQueue.length}`);
 
     if (hasReadyTask(state)) {
       state.currentTask = state.taskQueue.shift()!;
-      saveState(cwd, state);
+      await saveState(cwd, state);
       const prompt = buildTaskPrompt(state.currentTask, state.config);
       pi.sendMessage(
         {
@@ -668,7 +611,7 @@ async function runDiscoveryCycle(pi: ExtensionAPI, cwd: string, state: EngineSta
     logger.error('Discovery cycle failed', { error });
     state.tasksFailed++;
     state.consecutiveFailures++;
-    saveState(cwd, state);
+    await saveState(cwd, state);
   }
 
   const duration = (Date.now() - cycleStart) / 1000;
