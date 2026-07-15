@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-07-15T15:15:08.771Z
+// Generated: 2026-07-15T22:31:12.893Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -4351,9 +4351,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.5,
-        output: 3,
-        cacheRead: 0.05,
+        input: 1.5,
+        output: 9,
+        cacheRead: 0.15,
         cacheWrite: 0.08333333333333334,
       },
       contextWindow: 1048576,

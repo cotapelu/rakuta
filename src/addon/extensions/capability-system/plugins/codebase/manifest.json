@@ -269,6 +269,83 @@
       ],
       "dependencies": [],
       "experimental": true
+    },
+    {
+      "id": "quality_gate",
+      "name": "Quality Gate",
+      "description": "Evaluate codebase against production quality standards and compute a self-score",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "threshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Passing threshold (default 90)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "execute": "capabilities/quality_gate.ts",
+      "renderer": null,
+      "promptGuidelines": [
+        "Use quality.gate to assess production readiness of the codebase.",
+        "Returns scores per category and overall pass/fail status.",
+        "Example: { capability: 'quality.gate', params: { threshold: 90 } }"
+      ],
+      "dependencies": [],
+      "experimental": false
+    },
+    {
+      "id": "audit",
+      "name": "System Audit",
+      "description": "Comprehensive 10-dimension audit framework (STRIDE+DREAD, scalability, observability)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "includeTests": {
+            "type": "boolean",
+            "description": "Generate test cases for each finding (default true)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "execute": "capabilities/audit.ts",
+      "renderer": null,
+      "promptGuidelines": [
+        "Use system.audit for comprehensive production readiness check across 10 dimensions.",
+        "Produces detailed report with severity, exploit, impact, root cause, fix, test case.",
+        "Example: { capability: 'system.audit', params: { includeTests: true } }"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "benchmark",
+      "name": "Performance Benchmark",
+      "description": "Measure operation latency, throughput, and memory; track SLO compliance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "enum": ["analyze_file", "safe_edit", "call_graph_small", "call_graph_large", "custom"],
+            "description": "Benchmark scenario"
+          },
+          "iterations": { "type": "number", "minimum": 1, "maximum": 10000, "description": "Number of measured iterations (default 100)" },
+          "warmup": { "type": "number", "minimum": 0, "description": "Warm-up iterations (default 10)" },
+          "customCode": { "type": "string", "description": "Custom benchmark code (if scenario=custom)" }
+        },
+        "required": ["scenario"],
+        "additionalProperties": false
+      },
+      "execute": "capabilities/benchmark.ts",
+      "renderer": null,
+      "promptGuidelines": [
+        "Use benchmark.performance to measure latency, throughput, memory for operations.",
+        "Checks against SLOs: p50<100ms, p99<200ms, memory ops<50ms.",
+        "Example: { capability: 'benchmark.performance', params: { scenario: 'analyze_file', iterations: 100 } }"
+      ],
+      "dependencies": []
     }
   ],
   "settings": {
