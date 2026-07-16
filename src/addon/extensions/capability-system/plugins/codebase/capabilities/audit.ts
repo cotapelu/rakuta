@@ -86,6 +86,73 @@ function assessSeverity(impact: string, likelihood: string): "CRITICAL" | "HIGH"
   return "LOW";
 }
 
+// AST parsing utility (using @typescript-eslint/parser)
+function parseAST(content: string): any {
+  const parser = require('@typescript-eslint/parser');
+  const { parse } = parser;
+  return parse(content, { sourceType: 'module', ecmaVersion: 'latest', ts: true, jsx: true, errorOnUnknownVersion: false });
+}
+
+function walk(node: any, visitor: (n: any, parent?: any) => void, parent?: any) {
+  if (!node || typeof node !== 'object') return;
+  visitor(node, parent);
+  for (const key in node) {
+    if (node[key] && typeof node[key] === 'object') {
+      if (Array.isArray(node[key])) {
+        node[key].forEach((child: any) => walk(child, visitor, node));
+      } else {
+        walk(node[key], visitor, node);
+      }
+    }
+  }
+}
+
+function detectSqlInjection(content: string): { line: number; column: number } | null {
+  try {
+    const ast = parseAST(content);
+    let found: any = null;
+    walk(ast, (node) => {
+      if (found) return;
+      if (node.type === 'CallExpression') {
+        const callee = node.callee;
+        let methodName: string | null = null;
+        if (callee.type === 'MemberExpression') {
+          if (callee.property.type === 'Identifier') methodName = callee.property.name;
+        } else if (callee.type === 'Identifier') {
+          methodName = callee.name;
+        }
+        const queryMethods = ['query', 'execute', 'raw', 'exec', 'selection', 'find', 'findOne', 'findAll', 'update', 'delete', 'insert'];
+        if (methodName && queryMethods.includes(methodName)) {
+          const firstArg = node.arguments[0];
+          if (!firstArg) return;
+          // Safe: static string literal
+          if (firstArg.type === 'Literal' && typeof firstArg.value === 'string') return;
+          // Unsafe: template literal with expressions
+          if (firstArg.type === 'TemplateLiteral' && firstArg.expressions.length > 0) {
+            found = node;
+            return;
+          }
+          // Unsafe: binary '+' concatenation with string parts
+          if (firstArg.type === 'BinaryExpression' && firstArg.operator === '+') {
+            const leftString = firstArg.left.type === 'Literal' && typeof firstArg.left.value === 'string' || firstArg.left.type === 'TemplateLiteral';
+            const rightString = firstArg.right.type === 'Literal' && typeof firstArg.right.value === 'string' || firstArg.right.type === 'TemplateLiteral';
+            if (leftString || rightString) {
+              found = node;
+              return;
+            }
+          }
+        }
+      }
+    });
+    if (found) {
+      return { line: found.loc.start.line, column: found.loc.start.column };
+    }
+  } catch (e) {
+    // ignore parse errors
+  }
+  return null;
+}
+
 // Dimension 1: Business Logic Integrity
 async function auditBusinessLogicIntegrity(cwd: string, files: string[]): Promise<AuditIssue[]> {
   const issues: AuditIssue[] = [];
@@ -567,22 +634,20 @@ async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]
         });
       }
 
-      // Tampering: Lack of input validation leading to injection
-      if ((content.includes('sql') || content.includes('query') || content.includes('SELECT') || content.includes('INSERT')) &&
-          (content.includes('${') || content.includes('+') && content.includes('input'))) {
-        if (!content.includes('prepared') && !content.includes('?') && !content.includes('$1') && !content.includes('pg')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "CRITICAL",
-            location: relPath,
-            exploit: "Attacker injects SQL via input fields (SQL injection)",
-            impact: "Data exfiltration, modification, deletion, authentication bypass",
-            rootCause: "Constructing SQL queries via string concatenation",
-            fix: "Use parameterized queries / prepared statements exclusively",
-            testCase: "Submit SQL injection payloads (e.g., ' OR 1=1 --); verify queries fail or are neutralized",
-            priority: "P0"
-          });
-        }
+      // Tampering: SQL injection detection (AST-based)
+      const sqlLoc = detectSqlInjection(content);
+      if (sqlLoc) {
+        issues.push({
+          dimension: "Security Audit (STRIDE)",
+          severity: "CRITICAL",
+          location: relPath,
+          exploit: "Attacker injects SQL via input fields (SQL injection)",
+          impact: "Data exfiltration, modification, deletion, authentication bypass",
+          rootCause: "Constructing SQL queries via string concatenation or templating",
+          fix: "Use parameterized queries / prepared statements exclusively",
+          testCase: "Submit SQL injection payloads (e.g., ' OR 1=1 --); verify queries fail or are neutralized",
+          priority: "P0"
+        });
       }
 
       // Repudiation: Missing audit logs for sensitive operations
