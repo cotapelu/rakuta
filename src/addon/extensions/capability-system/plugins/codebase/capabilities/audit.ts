@@ -107,7 +107,7 @@ function walk(node: any, visitor: (n: any, parent?: any) => void, parent?: any) 
   }
 }
 
-function detectSqlInjection(content: string): { line: number; column: number } | null {
+export function detectSqlInjection(content: string): { line: number; column: number } | null {
   try {
     const ast = parseAST(content);
     let found: any = null;
