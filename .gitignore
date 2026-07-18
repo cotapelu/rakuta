@@ -43,3 +43,13 @@ llm-context/
 # Test artifacts
 evo-test-metrics-*/
 .piclaw/agent/todos.json.tmp.*
+
+# Benchmark baseline & temporary files
+benchmarks/
+benchmark-safe-edit-*/
+idor-replacement.txt
+jwt-replacement.txt
+new-audit-tests.ts
+src/addon/extensions/capability-system/plugins/codebase/capabilities/audit.ts.bak
+tmp-new-detectors.ts
+xss-replacement.txt
