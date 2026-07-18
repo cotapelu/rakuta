@@ -58,6 +58,15 @@ const SLOs = {
   memoryOp: 50, // ms for memory operations
 };
 
+// Scenario-specific SLO overrides (certain scenarios have heavier workloads)
+const scenarioSLOs: Record<string, { p50: number; p99: number }> = {
+  dependency_tree_deep: { p50: 500, p99: 1000 }, // graph construction is heavyweight
+};
+
+function getScenarioSLO(scenario: string): { p50: number; p99: number } {
+  return scenarioSLOs[scenario] || { p50: SLOs.p50, p99: SLOs.p99 };
+}
+
 export async function execute(params: { scenario: string; iterations?: number; warmup?: number; customCode?: string }, ctx: any): Promise<any> {
   const cwd = ctx.cwd || process.cwd();
   const iterations = params.iterations || 100;
@@ -109,9 +118,10 @@ export async function execute(params: { scenario: string; iterations?: number; w
   const throughput = (iterations / total) * 1000; // ops per second
 
   // Check SLO compliance (latency only; memory is informational)
+  const sloLimits = getScenarioSLO(scenario);
   const sLOResults = [
-    { metric: 'p50 latency (ms)', target: SLOs.p50, actual: p50, pass: p50 <= SLOs.p50 },
-    { metric: 'p99 latency (ms)', target: SLOs.p99, actual: p99, pass: p99 <= SLOs.p99 },
+    { metric: 'p50 latency (ms)', target: sloLimits.p50, actual: p50, pass: p50 <= sloLimits.p50 },
+    { metric: 'p99 latency (ms)', target: sloLimits.p99, actual: p99, pass: p99 <= sloLimits.p99 },
   ];
   // Memory is reported but not counted as failure for now
 

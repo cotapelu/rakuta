@@ -53,8 +53,10 @@ try {
   const report = response.result;
 
   console.log(`\n📊 Benchmark Results: ${report.scenario}`);
-  console.log(`   p50: ${report.p50Ms.toFixed(2)}ms (target ≤100ms)`);
-  console.log(`   p99: ${report.p99Ms.toFixed(2)}ms (target ≤200ms)`);
+  const p50Target = report.sLOResults.find(r => r.metric.startsWith('p50'))?.target ?? 100;
+  const p99Target = report.sLOResults.find(r => r.metric.startsWith('p99'))?.target ?? 200;
+  console.log(`   p50: ${report.p50Ms.toFixed(2)}ms (target ≤${p50Target}ms)`);
+  console.log(`   p99: ${report.p99Ms.toFixed(2)}ms (target ≤${p99Target}ms)`);
   console.log(`   Throughput: ${report.throughputOpsPerSec.toFixed(2)} ops/sec`);
   console.log(`   Memory: ${report.memoryPeakMB.toFixed(2)} MB`);
 
