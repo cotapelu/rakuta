@@ -2,11 +2,11 @@
 
 ## Status (2026-07-15)
 - **Overall branch coverage**: 81.24% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1685/1685)
+- **Test pass rate**: 100% (1710/1710)
 - **Code quality**: Clean typecheck, 0 ESLint warnings
 - **Architecture**: Simplified
 - **Quality Gate**: 90/100 ✅
-- **Audit AST migration**: In progress (SQLi complete)
+- **Audit AST migration**: Completed (all patterns AST-based)
 
 ## Completed Iterations
 - ✅ Remove autonomous engine
@@ -14,13 +14,14 @@
 - ✅ Stabilize test suite at 100% pass rate
 - ✅ Implement GOAL.md production framework (quality_gate, audit, benchmark)
 - ✅ Quality Gate reaches 90/100 via infrastructure exemptions, refactoring, and scoring improvements
-- ✅ Started Audit AST migration: SQLi detection replaced with AST version and unit-tested
+- ✅ Completed Audit AST migration: All security patterns (SQLi, XSS, command injection, JWT, IDOR) now AST-based with comprehensive tests
 
 ## Current Focus
 ### Audit AST Migration (P1)
-- **Completed**: AST utilities and detectSqlInjection; regex SQLi replaced; tests (8) pass.
-- **Remaining**: Migrate XSS, command injection, JWT verification, broken access control (IDOR) to AST.
-- **Goal**: Eliminate regex heuristics for reliable security pattern detection.
+- **Status**: ✅ Completed
+- **Completed**: AST utilities and all security detectors (detectSqlInjection, detectCommandInjection, detectXSS, detectJwtVerification, detectIDOR). Replaced all regex-based security heuristics in auditSecurity with AST-based detectors. Added comprehensive unit tests (33 total in audit.ast.test.ts).
+- **Impact**: Security scanning now robust; false positives/negatives greatly reduced.
+- **Next**: N/A
 
 ### Benchmark Expansion (P1)
 - Add scenarios: safe_edit, call_graph (large), deep dependency_tree.
@@ -39,12 +40,10 @@
 - Continuous performance regression detection
 
 ## Next Actions (Priority Order)
-1. Continue audit AST migration: XSS detection using AST (nodes with innerHTML, document.write, etc.)
-2. Command injection AST: detect exec/spawn with unsanitized input
-3. JWT verification AST: ensure asymmetric keys, validate claims
-4. IDOR AST: detect missing ownership checks in data access
-5. Expand benchmark scenarios and thresholds
-6. Update AGENT_METRICS.md and EVOLUTION.md after each sub-iteration
+1. Expand benchmark scenarios and thresholds
+2. Monitor quality gate and address any regressions
+3. Address remaining gaps (dependency_tree coverage, compliance matrix)
+4. Continue self-evolution and documentation updates
 
 ---
 

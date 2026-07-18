@@ -203,6 +203,330 @@ export function detectCommandInjection(content: string): { line: number; column:
   return null;
 }
 
+// Detect XSS via innerHTML, document.write, res.send with unsanitized user input
+export function detectXSS(content: string): { line: number; column: number } | null {
+  try {
+    const ast = parseAST(content);
+    let found: any = null;
+    walk(ast, (node) => {
+      if (found) return;
+
+      // Pattern 1: innerHTML assignment with dynamic content
+      if (node.type === 'AssignmentExpression' || node.type === 'CallExpression') {
+        let target: any = null;
+        if (node.type === 'AssignmentExpression') {
+          if (node.left?.type === 'MemberExpression') {
+            const prop = node.left.property;
+            if (prop.type === 'Identifier' && prop.name === 'innerHTML') {
+              target = node.right;
+            }
+          }
+        } else if (node.type === 'CallExpression') {
+          // document.write(...)
+          const callee = node.callee;
+          if (callee.type === 'MemberExpression' && callee.property.type === 'Identifier' && callee.property.name === 'write') {
+            if (callee.object.type === 'Identifier' && callee.object.name === 'document') {
+              target = node.arguments[0];
+            }
+          }
+          // res.send with raw HTML and dynamic input
+          if (callee.type === 'MemberExpression') {
+            const objName = callee.object?.type === 'Identifier' ? callee.object.name : '';
+            if (objName === 'res' || objName === 'response') {
+              if (callee.property?.type === 'Identifier' && callee.property.name === 'send') {
+                target = node.arguments[0];
+              }
+            }
+          }
+        }
+
+        if (target) {
+          // Unsafe if target is template literal with expressions
+          if (target.type === 'TemplateLiteral' && target.expressions.length > 0) {
+            found = node;
+            return;
+          }
+          // Unsafe if binary string concatenation
+          if (target.type === 'BinaryExpression' && target.operator === '+') {
+            const leftString = target.left.type === 'Literal' && typeof target.left.value === 'string' || target.left.type === 'TemplateLiteral';
+            const rightString = target.right.type === 'Literal' && typeof target.right.value === 'string' || target.right.type === 'TemplateLiteral';
+            if (leftString || rightString) {
+              found = node;
+              return;
+            }
+          }
+          // Unsafe if variable (likely user input)
+          if (target.type === 'Identifier') {
+            found = node;
+            return;
+          }
+        }
+      }
+    });
+    if (found) {
+      return { line: found.loc.start.line, column: found.loc.start.column };
+    }
+  } catch (e) {
+    // ignore parse errors
+  }
+  return null;
+}
+
+// Detect JWT verification issues: sign with HS256, missing verify with RS256, and use of decode
+export function detectJwtVerification(content: string): { line: number; column: number } | null {
+  try {
+    const ast = parseAST(content);
+    let found: any = null; // immediate finding: HS256 sign or non-RS256 verify
+    let hasProperVerify = false; // true if any verify call includes RS256
+    let jwtUsed = false;
+    let firstSignNode: any = null;
+    let firstDecodeNode: any = null;
+
+    walk(ast, (node) => {
+      if (node.type === 'CallExpression') {
+        const callee = node.callee;
+        let methodName: string | null = null;
+        if (callee.type === 'MemberExpression') {
+          if (callee.property.type === 'Identifier') methodName = callee.property.name;
+        } else if (callee.type === 'Identifier') {
+          methodName = callee.name;
+        }
+
+        // Check if this is a jwt.* call
+        const isJwtCall = callee.type === 'MemberExpression' && callee.object?.type === 'Identifier' && (callee.object.name === 'jwt' || callee.object.name === 'JWT');
+
+        if (!isJwtCall) return;
+
+        if (methodName === 'sign') {
+          jwtUsed = true;
+          if (!firstSignNode) firstSignNode = node;
+          const optionsArg = node.arguments[1];
+          if (optionsArg) {
+            if (optionsArg.type === 'ObjectExpression') {
+              for (const prop of optionsArg.properties) {
+                if (prop.type === 'Property' && prop.key?.type === 'Identifier' && prop.key.name === 'algorithm') {
+                  const val = prop.value;
+                  if (val.type === 'Literal' && (val.value === 'HS256' || val.value === 'HS384' || val.value === 'HS512')) {
+                    found = node;
+                    return;
+                  }
+                }
+              }
+            } else if (optionsArg.type === 'Literal') {
+              if (optionsArg.value === 'HS256' || optionsArg.value === 'HS384' || optionsArg.value === 'HS512') {
+                found = node;
+                return;
+              }
+            }
+          }
+        } else if (methodName === 'verify') {
+          const optionsArg = node.arguments[2];
+          let hasRS256 = false;
+          if (optionsArg?.type === 'ObjectExpression') {
+            for (const prop of optionsArg.properties) {
+              if (prop.type === 'Property' && prop.key?.type === 'Identifier' && prop.key.name === 'algorithms') {
+                const val = prop.value;
+                if (val.type === 'ArrayExpression') {
+                  for (const el of val.elements) {
+                    if (el.type === 'Literal' && el.value === 'RS256') {
+                      hasRS256 = true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          if (hasRS256) {
+            hasProperVerify = true;
+          } else {
+            // Verify exists but does not specify RS256 -> flag
+            found = node;
+            return;
+          }
+        } else if (methodName === 'decode') {
+          jwtUsed = true;
+          if (!firstDecodeNode) firstDecodeNode = node;
+          // Will be handled later if no proper verify
+        }
+      }
+    });
+
+    // If we already found an immediate issue (HS256 sign or non-RS256 verify), return it.
+    if (found) {
+      return { line: found.loc.start.line, column: found.loc.start.column };
+    }
+
+    // If JWT is used (sign or decode) but no proper verify (RS256) present, flag the earliest usage node.
+    if (jwtUsed && !hasProperVerify) {
+      if (firstDecodeNode) return { line: firstDecodeNode.loc.start.line, column: firstDecodeNode.loc.start.column };
+      if (firstSignNode) return { line: firstSignNode.loc.start.line, column: firstSignNode.loc.start.column };
+      // Fallback: find any jwt-related call
+      const anyJwtNode = findJwtCall(ast);
+      if (anyJwtNode) {
+        return { line: anyJwtNode.loc.start.line, column: anyJwtNode.loc.start.column };
+      }
+    }
+
+  } catch (e) {
+    // ignore parse errors
+  }
+  return null;
+}
+
+function findJwtCall(ast: any): any {
+  let found: any = null;
+  walk(ast, (node) => {
+    if (found) return;
+    if (node.type === 'CallExpression') {
+      const callee = node.callee;
+      if (callee.type === 'MemberExpression') {
+        const obj = callee.object;
+        if (obj.type === 'Identifier' && (obj.name === 'jwt' || obj.name === 'JWT')) {
+          found = node;
+          return;
+        }
+        if (callee.property?.type === 'Identifier' && (callee.property.name === 'jwt' || callee.property.name === 'JWT')) {
+          found = node;
+          return;
+        }
+      }
+      if (callee.type === 'Identifier' && (callee.name === 'jwt' || callee.name === 'JWT')) {
+        found = node;
+        return;
+      }
+    }
+  });
+  return found;
+}
+
+// Detect IDOR (Broken Access Control): missing ownership checks on data access
+export function detectIDOR(content: string): { line: number; column: number } | null {
+  try {
+    const ast = parseAST(content);
+    let found: any = null;
+
+    // Helper: check if a node references req.user, req.userId, or req.user.id
+    const isReqUserRef = (node: any): boolean => {
+      if (!node) return false;
+      if (node.type === 'MemberExpression') {
+        // req.user or req.userId
+        if (node.object?.type === 'Identifier' && node.object.name === 'req' && node.property?.type === 'Identifier' && (node.property.name === 'user' || node.property.name === 'userId')) {
+          return true;
+        }
+        // req.user.id (nested)
+        if (node.object?.type === 'MemberExpression' && node.object.object?.type === 'Identifier' && node.object.object.name === 'req' && node.object.property?.type === 'Identifier' && node.object.property.name === 'user' && node.property?.type === 'Identifier') {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Determine if a function uses request object (req, ctx, request)
+    const usesRequestObject = (funcNode: any): boolean => {
+      let uses = false;
+      walk(funcNode, (n: any) => {
+        if (n.type === 'Identifier' && (n.name === 'req' || n.name === 'ctx' || n.name === 'request')) {
+          uses = true;
+        }
+      });
+      return uses;
+    };
+
+    // For a given query call node, determine if it has a userId filter from req.user
+    const hasUserIdFilter = (callNode: any, methodName: string): boolean => {
+      const args = callNode.arguments;
+      if (methodName === 'findById' || methodName === 'findByPrimary') {
+        // Look at second argument (options) for where clause containing userId from req.user
+        if (args.length >= 2) {
+          const optionsArg = args[1];
+          if (optionsArg.type === 'ObjectExpression') {
+            for (const prop of optionsArg.properties) {
+              if (prop.type === 'Property' && prop.key?.type === 'Identifier' && prop.key.name === 'where') {
+                const whereVal = prop.value;
+                if (whereVal.type === 'ObjectExpression') {
+                  for (const innerProp of whereVal.properties) {
+                    if (innerProp.type === 'Property' && innerProp.key?.type === 'Identifier' && innerProp.key.name === 'userId') {
+                      if (isReqUserRef(innerProp.value)) {
+                        return true;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        return false;
+      } else {
+        // For findOne, find, query, select: examine first argument
+        if (args.length > 0) {
+          const firstArg = args[0];
+          if (firstArg.type === 'ObjectExpression') {
+            for (const prop of firstArg.properties) {
+              if (prop.type === 'Property' && prop.key?.type === 'Identifier' && prop.key.name === 'userId') {
+                if (isReqUserRef(prop.value)) {
+                  return true;
+                }
+              }
+            }
+          } else if (firstArg.type === 'Literal' && typeof firstArg.value === 'string') {
+            const sql = firstArg.value;
+            if (sql.includes('user_id') && (sql.includes('$req') || sql.includes('?'))) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+    };
+
+    // Collect candidate functions (handlers)
+    const functions: any[] = [];
+    walk(ast, (node: any) => {
+      if (node.type === 'FunctionDeclaration' || node.type === 'VariableDeclarator' && node.init?.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') {
+        functions.push(node);
+      }
+    });
+
+    for (const func of functions) {
+      if (!usesRequestObject(func)) continue;
+
+      // Walk the function to find query calls
+      let localFound: any = null;
+      walk(func, (n: any) => {
+        if (localFound) return;
+        if (n.type === 'CallExpression') {
+          const callee = n.callee;
+          let methodName: string | null = null;
+          if (callee.type === 'MemberExpression') {
+            if (callee.property.type === 'Identifier') methodName = callee.property.name;
+          } else if (callee.type === 'Identifier') {
+            methodName = n.name;
+          }
+
+          const methods = ['findById', 'findOne', 'find', 'query', 'select', 'findByPrimary'];
+          if (methods.includes(methodName || '')) {
+            if (!hasUserIdFilter(n, methodName!)) {
+              localFound = n;
+            }
+          }
+        }
+      });
+      if (localFound) {
+        found = localFound;
+        break;
+      }
+    }
+
+    if (found) {
+      return { line: found.loc.start.line, column: found.loc.start.column };
+    }
+  } catch (e) {
+    // ignore parse errors
+  }
+  return null;
+}
+
 // Dimension 1: Business Logic Integrity
 async function auditBusinessLogicIntegrity(cwd: string, files: string[]): Promise<AuditIssue[]> {
   const issues: AuditIssue[] = [];
@@ -815,68 +1139,51 @@ async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]
         }
       }
 
-      // XSS: Output encoding missing when rendering user-provided content (web only)
-      if (isWebServerFile(content)) {
-        if (content.includes('res.send') || content.includes('res.json') || content.includes('innerHTML') || content.includes('document.write')) {
-          if (!content.includes('escape') && !content.includes('encode') && !content.includes('sanitize') && !content.includes('he.encode')) {
-            // Heuristic: if data from req.params, req.body, or database is directly inserted into HTML
-            if (content.includes('req.') && (content.includes('<') || content.includes('html'))) {
-              issues.push({
-                dimension: "Security Audit (STRIDE)",
-                severity: "HIGH",
-                location: relPath,
-                exploit: "Attacker injects <script> tags via input → XSS in browser",
-                impact: "Session hijacking, credential theft, defacement",
-                rootCause: "User input not HTML-escaped before rendering",
-                fix: "Encode user-provided data before inserting into HTML (use escape functions or templating engine auto-escaping)",
-                testCase: "Submit <script>alert(1)</script> in form; verify it is rendered as text, not executed",
-                priority: "P1"
-              });
-            }
-          }
-        }
+      // XSS: Output encoding missing when rendering user-provided content (AST-based)
+      const xssLoc = detectXSS(content);
+      if (xssLoc) {
+        issues.push({
+          dimension: "Security Audit (STRIDE)",
+          severity: "HIGH",
+          location: `${relPath}:${xssLoc.line}:${xssLoc.column}`,
+          exploit: "Attacker injects <script> tags via input → XSS in browser",
+          impact: "Session hijacking, credential theft, defacement",
+          rootCause: "User input not HTML-escaped before rendering",
+          fix: "Encode user-provided data before inserting into HTML (use escape functions or templating engine auto-escaping)",
+          testCase: "Submit <script>alert(1)</script> in form; verify it is rendered as text, not executed",
+          priority: "P1"
+        });
       }
-
-      // Broken Access Control: Missing permission checks on resources (IDOR) (web only)
-      if (isWebServerFile(content)) {
-        if (content.includes('GET') || content.includes('POST') || content.includes('PUT') || content.includes('DELETE')) {
-          // Look for patterns where user ID from request is used to access data without verifying ownership
-          if (content.includes('findById') || content.includes('findOne') || content.includes('select') || content.includes('WHERE')) {
-            // Check if there's a comparison between authenticated user and resource owner
-            if (!content.includes('userId ===') && !content.includes('userId ==') && !content.includes('ownerId') && !content.includes('belongsTo')) {
-              issues.push({
-                dimension: "Security Audit (STRIDE)",
-                severity: "CRITICAL",
-                location: relPath,
-                exploit: "Attacker accesses other users' data by guessing IDs (IDOR)",
-                impact: "Data breach, privacy violation",
-                rootCause: "No ownership check before returning resource",
-                fix: "Enforce that user can only access their own resources (compare resource.userId to req.user.id)",
-                testCase: "Authenticated user requests /resource/123 where 123 belongs to another user; verify 403 or ownership enforced",
-                priority: "P0"
-              });
-            }
-          }
-        }
+      // Broken Access Control: Missing permission checks on resources (IDOR) (AST-based)
+      const idorLoc = detectIDOR(content);
+      if (idorLoc) {
+        issues.push({
+          dimension: "Security Audit (STRIDE)",
+          severity: "CRITICAL",
+          location: `${relPath}:${idorLoc.line}:${idorLoc.column}`,
+          exploit: "Attacker accesses other users' data by guessing IDs (IDOR)",
+          impact: "Data breach, privacy violation",
+          rootCause: "No ownership check before returning resource",
+          fix: "Enforce that user can only access their own resources (compare resource.userId to req.user.id)",
+          testCase: "Authenticated user requests /resource/123 where 123 belongs to another user; verify 403 or ownership enforced",
+          priority: "P0"
+        });
       }
-
-      // JWT verification: ensure tokens are verified with RS256 and proper audience/issuer
-      if (content.includes('jwt') || content.includes('JWT') || content.includes('jsonwebtoken')) {
-        if (!content.includes(' RS256') && !content.includes('RS256') && !content.includes('verify') && !content.includes('publicKey')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "HIGH",
-            location: relPath,
-            exploit: "JWT signed with weak HS256; secret key compromise allows token forgery",
-            impact: "Authentication bypass, privilege escalation",
-            rootCause: "JWT verification not using asymmetric keys (RS256) or missing verification altogether",
-            fix: "Use RS256 with public key verification; validate aud, iss, exp claims;",
-            testCase: "Forge JWT with known secret; verify server rejects or requires proper signature",
-            priority: "P1"
-          });
-        }
+      // JWT verification: ensure tokens are verified with RS256 and proper audience/issuer (AST-based)
+      const jwtLoc = detectJwtVerification(content);
+      if (jwtLoc) {
+        issues.push({
+          dimension: "Security Audit (STRIDE)",
+          severity: "HIGH",
+          location: `${relPath}:${jwtLoc.line}:${jwtLoc.column}`,
+          exploit: "JWT signed with weak HS256 or missing proper verification",
+          impact: "Authentication bypass, privilege escalation",
+          rootCause: "JWT not using RS256 or missing verification/claim checks",
+          fix: "Use RS256 with public key verification; validate aud, iss, exp claims;",
+          testCase: "Forge JWT with known secret; verify server rejects or requires proper signature",
+          priority: "P1"
+        });
       }
-
       // Command injection: AST-based detection of exec/spawn/fork with dynamic input
       const cmdLoc = detectCommandInjection(content);
       if (cmdLoc) {

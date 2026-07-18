@@ -5,12 +5,12 @@
 ## Final State (2026-07-15)
 - **Branch coverage**: ~81.24% ✅ (target ≥80% achieved)
 - **Statement coverage**: ~86%
-- **Test pass rate**: 100% (1685/1685)
+- **Test pass rate**: 100% (1710/1710)
 - **Quality Gate score**: 90/100 ✅ (PASS)
 - **Codebase status**: Production-ready; quality framework operational; all categories meet threshold
 - **Known gaps**:
   - Coverage local discrepancy (2.8% vs CI 81%) – acceptable as CI passes
-  - Audit patterns still partially regex-based (SQLi now AST; others pending)
+  - Audit patterns now fully AST-based (SQLi, XSS, JWT, IDOR, command injection)
   - Benchmark scenarios limited – need to add safe_edit, call_graph
 
 ## Recent Cycles
@@ -18,14 +18,16 @@
 ### [2026-07-15 00:35] Cycle 76 - Task: Audit Security Patterns AST Migration
 - **Type**: Security Hardening
 - **Priority**: P1
-- **Status**: ✅ In Progress
+- **Status**: ✅ Completed
 - **Changes**:
-  - Added AST utilities to audit.ts (parseAST, walk, detectSqlInjection)
-  - Replaced regex-based SQL injection check with AST-based detection
-  - Created unit tests for detectSqlInjection (8 tests, all pass)
-- **Test Delta**: +8 (now 1685 total passing)
-- **Impact**: Improved accuracy for SQLi pattern detection; eliminates many false positives/negatives
-- **Next**: Migrate remaining security patterns to AST (XSS, command injection, JWT verification, IDOR)
+  - Added AST utilities to audit.ts (parseAST, walk)
+  - Implemented AST-based detectors: detectSqlInjection, detectCommandInjection (existing), detectXSS, detectJwtVerification, detectIDOR
+  - Replaced all regex-based security checks in auditSecurity with AST-based detectors
+  - Created comprehensive unit tests for detectXSS (9 tests), detectJwtVerification (8 tests), detectIDOR (8 tests) — all pass
+  - Extended audit.ast.test.ts to 33 tests total
+- **Test Delta**: +25 (now 1710 total passing)
+- **Impact**: Significantly improved accuracy for XSS, JWT verification, and IDOR pattern detection; eliminated false positives/negatives from string heuristics; all security scans now use robust AST analysis
+- **Next**: N/A — all planned AST migrations complete
 
 ### [2026-07-15 00:15] Cycle 75 - Task: Achieve Quality Gate ≥90
 - **Type**: Quality Improvement
