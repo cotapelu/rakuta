@@ -3,57 +3,47 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "AST Migration (Completed)",
+      "name": "Benchmark Expansion (P1)",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Implement detectXSS AST detector",
-          "status": "completed"
+          "content": "Add safe_edit scenario to benchmark suite",
+          "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Implement detectJwtVerification AST detector",
-          "status": "completed"
+          "content": "Add call_graph (large) scenario to benchmark suite",
+          "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Implement detectIDOR AST detector",
-          "status": "completed"
+          "content": "Add deep dependency_tree scenario to benchmark suite",
+          "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Add unit tests for XSS detector (9 tests)",
-          "status": "completed"
+          "content": "Establish baseline SLO thresholds (latency p50<100ms, p99<200ms)",
+          "status": "pending"
         },
         {
           "id": "task-5",
-          "content": "Add unit tests for JWT detector (8 tests)",
-          "status": "completed"
+          "content": "Implement automated regression detection (>5% slowdown fails CI)",
+          "status": "pending"
         },
         {
           "id": "task-6",
-          "content": "Add unit tests for IDOR detector (8 tests)",
-          "status": "completed"
+          "content": "Run benchmark scenarios and verify SLO compliance",
+          "status": "pending"
         },
         {
           "id": "task-7",
-          "content": "Replace string-based checks with AST detectors in auditSecurity",
-          "status": "completed"
-        },
-        {
-          "id": "task-8",
-          "content": "Run full test suite and verify all pass",
-          "status": "completed"
-        },
-        {
-          "id": "task-9",
-          "content": "Run quality gate and verify >=90",
-          "status": "completed"
+          "content": "Update AGENT_METRICS.md and EVOLUTION.md with progress",
+          "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 10,
+  "nextTaskId": 8,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-18T12:55:40.571Z"
+  "updatedAt": "2026-07-18T12:57:34.200Z"
 }

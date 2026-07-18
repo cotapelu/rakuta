@@ -15,6 +15,7 @@
 - ✅ Implement GOAL.md production framework (quality_gate, audit, benchmark)
 - ✅ Quality Gate reaches 90/100 via infrastructure exemptions, refactoring, and scoring improvements
 - ✅ Completed Audit AST migration: All security patterns (SQLi, XSS, command injection, JWT, IDOR) now AST-based with comprehensive tests
+- ✅ Benchmark Expansion: Added safe_edit, call_graph_small/large, dependency_tree_deep scenarios (deep scenario still exceeds SLO; optimization pending)
 
 ## Current Focus
 ### Audit AST Migration (P1)
@@ -40,10 +41,11 @@
 - Continuous performance regression detection
 
 ## Next Actions (Priority Order)
-1. Expand benchmark scenarios and thresholds
-2. Monitor quality gate and address any regressions
-3. Address remaining gaps (dependency_tree coverage, compliance matrix)
-4. Continue self-evolution and documentation updates
+1. Optimize dependency_tree_deep scenario to meet SLOs (or adjust per-scenario thresholds)
+2. Implement automated regression detection (>5% slowdown fails CI) for benchmark suite
+3. Monitor quality gate and address any regressions
+4. Address remaining gaps (dependency_tree coverage, compliance matrix)
+5. Continue self-evolution and documentation updates
 
 ---
 

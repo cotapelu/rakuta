@@ -28,7 +28,7 @@ export const schema = Type.Object({
   fixImports: Type.Optional(Type.Boolean({ description: "Attempt to fix imports automatically (default true)" }))
 }, { additionalProperties: false });
 
-interface EditOperation {
+export interface EditOperation {
   file: string;
   editType: "replace" | "insert" | "delete";
   range: { start: number; end: number };

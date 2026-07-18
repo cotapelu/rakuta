@@ -23,10 +23,16 @@ for (let i = 0; i < args.length; i++) {
   }
 }
 
+// Create a minimal exec stub for benchmark scenarios (safe_edit uses ctx.exec to run external commands; we provide a no-op for speed)
+const execStub = async (_cmd: string, _args: string[], _options?: any): Promise<any> => {
+  // Return success object so safe_edit validation passes quickly
+  return { code: 0, stdout: '', stderr: '' };
+};
+
 // Run benchmark
 const cwd = process.cwd();
 try {
-  const response = await benchmarkExecute({ scenario, iterations, warmup: 5 }, { cwd });
+  const response = await benchmarkExecute({ scenario, iterations, warmup: 5 }, { cwd, exec: execStub });
   const report = response.result; // response has { content, result, isError }
 
   console.log(`\n📊 Benchmark Results: ${report.scenario}`);

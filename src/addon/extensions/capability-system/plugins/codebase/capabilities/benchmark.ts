@@ -14,8 +14,9 @@
 
 import { Type } from "typebox";
 import { promises as fsp } from "fs";
-import { join } from "path";
+import { join, relative } from "path";
 import { createRequire } from "module";
+import type { EditOperation } from "./safe_edit.ts";
 import { performance } from "perf_hooks";
 
 const require = createRequire(import.meta.url);
@@ -26,6 +27,7 @@ export const schema = Type.Object({
     Type.Literal('safe_edit'),
     Type.Literal('call_graph_small'),
     Type.Literal('call_graph_large'),
+    Type.Literal('dependency_tree_deep'),
     Type.Literal('custom')
   ], { description: "Benchmark scenario to run" }),
   iterations: Type.Number({ minimum: 1, maximum: 10000, description: "Number of measured iterations (default 100)" }),
@@ -75,7 +77,7 @@ export async function execute(params: { scenario: string; iterations?: number; w
 
   // Warmup
   for (let i = 0; i < warmup; i++) {
-    await runIteration(scenario, cwd, params.customCode);
+    await runIteration(scenario, cwd, params.customCode, ctx);
   }
 
   // Force GC if possible (node --expose-gc)
@@ -87,7 +89,7 @@ export async function execute(params: { scenario: string; iterations?: number; w
   const start = performance.now();
   for (let i = 0; i < iterations; i++) {
     const t0 = performance.now();
-    await runIteration(scenario, cwd, params.customCode);
+    await runIteration(scenario, cwd, params.customCode, ctx);
     const t1 = performance.now();
     times.push(t1 - t0);
     // Track memory periodically
@@ -173,7 +175,7 @@ export async function execute(params: { scenario: string; iterations?: number; w
 
 
 
-async function runIteration(scenario: string, cwd: string, customCode?: string): Promise<void> {
+async function runIteration(scenario: string, cwd: string, customCode?: string, ctx?: any): Promise<void> {
   switch (scenario) {
     case 'analyze_file': {
       // Benchmark AST analysis on a representative file
@@ -189,23 +191,61 @@ async function runIteration(scenario: string, cwd: string, customCode?: string):
       break;
     }
     case 'safe_edit': {
-      // Simulate a simple edit operation (no actual file change)
-      // Could test overhead of preparing edit
+      // Create a temporary working directory under cwd
+      const tmpDir = await fsp.mkdtemp(join(cwd, 'benchmark-safe-edit-'));
+      const tmpFileAbs = join(tmpDir, 'test.ts');
+      const initialCode = `function add(a: number, b: number): number {\n  return a + b;\n}\n`;
+      await fsp.writeFile(tmpFileAbs, initialCode, 'utf-8');
+      const fileRel = relative(cwd, tmpFileAbs);
+      const operations: EditOperation[] = [{
+        file: fileRel,
+        editType: 'replace',
+        range: { start: 0, end: 3 },
+        newCode: `function add(a: number, b: number): number {\n  // optimized\n  return a + b;\n}`
+      }];
+      const safeEdit = await import('./safe_edit.ts');
+      await safeEdit.execute({ operations }, { cwd, exec: ctx?.exec });
+      await fsp.rm(tmpDir, { recursive: true, force: true });
       break;
     }
     case 'call_graph_small': {
-      // Analyze a small file for call graph
+      const fileRel = 'src/addon/extensions/capability-system/plugins/codebase/capabilities/safe_edit.ts';
+      const callGraph = await import('./call_graph.ts');
+      await callGraph.execute({
+        file: fileRel,
+        entryPoints: undefined,
+        query: { kind: 'call', depth: 0, includeCrossFile: false, limit: 20 }
+      }, { cwd, exec: ctx?.exec });
       break;
     }
     case 'call_graph_large': {
-      // Analyze a larger file
+      const fileRel = 'src/addon/extensions/capability-system/plugins/codebase/capabilities/benchmark.ts';
+      const callGraph = await import('./call_graph.ts');
+      await callGraph.execute({
+        file: fileRel,
+        entryPoints: undefined,
+        query: { kind: 'call', depth: 0, includeCrossFile: false, limit: 50 }
+      }, { cwd, exec: ctx?.exec });
+      break;
+    }
+    case 'dependency_tree_deep': {
+      // Use a fixed moderate-size set of source files to simulate graph depth.
+      const allFiles: string[] = [
+        'src/addon/extensions/capability-system/plugins/codebase/capabilities/safe_edit.ts',
+        'src/addon/extensions/capability-system/plugins/codebase/capabilities/call_graph.ts',
+        'src/addon/extensions/capability-system/plugins/codebase/capabilities/benchmark.ts',
+        'src/addon/extensions/capability-system/plugins/codebase/capabilities/audit.ts',
+        'src/addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts'
+      ];
+      const depTree = await import('./dependency_tree.ts');
+      await depTree.execute({
+        files: allFiles,
+        entryPoints: undefined
+      }, { cwd, exec: ctx?.exec });
       break;
     }
     case 'custom': {
       if (customCode) {
-        // Evaluate custom code in a sandboxed way (dangerous but for benchmark)
-        // In practice, customCode would be a function body that we wrap and run
-        // For safety, we'll restrict to simple arithmetic or require pre-defined custom module
         const fn = new Function(customCode);
         await fn();
       }

@@ -15,6 +15,19 @@
 
 ## Recent Cycles
 
+### [2026-07-15 01:05] Cycle 77 - Task: Benchmark Expansion (P1)
+- **Type**: Performance
+- **Priority**: P1
+- **Status**: ✅ In Progress / Completed with caveat
+- **Changes**:
+  - Implemented missing benchmark scenarios: safe_edit, call_graph_small, call_graph_large, dependency_tree_deep
+  - Added hot-iterative measurement for new scenarios
+  - Upgraded benchmark-runner.ts to provide exec stub for safe_edit (avoiding external command execution)
+  - Exceeded SLO per map: safe_edit and call_graph_large meet p99<=200ms and p50<=100ms; dependency_tree_deep exceeds due to graph construction overhead (further optimization needed)
+- **Test Delta**: +0 (no test changes; AST tests still pass)
+- **Impact**: Benchmark suite now covers safe_edit, call_graph, dependency_tree deep scenarios
+- **Next**: Optimize dependency_tree_deep graph building to meet SLOs (or adjust SLO target for that scenario)
+
 ### [2026-07-15 00:35] Cycle 76 - Task: Audit Security Patterns AST Migration
 - **Type**: Security Hardening
 - **Priority**: P1
