@@ -153,6 +153,56 @@ export function detectSqlInjection(content: string): { line: number; column: num
   return null;
 }
 
+// Detect command injection via exec/spawn/fork with dynamic input (template literals or concatenation)
+export function detectCommandInjection(content: string): { line: number; column: number } | null {
+  try {
+    const ast = parseAST(content);
+    let found: any = null;
+    walk(ast, (node) => {
+      if (found) return;
+      if (node.type === 'CallExpression') {
+        const callee = node.callee;
+        let methodName: string | null = null;
+        if (callee.type === 'MemberExpression') {
+          if (callee.property.type === 'Identifier') methodName = callee.property.name;
+        } else if (callee.type === 'Identifier') {
+          methodName = callee.name;
+        }
+        const dangerousMethods = ['exec', 'spawn', 'fork'];
+        if (methodName && dangerousMethods.includes(methodName)) {
+          const firstArg = node.arguments[0];
+          if (!firstArg) return;
+          // Unsafe if argument is dynamic: template literal with expressions or binary concatenation
+          if (firstArg.type === 'TemplateLiteral' && firstArg.expressions.length > 0) {
+            found = node;
+            return;
+          }
+          if (firstArg.type === 'BinaryExpression' && firstArg.operator === '+') {
+            // Check if either side is string-like (literal or template)
+            const leftString = firstArg.left.type === 'Literal' && typeof firstArg.left.value === 'string' || firstArg.left.type === 'TemplateLiteral';
+            const rightString = firstArg.right.type === 'Literal' && typeof firstArg.right.value === 'string' || firstArg.right.type === 'TemplateLiteral';
+            if (leftString || rightString) {
+              found = node;
+              return;
+            }
+          }
+          // Also unsafe if argument is a variable (likely from user input)
+          if (firstArg.type === 'Identifier') {
+            found = node;
+            return;
+          }
+        }
+      }
+    });
+    if (found) {
+      return { line: found.loc.start.line, column: found.loc.start.column };
+    }
+  } catch (e) {
+    // ignore parse errors
+  }
+  return null;
+}
+
 // Dimension 1: Business Logic Integrity
 async function auditBusinessLogicIntegrity(cwd: string, files: string[]): Promise<AuditIssue[]> {
   const issues: AuditIssue[] = [];
@@ -611,6 +661,21 @@ async function auditFailureScenarios(cwd: string, files: string[]): Promise<Audi
 }
 
 // Dimension 8: Security Audit (STRIDE+DREAD)
+// Determine if a file is likely an HTTP server/handler (Express, Fastify, etc.)
+function isWebServerFile(content: string): boolean {
+  // Simple heuristics based on common patterns
+  return content.includes('req, res') ||
+         content.includes('req, res, next') ||
+         content.includes('app.get(') ||
+         content.includes('app.post(') ||
+         content.includes('router.get(') ||
+         content.includes('router.post(') ||
+         content.includes('res.send(') ||
+         content.includes('res.json(') ||
+         content.includes('express()') ||
+         content.includes('fastify()');
+}
+
 async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]> {
   const issues: AuditIssue[] = [];
 
@@ -619,8 +684,11 @@ async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]
       const absPath = join(cwd, relPath);
       const content = await fsp.readFile(absPath, 'utf-8');
 
-      // Spoofing: Weak authentication
-      if (content.includes('password') && !content.includes('bcrypt') && !content.includes('argon2') && !content.includes('scrypt')) {
+      // Spoofing: Weak authentication - only flag if weak hash algorithm is actually used on passwords
+      // Look for crypto.createHash('md5'|'sha1') or md5/sha1 modules being used
+      const usesWeakHash = /\b(?:md5|sha1)\s*\(/.test(content);
+      const hasPassword = /password/.test(content);
+      if (usesWeakHash && hasPassword) {
         issues.push({
           dimension: "Security Audit (STRIDE)",
           severity: "CRITICAL",
@@ -650,20 +718,22 @@ async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]
         });
       }
 
-      // Repudiation: Missing audit logs for sensitive operations
-      if (content.includes('delete') || content.includes('UPDATE') || content.includes('payment') || content.includes('role')) {
-        if (!content.includes('log') && !content.includes('audit') && !content.includes('logger')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "HIGH",
-            location: relPath,
-            exploit: "Malicious action performed and not traceable in logs",
-            impact: "Cannot detect breaches, meet compliance, or attribute actions",
-            rootCause: "No audit logging for security-relevant events",
-            fix: "Log all authentication, authorization, data modification with user ID, timestamp, action, target",
-            testCase: "Perform sensitive actions; verify corresponding entries in audit log with sufficient context",
-            priority: "P1"
-          });
+      // Repudiation: Missing audit logs for sensitive operations (web only)
+      if (isWebServerFile(content)) {
+        if (content.includes('delete') || content.includes('UPDATE') || content.includes('payment') || content.includes('role')) {
+          if (!content.includes('log') && !content.includes('audit') && !content.includes('logger')) {
+            issues.push({
+              dimension: "Security Audit (STRIDE)",
+              severity: "HIGH",
+              location: relPath,
+              exploit: "Malicious action performed and not traceable in logs",
+              impact: "Cannot detect breaches, meet compliance, or attribute actions",
+              rootCause: "No audit logging for security-relevant events",
+              fix: "Log all authentication, authorization, data modification with user ID, timestamp, action, target",
+              testCase: "Perform sensitive actions; verify corresponding entries in audit log with sufficient context",
+              priority: "P1"
+            });
+          }
         }
       }
 
@@ -686,96 +756,106 @@ async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]
         }
       }
 
-      // Denial of Service: Unbounded request body size
-      if (content.includes('body-parser') || content.includes('express.json') || content.includes('raw(')) {
-        if (!content.includes('limit:') && !content.includes('size:') && !content.includes('maxBodyLength')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "HIGH",
-            location: relPath,
-            exploit: "Attacker sends multi-GB request body → memory exhaustion",
-            impact: "DoS, service crash",
-            rootCause: "No limit on request body size",
-            fix: "Configure body parser with generous but finite limit (e.g., 1MB for JSON, 10MB for uploads)",
-            testCase: "Send request with huge payload; verify server responds with 413 Payload Too Large",
-            priority: "P1"
-          });
-        }
-      }
-
-      // Elevation of Privilege: Missing authentication on state-changing endpoints
-      const stateChangeMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
-      if (stateChangeMethods.some(method => content.includes(method))) {
-        // Check if endpoint has auth guard
-        if (!content.includes('authenticate') && !content.includes('authorize') && !content.includes('requireAuth') && !content.includes('middleware')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "CRITICAL",
-            location: relPath,
-            exploit: "Unauthenticated user can modify data or perform privileged action",
-            impact: "Privilege escalation, data tampering",
-            rootCause: "State-changing endpoint lacks authentication check",
-            fix: "Apply authentication middleware to all POST/PUT/DELETE/PATCH routes",
-            testCase: "Issue state-changing request without credentials; verify 401 Unauthorized",
-            priority: "P0"
-          });
-        }
-      }
-
-      // Rate limiting absence
-      if (content.includes('login') || content.includes('password') || content.includes('forgot') || content.includes('reset')) {
-        if (!content.includes('rate-limit') && !content.includes('RateLimiter') && !content.includes('throttle')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "HIGH",
-            location: relPath,
-            exploit: "Brute force credentials or DoS auth endpoint",
-            impact: "Account compromise, service disruption",
-            rootCause: "No rate limiting on authentication endpoints",
-            fix: "Apply rate limiting (e.g., 5 attempts per 15 minutes per IP/account)",
-            testCase: "Exceed rate limit; verify subsequent requests are rejected with 429 Too Many Requests",
-            priority: "P1"
-          });
-        }
-      }
-
-      // XSS: Output encoding missing when rendering user-provided content
-      if (content.includes('res.send') || content.includes('res.json') || content.includes('innerHTML') || content.includes('document.write')) {
-        if (!content.includes('escape') && !content.includes('encode') && !content.includes('sanitize') && !content.includes('he.encode')) {
-          // Heuristic: if data from req.params, req.body, or database is directly inserted into HTML
-          if (content.includes('req.') && (content.includes('<') || content.includes('html'))) {
+      // Denial of Service: Unbounded request body size (web only)
+      if (isWebServerFile(content)) {
+        if (content.includes('body-parser') || content.includes('express.json') || content.includes('raw(')) {
+          if (!content.includes('limit:') && !content.includes('size:') && !content.includes('maxBodyLength')) {
             issues.push({
               dimension: "Security Audit (STRIDE)",
               severity: "HIGH",
               location: relPath,
-              exploit: "Attacker injects <script> tags via input → XSS in browser",
-              impact: "Session hijacking, credential theft, defacement",
-              rootCause: "User input not HTML-escaped before rendering",
-              fix: "Encode user-provided data before inserting into HTML (use escape functions or templating engine auto-escaping)",
-              testCase: "Submit <script>alert(1)</script> in form; verify it is rendered as text, not executed",
+              exploit: "Attacker sends multi-GB request body → memory exhaustion",
+              impact: "DoS, service crash",
+              rootCause: "No limit on request body size",
+              fix: "Configure body parser with generous but finite limit (e.g., 1MB for JSON, 10MB for uploads)",
+              testCase: "Send request with huge payload; verify server responds with 413 Payload Too Large",
               priority: "P1"
             });
           }
         }
       }
 
-      // Broken Access Control: Missing permission checks on resources (IDOR)
-      if (content.includes('GET') || content.includes('POST') || content.includes('PUT') || content.includes('DELETE')) {
-        // Look for patterns where user ID from request is used to access data without verifying ownership
-        if (content.includes('findById') || content.includes('findOne') || content.includes('select') || content.includes('WHERE')) {
-          // Check if there's a comparison between authenticated user and resource owner
-          if (!content.includes('userId ===') && !content.includes('userId ==') && !content.includes('ownerId') && !content.includes('belongsTo')) {
+      // Elevation of Privilege: Missing authentication on state-changing endpoints (web only)
+      if (isWebServerFile(content)) {
+        const stateChangeMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
+        if (stateChangeMethods.some(method => content.includes(method))) {
+          // Check if endpoint has auth guard
+          if (!content.includes('authenticate') && !content.includes('authorize') && !content.includes('requireAuth') && !content.includes('middleware')) {
             issues.push({
               dimension: "Security Audit (STRIDE)",
               severity: "CRITICAL",
               location: relPath,
-              exploit: "Attacker accesses other users' data by guessing IDs (IDOR)",
-              impact: "Data breach, privacy violation",
-              rootCause: "No ownership check before returning resource",
-              fix: "Enforce that user can only access their own resources (compare resource.userId to req.user.id)",
-              testCase: "Authenticated user requests /resource/123 where 123 belongs to another user; verify 403 or ownership enforced",
+              exploit: "Unauthenticated user can modify data or perform privileged action",
+              impact: "Privilege escalation, data tampering",
+              rootCause: "State-changing endpoint lacks authentication check",
+              fix: "Apply authentication middleware to all POST/PUT/DELETE/PATCH routes",
+              testCase: "Issue state-changing request without credentials; verify 401 Unauthorized",
               priority: "P0"
             });
+          }
+        }
+      }
+
+      // Rate limiting absence (web only)
+      if (isWebServerFile(content)) {
+        if (content.includes('login') || content.includes('password') || content.includes('forgot') || content.includes('reset')) {
+          if (!content.includes('rate-limit') && !content.includes('RateLimiter') && !content.includes('throttle')) {
+            issues.push({
+              dimension: "Security Audit (STRIDE)",
+              severity: "HIGH",
+              location: relPath,
+              exploit: "Brute force credentials or DoS auth endpoint",
+              impact: "Account compromise, service disruption",
+              rootCause: "No rate limiting on authentication endpoints",
+              fix: "Apply rate limiting (e.g., 5 attempts per 15 minutes per IP/account)",
+              testCase: "Exceed rate limit; verify subsequent requests are rejected with 429 Too Many Requests",
+              priority: "P1"
+            });
+          }
+        }
+      }
+
+      // XSS: Output encoding missing when rendering user-provided content (web only)
+      if (isWebServerFile(content)) {
+        if (content.includes('res.send') || content.includes('res.json') || content.includes('innerHTML') || content.includes('document.write')) {
+          if (!content.includes('escape') && !content.includes('encode') && !content.includes('sanitize') && !content.includes('he.encode')) {
+            // Heuristic: if data from req.params, req.body, or database is directly inserted into HTML
+            if (content.includes('req.') && (content.includes('<') || content.includes('html'))) {
+              issues.push({
+                dimension: "Security Audit (STRIDE)",
+                severity: "HIGH",
+                location: relPath,
+                exploit: "Attacker injects <script> tags via input → XSS in browser",
+                impact: "Session hijacking, credential theft, defacement",
+                rootCause: "User input not HTML-escaped before rendering",
+                fix: "Encode user-provided data before inserting into HTML (use escape functions or templating engine auto-escaping)",
+                testCase: "Submit <script>alert(1)</script> in form; verify it is rendered as text, not executed",
+                priority: "P1"
+              });
+            }
+          }
+        }
+      }
+
+      // Broken Access Control: Missing permission checks on resources (IDOR) (web only)
+      if (isWebServerFile(content)) {
+        if (content.includes('GET') || content.includes('POST') || content.includes('PUT') || content.includes('DELETE')) {
+          // Look for patterns where user ID from request is used to access data without verifying ownership
+          if (content.includes('findById') || content.includes('findOne') || content.includes('select') || content.includes('WHERE')) {
+            // Check if there's a comparison between authenticated user and resource owner
+            if (!content.includes('userId ===') && !content.includes('userId ==') && !content.includes('ownerId') && !content.includes('belongsTo')) {
+              issues.push({
+                dimension: "Security Audit (STRIDE)",
+                severity: "CRITICAL",
+                location: relPath,
+                exploit: "Attacker accesses other users' data by guessing IDs (IDOR)",
+                impact: "Data breach, privacy violation",
+                rootCause: "No ownership check before returning resource",
+                fix: "Enforce that user can only access their own resources (compare resource.userId to req.user.id)",
+                testCase: "Authenticated user requests /resource/123 where 123 belongs to another user; verify 403 or ownership enforced",
+                priority: "P0"
+              });
+            }
           }
         }
       }
@@ -797,21 +877,20 @@ async function auditSecurity(cwd: string, files: string[]): Promise<AuditIssue[]
         }
       }
 
-      // Command injection: Use of exec or child_process with unsanitized input
-      if (content.includes('exec(') || content.includes('spawn(') || content.includes('fork(')) {
-        if (content.includes('req.body') || content.includes('req.query') || content.includes('req.params')) {
-          issues.push({
-            dimension: "Security Audit (STRIDE)",
-            severity: "CRITICAL",
-            location: relPath,
-            exploit: "Attacker injects shell commands via input (e.g., ; rm -rf /)",
-            impact: "Remote code execution, server compromise",
-            rootCause: "Executing shell commands with unsanitized user input",
-            fix: "Avoid exec with user input; use parameterized APIs or whitelist allowed commands",
-            testCase: "Send malicious command in input; verify it is not executed or properly sanitized",
-            priority: "P0"
-          });
-        }
+      // Command injection: AST-based detection of exec/spawn/fork with dynamic input
+      const cmdLoc = detectCommandInjection(content);
+      if (cmdLoc) {
+        issues.push({
+          dimension: "Security Audit (STRIDE)",
+          severity: "CRITICAL",
+          location: `${relPath}:${cmdLoc.line}:${cmdLoc.column}`,
+          exploit: "Attacker injects shell commands via input (e.g., ; rm -rf /)",
+          impact: "Remote code execution, server compromise",
+          rootCause: "Executing shell commands with unsanitized user input",
+          fix: "Avoid exec with user input; use parameterized APIs or whitelist allowed commands",
+          testCase: "Send malicious command in input; verify it is not executed or properly sanitized",
+          priority: "P0"
+        });
       }
 
       // Path traversal: File operations using user-supplied paths without sanitization
