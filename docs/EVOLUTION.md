@@ -1,12 +1,12 @@
 # Evolution Roadmap (Current State)
 
-## Status (2026-07-15)
+## Status (2026-07-18)
 - **Overall branch coverage**: 81.24% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1710/1710)
+- **Test pass rate**: 100% (1713/1713)
 - **Code quality**: Clean typecheck, 0 ESLint warnings
 - **Architecture**: Simplified
 - **Quality Gate**: 98/100 ✅
-- **Audit AST migration**: Completed (all patterns AST-based)
+- **Audit AST migration**: Completed (all patterns AST-based))
 
 ## Completed Iterations
 - ✅ Remove autonomous engine
@@ -17,6 +17,7 @@
 - ✅ Completed Audit AST migration: All security patterns (SQLi, XSS, command injection, JWT, IDOR) now AST-based with comprehensive tests
 - ✅ Benchmark Expansion: Added safe_edit, call_graph_small/large, dependency_tree_deep scenarios + automated regression detection (>5% slowdown fails CI); dependency_tree_deep uses scenario-specific SLO thresholds to meet targets
 - ✅ Branch Coverage Accurate Computation: quality_gate now uses branchMap.locations to calculate branch coverage correctly, raising quality gate score from 90 to 98
+- ✅ Build reliability fix: resolved tsconfig TS5096 error by setting noEmit:true; fixed plugin-loader test race condition (async writeJSON). Test suite now 1713/1713.
 
 ## Current Focus
 ### Audit AST Migration (P1)

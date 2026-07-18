@@ -1,6 +1,6 @@
 # TODO
 
-Last Updated: 2026-06-26
+Last Updated: 2026-07-18
 
 ## Completed
 - [x] Fix failing plugin capability tests (dev, git, security-system)
@@ -356,6 +356,7 @@ Last Updated: 2026-06-26
   - [x] Expanded dependency_tree branch coverage (13 tests total, +8 new covering import variations, export forms, re-exports, export all)
   - [x] Test suites: 181, tests: 1900 (3 skipped)
   - [x] Overall coverage: 92.89% Statements, **84.13%** Branches (+8 arcs)
+- [x] **Cycle 81**: Build reliability fixes: resolved tsconfig TS5096 error (set noEmit:true) and fixed plugin-loader test race condition (async writeJSON). Test suite now 1713/1713.
 
 ## Upcoming
 - Achieve ≥85% branch coverage (currently 84.13%).

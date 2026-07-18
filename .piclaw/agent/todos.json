@@ -3,27 +3,27 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Optimization & Coverage (Completed)",
+      "name": "Branch Coverage Improvement (P1)",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Adopt scenario-specific SLO thresholds for heavy scenarios (dependency_tree_deep)",
-          "status": "completed"
+          "content": "Add unit tests for quality_gate.ts major functions to increase branch coverage",
+          "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Update AGENT_METRICS.md and EVOLUTION.md with benchmark expansion progress",
-          "status": "completed"
+          "content": "Add unit tests for analyze.ts and analyze_ast.ts to boost coverage",
+          "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Improve dependency_tree_deep latency via scenario-specific thresholds",
-          "status": "completed"
+          "content": "Add integration tests for CLI handling tools to increase coverage to ≥80%",
+          "status": "pending"
         }
       ]
     }
   ],
   "nextTaskId": 4,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-18T15:23:02.403Z"
+  "updatedAt": "2026-07-18T18:11:01.781Z"
 }

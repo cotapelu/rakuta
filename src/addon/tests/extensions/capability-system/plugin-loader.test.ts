@@ -29,8 +29,8 @@ describe('PluginLoader', () => {
     } catch (e) {}
   });
 
-  function writeJSON(filePath: string, data: any): void {
-    writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  async function writeJSON(filePath: string, data: any): Promise<void> {
+    await writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
   }
 
   describe('loadAll', () => {
@@ -63,7 +63,7 @@ describe('PluginLoader', () => {
       await mkdir(pluginDir);
 
       // Write manifest.json
-      writeJSON(join(pluginDir, 'manifest.json'), {
+      await writeJSON(join(pluginDir, 'manifest.json'), {
         id: 'myplugin',
         name: 'My Plugin',
         description: 'Test plugin',
@@ -121,7 +121,7 @@ describe('PluginLoader', () => {
       await mkdir(pluginDir);
 
       // Manifest with capability that points to a file missing execute export
-      writeJSON(join(pluginDir, 'manifest.json'), {
+      await writeJSON(join(pluginDir, 'manifest.json'), {
         id: 'badschema',
         name: 'Bad Schema',
         description: 'Missing execute',
@@ -179,7 +179,7 @@ describe('PluginLoader', () => {
       // Create first plugin
       const plugin1Dir = join(pluginsDir, 'plugin1');
       await mkdir(plugin1Dir);
-      writeJSON(join(plugin1Dir, 'manifest.json'), {
+      await writeJSON(join(plugin1Dir, 'manifest.json'), {
         id: 'dup',
         name: 'Duplicate 1',
         description: 'First',
@@ -195,7 +195,7 @@ describe('PluginLoader', () => {
       // Load second plugin with same id
       const plugin2Dir = join(pluginsDir, 'plugin2');
       await mkdir(plugin2Dir);
-      writeJSON(join(plugin2Dir, 'manifest.json'), {
+      await writeJSON(join(plugin2Dir, 'manifest.json'), {
         id: 'dup',
         name: 'Duplicate 2',
         description: 'Second',
@@ -229,7 +229,7 @@ describe('PluginLoader', () => {
       await mkdir(pluginsDir);
       const pluginDir = join(pluginsDir, 'multi');
       await mkdir(pluginDir);
-      writeJSON(join(pluginDir, 'manifest.json'), {
+      await writeJSON(join(pluginDir, 'manifest.json'), {
         id: 'multi',
         name: 'Multi',
         version: '1.0.0',
@@ -280,7 +280,7 @@ describe('PluginLoader', () => {
       await mkdir(pluginsDir);
       const pluginDir = join(pluginsDir, 'reloadme');
       await mkdir(pluginDir);
-      writeJSON(join(pluginDir, 'manifest.json'), {
+      await writeJSON(join(pluginDir, 'manifest.json'), {
         id: 'reloadme',
         name: 'Reload Me',
         version: '1.0.0',
