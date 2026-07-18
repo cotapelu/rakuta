@@ -15,7 +15,7 @@
 - ✅ Implement GOAL.md production framework (quality_gate, audit, benchmark)
 - ✅ Quality Gate reaches 90/100 via infrastructure exemptions, refactoring, and scoring improvements
 - ✅ Completed Audit AST migration: All security patterns (SQLi, XSS, command injection, JWT, IDOR) now AST-based with comprehensive tests
-- ✅ Benchmark Expansion: Added safe_edit, call_graph_small/large, dependency_tree_deep scenarios (deep scenario still exceeds SLO; optimization pending)
+- ✅ Benchmark Expansion: Added safe_edit, call_graph_small/large, dependency_tree_deep scenarios + automated regression detection (>5% slowdown fails CI); dependency_tree_deep still exceeds SLO (optimization pending)
 
 ## Current Focus
 ### Audit AST Migration (P1)
@@ -25,9 +25,12 @@
 - **Next**: N/A
 
 ### Benchmark Expansion (P1)
-- Add scenarios: safe_edit, call_graph (large), deep dependency_tree.
-- Establish baseline SLO thresholds (latency p50<100ms, p99<200ms).
-- Implement regression detection (>5% slowdown fails CI).
+- **Status**: ✅ In Progress / Completed with caveat
+- **Completed**:
+  - Added safe_edit, call_graph_small/large, dependency_tree_deep benchmark scenarios
+  - Set global SLO thresholds (p50<100ms, p99<200ms)
+  - Implemented automated regression detection: baseline file (benchmarks/baseline.json) with >5% slowdown fails CI; threshold configurable via --threshold
+- **Pending**: Optimize dependency_tree_deep scenario to meet SLOs (graph construction is heavy) or adjust per-scenario thresholds.
 
 ### Compliance & Observability (P2)
 - Add compliance matrix (GDPR, PCI-DSS, SOC2) if applicable.
@@ -42,7 +45,7 @@
 
 ## Next Actions (Priority Order)
 1. Optimize dependency_tree_deep scenario to meet SLOs (or adjust per-scenario thresholds)
-2. Implement automated regression detection (>5% slowdown fails CI) for benchmark suite
+2. Improve branch coverage reporting (local coverage cutoff vs CI discrepancy)
 3. Monitor quality gate and address any regressions
 4. Address remaining gaps (dependency_tree coverage, compliance matrix)
 5. Continue self-evolution and documentation updates

@@ -11,7 +11,7 @@
 - **Known gaps**:
   - Coverage local discrepancy (2.8% vs CI 81%) – acceptable as CI passes
   - Audit patterns now fully AST-based (SQLi, XSS, JWT, IDOR, command injection)
-  - Benchmark scenarios limited – need to add safe_edit, call_graph
+  - Benchmark scenarios now cover safe_edit, call_graph, dependency_tree deep
 
 ## Recent Cycles
 
@@ -27,6 +27,19 @@
 - **Test Delta**: +0 (no test changes; AST tests still pass)
 - **Impact**: Benchmark suite now covers safe_edit, call_graph, dependency_tree deep scenarios
 - **Next**: Optimize dependency_tree_deep graph building to meet SLOs (or adjust SLO target for that scenario)
+
+### [2026-07-15 01:15] Cycle 78 - Task: Benchmark Regression Detection
+- **Type**: CI Quality Gate
+- **Priority**: P1
+- **Status**: ✅ Completed
+- **Changes**:
+  - Added baseline file generation (npm run benchmark -- --record-baseline)
+  - Automated regression detection: compare measured p50/p99 against stored baseline with configurable tolerance (default 5%)
+  - Configurable regression factor via --threshold <factor>
+  - Baseline stored in benchmarks/baseline.json (gitignore to be added)
+- **Test Delta**: +0 (no test changes)
+- **Impact**: CI now fails if a scenario is >5% slower than baseline
+- **Next**: Optimize dependency_tree_deep scenario to meet SLOs
 
 ### [2026-07-15 00:35] Cycle 76 - Task: Audit Security Patterns AST Migration
 - **Type**: Security Hardening
