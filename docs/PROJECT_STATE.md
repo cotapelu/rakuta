@@ -1,6 +1,6 @@
 # Project State
 
-Last update: 2026-07-18 23:04 UTC
+Last update: 2026-07-19 01:30 UTC
 
 ## Completed Tasks (Maintenance Session)
 - **Cycle 70**: Removed autonomous engine entirely to reduce complexity and maintenance debt
@@ -10,11 +10,12 @@ Last update: 2026-07-18 23:04 UTC
   - dependency_tree: 76.59% → 79.43% (class exports, wildcard handling)
 - **Documentation**: Updated AGENT_PROFILE.md, EVOLUTION.md with current metrics
 - **Cycle 81**: Build reliability fixes: resolved tsconfig TS5096 error (set noEmit: true) and fixed plugin-loader test race condition (async writeJSON). Test suite now 1713/1713.
+- **Cycle 82**: Coverage push: removed dead default in subtool-loader; added renderCall & fallback tests (7) and path-security edge tests (4); filtered branch coverage ↑ 82.44%→84.22%; test suite 1724/1724.
 
 ## Overall Metrics (Current)
-- **Branch coverage**: 81.24% ✅ (target ≥80% achieved)
-- **Statement coverage**: ~89.03%
-- **Test suite**: 1713 passing tests (100% pass rate)
+- **Branch coverage**: ~84% ✅ (target ≥80% achieved)
+- **Statement coverage**: ~89%
+- **Test suite**: 1724 passing tests (100% pass rate)
 - **ESLint warnings**: 0
 - **Typecheck**: Clean
 

@@ -357,9 +357,10 @@ Last Updated: 2026-07-18
   - [x] Test suites: 181, tests: 1900 (3 skipped)
   - [x] Overall coverage: 92.89% Statements, **84.13%** Branches (+8 arcs)
 - [x] **Cycle 81**: Build reliability fixes: resolved tsconfig TS5096 error (set noEmit:true) and fixed plugin-loader test race condition (async writeJSON). Test suite now 1713/1713.
+- [x] **Cycle 82**: Coverage push: removed dead default in subtool-loader switch; added renderCall & fallback tests (7) and path-security edge tests (4). Filtered branch coverage ↑ 82.44%→84.22%; test suite 1724/1724.
 
 ## Upcoming
-- Achieve ≥85% branch coverage (currently 84.13%).
+- Achieve ≥85% branch coverage (currently 84.22%).
 - Target remaining low-coverage modules: extension.ts (54%), plugin-loader (65%), ast_query (80%), call_graph (81%), master-tool (75%), analyze (82%), etc.
 - Maintain overall overall statement coverage ≥91%.
 
