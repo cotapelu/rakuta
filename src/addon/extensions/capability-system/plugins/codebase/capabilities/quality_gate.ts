@@ -523,11 +523,16 @@ function computeCoverageScore(cwd: string): CategoryScore {
     let totalBranches = 0;
     let coveredBranches = 0;
     for (const file of Object.values(cov) as any[]) {
-      const branchHits = file.b as Record<string, number> | undefined;
-      if (branchHits) {
-        for (const key in branchHits) {
-          totalBranches++;
-          if (branchHits[key] > 0) coveredBranches++;
+      const branchMap = file.branchMap ?? {};
+      const b = file.b ?? {};
+      for (const key of Object.keys(branchMap)) {
+        const locations = branchMap[key].locations || [];
+        totalBranches += locations.length;
+        const hits = b[key];
+        if (Array.isArray(hits)) {
+          for (let i = 0; i < locations.length; i++) {
+            if ((hits[i] ?? 0) > 0) coveredBranches++;
+          }
         }
       }
     }
