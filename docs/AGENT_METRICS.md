@@ -66,6 +66,20 @@
 - **Impact**: All core modules now meet or approach ≥80% branch coverage; quality gate category improves.
 - **Next**: Maintain ≥85% and consider raising target to ≥90% in next planning.
 
+### [2026-07-19] Cycle 85 - Task: Coverage Push to 90% (P1)
+- **Type**: Test Expansion
+- **Priority**: P1
+- **Status**: ✅ Completed
+- **Changes**:
+  - Added tests for `http` sub-tool (`executeHttp`) covering GET/POST, headers, timeout, insecure, credentials, verbose, error handling (11 tests)
+  - Added tests for `computer-use` error handling (`executeLs`, `executeFind`, `executeGrep`, `executeRead`) covering command failures and exceptions (8 tests)
+  - Added tests for `piclaw-header` extension covering package.json fallback, name/version display, version check skip, update banner show/hide, fetch failure handling (5 tests)
+  - All new tests pass; overall test count increased to 1767
+  - **Filtered branch coverage (excl. infrastructure) reached 90.00% (765/850)** – target ≥90% achieved
+- **Test Delta**: +24 net tests
+- **Impact**: Core tools and header extension now have robust coverage; branch coverage increased from 85.06% to 90.00%; quality gate remains passing (98/100)
+- **Next**: Aim for ≥95% filtered coverage; target remaining high-missing modules (e.g., todos-tool)
+
 ### [2026-07-15 01:05] Cycle 77 - Task: Benchmark Expansion (P1)
 - **Type**: Performance
 - **Priority**: P1

@@ -1,8 +1,8 @@
 # Evolution Roadmap (Current State)
 
 ## Status (2026-07-19)
-- **Overall branch coverage**: ~85% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1743/1743)
+- **Overall branch coverage**: ~90% ✅ (target ≥80% achieved)
+- **Test pass rate**: 100% (1767/1767)
 - **Code quality**: Clean typecheck, 0 ESLint warnings
 - **Architecture**: Simplified
 - **Quality Gate**: 98/100 ✅
@@ -21,6 +21,7 @@
 - ✅ Coverage Push: removed dead `default` in subtool-loader switch; added renderCall & fallback tests (7 new) and path-security edge tests (4 new) → filtered branch coverage ↑ 82.44% → 84.22%; test count 1724.
 - ✅ Team‑ops‑renderer edge‑case tests: added 7 tests covering status rendering, agent icons, messages truncation, workspace read undefined, claim/release task missing indices, status updates → further branch coverage progress; test count 1731; coverage ~84.12% (target ≥85% remains).
 - ✅ Coverage Finale: added memory-tool renderResult undefined details test and handleInput non‑matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. Filtered branch coverage reached **85.06%** (target ≥85% achieved). Test count 1743.
+- ✅ Coverage Push to 90%: Added tests for http sub-tool (`executeHttp`, 11 tests), computer‑use error handling (8 tests for `executeLs`, `executeFind`, `executeGrep`, `executeRead`), and piclaw‑header extension (5 tests); filtered branch coverage increased from 85.06% to 90.00% (765/850); test count 1767.
 
 ## Current Focus
 ### Audit AST Migration (P1)
