@@ -94,6 +94,13 @@ describe('MemoryListComponent', () => {
     expect(() => component.handleInput('ctrl+c')).not.toThrow();
   });
 
+  it('handleInput does not call onClose for other keys', () => {
+    const onClose = vi.fn();
+    const component = new MemoryListComponent([], mockTheme(), onClose);
+    expect(() => component.handleInput('a')).not.toThrow();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it('should display tags when present', () => {
     const memories = [{ id: 1, text: 'Test', tags: ['important', 'meeting'] }];
     const component = new MemoryListComponent(memories, mockTheme(), () => {});
@@ -377,6 +384,14 @@ describe('memory tool integration', () => {
       const result = tool.renderResult({ details: { action: 'list', memories: [] } }, { expanded: false, isPartial: false }, theme, null);
 
       expect(result.text).toContain('No memories');
+    });
+
+    it('handles undefined details falling back to content', () => {
+      registerMemoryTool(mockApi);
+      const tool = getRegisteredTool();
+      const theme = mockTheme();
+      const result = tool.renderResult({ content: [{ type: 'text', text: 'fallback text' }], details: undefined, isError: false }, { expanded: false, isPartial: false }, theme, null);
+      expect(result.text).toContain('fallback text');
     });
   });
 

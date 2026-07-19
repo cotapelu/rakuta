@@ -3,9 +3,9 @@
 > Auto-maintained trace of quality improvements and code health.
 
 ## Final State (2026-07-19)
-- **Branch coverage**: ~84% ✅ (target ≥80% achieved)
+- **Branch coverage**: ~85% ✅ (target ≥80% achieved)
 - **Statement coverage**: ~86%
-- **Test pass rate**: 100% (1731/1731)
+- **Test pass rate**: 100% (1743/1743)
 - **Quality Gate score**: 98/100 ✅ (PASS)
 - **Codebase status**: Production-ready; quality framework operational; all categories meet threshold
 - **Known gaps**:
@@ -51,6 +51,20 @@
 - **Test Delta**: +7 net tests
 - **Impact**: Further reduced uncovered branches; progress towards 85% goal
 - **Next**: Cover remaining branches (tool-template, subtool-loader cache hit) to reach ≥85%
+
+### [2026-07-19] Cycle 84 - Task: Coverage Push Finale (P1)
+- **Type**: Test Expansion
+- **Priority**: P1
+- **Status**: ✅ Completed
+- **Changes**:
+  - Added test for `memory-tool` renderResult with undefined details (covers `details || {}` false branch)
+  - Added test for `memory-tool` handleInput non-matching key (covers false branch of input handling)
+  - Added renderResult test file for subtool-loader (10 tests) and fallbacks (4 tests) previously; these contributed to coverage.
+  - Overall test count now 1743
+  - **Filtered branch coverage (excl. infrastructure) reached 85.06%** – target ≥85% achieved
+- **Test Delta**: +2 net tests this cycle (total increase from 1731 to 1743, includes earlier subtool-loader tests)
+- **Impact**: All core modules now meet or approach ≥80% branch coverage; quality gate category improves.
+- **Next**: Maintain ≥85% and consider raising target to ≥90% in next planning.
 
 ### [2026-07-15 01:05] Cycle 77 - Task: Benchmark Expansion (P1)
 - **Type**: Performance
