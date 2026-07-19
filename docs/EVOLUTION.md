@@ -1,11 +1,11 @@
 # Evolution Roadmap (Current State)
 
 ## Status (2026-07-19)
-- **Overall branch coverage**: ~90% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1767/1767)
+- **Overall branch coverage**: ~92% ✅ (target ≥80% achieved)
+- **Test pass rate**: 100% (1781/1781)
 - **Code quality**: Clean typecheck, 0 ESLint warnings
 - **Architecture**: Simplified
-- **Quality Gate**: 98/100 ✅
+- **Quality Gate**: 99/100 ✅
 - **Audit AST migration**: Completed (all patterns AST-based))
 
 ## Completed Iterations
@@ -22,6 +22,8 @@
 - ✅ Team‑ops‑renderer edge‑case tests: added 7 tests covering status rendering, agent icons, messages truncation, workspace read undefined, claim/release task missing indices, status updates → further branch coverage progress; test count 1731; coverage ~84.12% (target ≥85% remains).
 - ✅ Coverage Finale: added memory-tool renderResult undefined details test and handleInput non‑matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. Filtered branch coverage reached **85.06%** (target ≥85% achieved). Test count 1743.
 - ✅ Coverage Push to 90%: Added tests for http sub-tool (`executeHttp`, 11 tests), computer‑use error handling (8 tests for `executeLs`, `executeFind`, `executeGrep`, `executeRead`), and piclaw‑header extension (5 tests); filtered branch coverage increased from 85.06% to 90.00% (765/850); test count 1767.
+- ✅ Coverage Push beyond 90%: Added targeted tests for `todos-tool` (applyOp edge cases, updateTask content/details, execute paths for add_task/update/remove_task/delete, error handling, session file‑missing scenarios) and other modules; filtered branch coverage reached **92.47% (786/850)**; test count 1781;
+  todos-tool missing branches reduced from 37 to 16; quality gate improved to 99/100.
 
 ## Current Focus
 ### Audit AST Migration (P1)

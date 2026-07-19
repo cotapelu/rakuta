@@ -3,10 +3,10 @@
 > Auto-maintained trace of quality improvements and code health.
 
 ## Final State (2026-07-19)
-- **Branch coverage**: ~90% ✅ (target ≥80% achieved)
-- **Statement coverage**: ~80.5%
-- **Test pass rate**: 100% (1767/1767)
-- **Quality Gate score**: 98/100 ✅ (PASS)
+- **Branch coverage**: ~92.5% ✅ (target ≥80% achieved)
+- **Statement coverage**: ~80.7%
+- **Test pass rate**: 100% (1781/1781)
+- **Quality Gate score**: 99/100 ✅ (PASS)
 - **Codebase status**: Production-ready; quality framework operational; all categories meet threshold
 - **Known gaps**:
   - Audit patterns now fully AST-based (SQLi, XSS, JWT, IDOR, command injection)
@@ -65,6 +65,24 @@
 - **Test Delta**: +2 net tests this cycle (total increase from 1731 to 1743, includes earlier subtool-loader tests)
 - **Impact**: All core modules now meet or approach ≥80% branch coverage; quality gate category improves.
 - **Next**: Maintain ≥85% and consider raising target to ≥90% in next planning.
+
+### [2026-07-19] Cycle 86 - Task: Coverage Push beyond 90% (P1)
+- **Type**: Test Expansion
+- **Priority**: P1
+- **Status**: ✅ Completed
+- **Changes**:
+  - Added targeted tests for `todos-tool` to cover remaining branches:
+    - `applyOp` edge cases: add_phase with non-array tasks error, add_task with non-string phase error, update with invalid status error
+    - `updateTask` content and details updates
+    - `TodoState` I/O and event handling improvements
+    - `getOperationName` and `countOperations` exercised via execute for all operations (add_task, update, remove_task, delete)
+    - `execute` error handling: empty params, non-object params, add_phase invalid JSON string, add_task invalid phase type, update invalid status
+    - `session_start` and `session_tree` file-missing scenarios
+  - All new tests pass; overall test count increased to 1781
+  - **Filtered branch coverage (excl. infrastructure) reached 92.47% (786/850)** – target ≥92% achieved
+- **Test Delta**: +14 net tests
+- **Impact**: todos-tool missing branches reduced from 37 to 16; overall filtered coverage up from 90.00% to 92.47%; quality gate improved to 99/100
+- **Next**: Continue towards ≥95% filtered coverage; address remaining gaps in `renderers` and `tool-template` modules.
 
 ### [2026-07-19] Cycle 85 - Task: Coverage Push to 90% (P1)
 - **Type**: Test Expansion

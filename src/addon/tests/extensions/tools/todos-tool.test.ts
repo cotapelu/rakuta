@@ -229,6 +229,22 @@ describe('TodoState', () => {
       const res = state.updateTask('nonexistent', { status: 'completed' });
       expect(res).toBeNull();
     });
+
+    it('updates content', () => {
+      const phase = state.addPhase('P1', [{ content: 'T1' }]);
+      const taskId = phase.tasks[0].id;
+      const task = state.updateTask(taskId, { content: 'T1-modified' });
+      expect(task).not.toBeNull();
+      expect(task!.content).toBe('T1-modified');
+    });
+
+    it('updates details', () => {
+      const phase = state.addPhase('P1', [{ content: 'T1' }]);
+      const taskId = phase.tasks[0].id;
+      const task = state.updateTask(taskId, { details: 'details text' });
+      expect(task).not.toBeNull();
+      expect(task!.details).toBe('details text');
+    });
   });
 
   describe('removeTask', () => {
@@ -489,6 +505,15 @@ describe('getLatestTodoPhasesFromEntries', () => {
     const entries = [{ type: 'message', message: { role: 'user' } }];
     expect(getLatestTodoPhasesFromEntries(entries)).toEqual([]);
   });
+
+  it('skips entries where type is not message', () => {
+    const phases: TodoPhase[] = [{ id: 'p1', name: 'P1', tasks: [] }];
+    const entries = [
+      { type: 'chunk', text: '' },
+      { type: 'message', message: { role: 'toolResult', toolName: 'todos', details: { phases } } }
+    ] as any[];
+    expect(getLatestTodoPhasesFromEntries(entries)).toEqual(phases);
+  });
 });
 
 // ================================
@@ -734,6 +759,20 @@ describe('TodoTool session lifecycle', () => {
     expect(result.details.phases).toHaveLength(1);
     expect(result.details.phases[0].name).toBe('P2');
   });
+
+  it('session_start sets storage to memory when file missing', async () => {
+    // No file set in fsMap
+    const sessionStartCall = api.on.mock.calls.find((c: any) => c[0] === 'session_start');
+    expect(sessionStartCall).toBeDefined();
+    const handler = sessionStartCall[1];
+    const mockCtx = {
+      cwd,
+      sessionManager: { getBranch: () => [] },
+    } as any;
+    await handler(null as any, mockCtx);
+    const result = await tool.execute('tid', { list: {} }, undefined, undefined, mockCtx);
+    expect(result.details.storage).toBe('memory');
+  });
 });
 
 // Additional formatSummary edge cases for branch coverage
@@ -758,5 +797,97 @@ describe('formatSummary edge cases', () => {
     // Should show Phase 2/2 "P2"
     expect(text).toMatch(/Phase 2\/2/);
     expect(text).toContain('P2');
+  });
+});
+
+// Additional execute coverage for missing operations and error paths
+describe('createTodoTool execute additional coverage', () => {
+  let api: any;
+  let tool: any;
+  const cwd = '/test';
+
+  beforeEach(() => {
+    api = { on: vi.fn(), exec: vi.fn(), sendMessage: vi.fn() };
+    tool = createTodoTool(api);
+  });
+
+  it('executes add_task successfully', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    await tool.execute('1', { add_phase: { name: 'P1' } }, undefined, undefined, ctx);
+    const res = await tool.execute('2', { add_task: { phase: 'phase-1', content: 'Task1' } }, undefined, undefined, ctx);
+    expect(res.isError).toBe(false);
+    expect(res.details.phases[0].tasks).toHaveLength(1);
+    expect(res.details.phases[0].tasks[0].content).toBe('Task1');
+  });
+
+  it('executes update with notes and details', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const init = await tool.execute('1', { add_phase: { name: 'P', tasks: [{ content: 'T' }] } }, undefined, undefined, ctx);
+    const taskId = init.details.phases[0].tasks[0].id;
+    const res = await tool.execute('2', { update: { id: taskId, notes: 'note', details: 'details' } }, undefined, undefined, ctx);
+    expect(res.isError).toBe(false);
+    expect(res.details.phases[0].tasks[0].notes).toBe('note');
+    expect(res.details.phases[0].tasks[0].details).toBe('details');
+  });
+
+  it('executes remove_task successfully', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const init = await tool.execute('1', { add_phase: { name: 'P', tasks: [{ content: 'T' }] } }, undefined, undefined, ctx);
+    const taskId = init.details.phases[0].tasks[0].id;
+    const res = await tool.execute('2', { remove_task: { id: taskId } }, undefined, undefined, ctx);
+    expect(res.isError).toBe(false);
+    expect(res.details.phases[0].tasks).toHaveLength(0);
+  });
+
+  it('executes delete successfully', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    await tool.execute('1', { add_phase: { name: 'P', tasks: [{ content: 'T' }] } }, undefined, undefined, ctx);
+    const res = await tool.execute('2', { delete: {} }, undefined, undefined, ctx);
+    expect(res.isError).toBe(false);
+    expect(res.details.phases).toHaveLength(0);
+  });
+
+  it('execute add_task with invalid phase type returns error', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const res = await tool.execute('1', { add_task: { phase: 123, content: 'T' } }, undefined, undefined, ctx);
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('add_task.phase must be a string');
+  });
+
+  it('execute update with invalid status returns error', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const init = await tool.execute('1', { add_phase: { name: 'P', tasks: [{ content: 'T' }] } }, undefined, undefined, ctx);
+    const taskId = init.details.phases[0].tasks[0].id;
+    const res = await tool.execute('2', { update: { id: taskId, status: 'bad' } }, undefined, undefined, ctx);
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('Invalid status');
+  });
+
+  it('execute with empty parameters returns error', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const res = await tool.execute('1', {}, undefined, undefined, ctx);
+    expect(res.isError).toBe(true);
+    expect(res.details?.error).toContain('No operation specified');
+  });
+
+  it('execute with non-object params returns error', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const res = await tool.execute('1', 123 as any, undefined, undefined, ctx);
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('object required');
+  });
+
+  it('execute with add_phase.tasks non-array returns error', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const res = await tool.execute('1', { add_phase: { name: 'P', tasks: 123 } }, undefined, undefined, ctx);
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('add_phase.tasks must be an array');
+  });
+
+  it('execute with add_phase as invalid JSON string returns error', async () => {
+    const ctx = { cwd, sessionManager: { getBranch: () => [] } };
+    const res = await tool.execute('1', { add_phase: 'not json' }, undefined, undefined, ctx);
+    expect(res.isError).toBe(true);
+    expect(res.content[0].text).toContain('add_phase must be an object');
   });
 });

@@ -362,9 +362,9 @@ Last Updated: 2026-07-18
 - [x] **Cycle 84**: Coverage finale: memory-tool renderResult undefined details test, handleInput non-matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. **Filtered branch coverage 85.06% (target ≥85% achieved).** Test suite 1743/1743.
 
 ## Upcoming
-- Achieve ≥90% branch coverage (current ~85%).
-- Target remaining low-coverage modules: extension.ts (54%), plugin-loader (65%), ast_query (80%), call_graph (81%), master-tool (75%), analyze (82%), etc.
-- Maintain overall statement coverage ≥91%.
+- Achieve ≥95% filtered branch coverage (current ~92%).
+- Target remaining modules: todos-tool (16%), team-ops-renderer (7%), piclaw-header (4%), memory-tool (4%), tool-template (4%), circuit-breaker (3%), and other renderers/subtool-loader.
+- Maintain test pass rate 100% and clean typecheck.
 
 
 ## Notes

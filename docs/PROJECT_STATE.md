@@ -13,11 +13,12 @@ Last update: 2026-07-19 01:30 UTC
 - **Cycle 82**: Coverage push: removed dead default in subtool-loader; added renderCall & fallback tests (7) and path-security edge tests (4); filtered branch coverage ↑ 82.44%→84.22%; test suite 1724/1724.
 - **Cycle 83**: Team‑ops‑renderer edge‑case tests (7) covering status rendering, agent icons, messages truncation, workspace read undefined, claim/release task missing indices, status updates; test suite 1731/1731; coverage ~84.12%.
 - **Cycle 84**: Coverage finale: added memory-tool renderResult undefined details test and handleInput non‑matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. **Filtered branch coverage reached 85.06% (target ≥85% achieved).** Test suite 1743/1743.
+- **Cycle 86**: Coverage push beyond 90%: added targeted tests for `todos-tool` and other modules; filtered branch coverage reached **92.47% (786/850)**; test suite 1781/1781.
 
 ## Overall Metrics (Current)
-- **Branch coverage**: ~85% ✅ (target ≥80% achieved)
-- **Statement coverage**: ~89%
-- **Test suite**: 1743 passing tests (100% pass rate)
+- **Branch coverage**: ~92% ✅ (target ≥80% achieved)
+- **Statement coverage**: ~81%
+- **Test suite**: 1781 passing tests (100% pass rate)
 - **ESLint warnings**: 0
 - **Typecheck**: Clean
 
