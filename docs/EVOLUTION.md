@@ -1,8 +1,8 @@
 # Evolution Roadmap (Current State)
 
 ## Status (2026-07-19)
-- **Overall branch coverage**: ~92% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1781/1781)
+- **Overall branch coverage**: ~93% ✅ (target ≥80% achieved)
+- **Test pass rate**: 100% (1787/1787)
 - **Code quality**: Clean typecheck, 0 ESLint warnings
 - **Architecture**: Simplified
 - **Quality Gate**: 99/100 ✅
@@ -24,6 +24,7 @@
 - ✅ Coverage Push to 90%: Added tests for http sub-tool (`executeHttp`, 11 tests), computer‑use error handling (8 tests for `executeLs`, `executeFind`, `executeGrep`, `executeRead`), and piclaw‑header extension (5 tests); filtered branch coverage increased from 85.06% to 90.00% (765/850); test count 1767.
 - ✅ Coverage Push beyond 90%: Added targeted tests for `todos-tool` (applyOp edge cases, updateTask content/details, execute paths for add_task/update/remove_task/delete, error handling, session file‑missing scenarios) and other modules; filtered branch coverage reached **92.47% (786/850)**; test count 1781;
   todos-tool missing branches reduced from 37 to 16; quality gate improved to 99/100.
+- ✅ Coverage Incremental Push: Added edge‑case tests for `team-ops-renderer` (10 tests) and `piclaw-header` (3 tests); filtered branch coverage reached **93.41% (794/850)**; test count 1787; team‑ops‑renderer missing branches eliminated; piclaw‑header missing reduced.
 
 ## Current Focus
 ### Audit AST Migration (P1)

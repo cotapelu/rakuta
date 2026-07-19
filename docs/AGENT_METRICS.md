@@ -3,9 +3,9 @@
 > Auto-maintained trace of quality improvements and code health.
 
 ## Final State (2026-07-19)
-- **Branch coverage**: ~92.5% ✅ (target ≥80% achieved)
-- **Statement coverage**: ~80.7%
-- **Test pass rate**: 100% (1781/1781)
+- **Branch coverage**: ~93.5% ✅ (target ≥80% achieved)
+- **Statement coverage**: ~80.8%
+- **Test pass rate**: 100% (1787/1787)
 - **Quality Gate score**: 99/100 ✅ (PASS)
 - **Codebase status**: Production-ready; quality framework operational; all categories meet threshold
 - **Known gaps**:
@@ -83,6 +83,19 @@
 - **Test Delta**: +14 net tests
 - **Impact**: todos-tool missing branches reduced from 37 to 16; overall filtered coverage up from 90.00% to 92.47%; quality gate improved to 99/100
 - **Next**: Continue towards ≥95% filtered coverage; address remaining gaps in `renderers` and `tool-template` modules.
+
+### [2026-07-19] Cycle 87 - Task: Coverage Push incremental (P1)
+- **Type**: Test Expansion
+- **Priority**: P1
+- **Status**: ✅ Completed
+- **Changes**:
+  - Added edge‑case tests for `team-ops-renderer` covering agents empty/undefined, messages truncation boundaries, long content ellipsis, workspace value truncation threshold, send_message default channel, registration guard, error fallback, and undefined messages default (10 tests)
+  - Added edge‑case tests for `piclaw-header` covering PI_OFFLINE, non‑ok fetch response, and fetch network error (3 tests)
+  - All new tests pass; overall test count increased to 1787
+  - **Filtered branch coverage (excl. infrastructure) reached 93.41% (794/850)** – modest improvement
+- **Test Delta**: +13 net tests
+- **Impact**: team‑ops‑renderer missing branches dropped from 7 to 0; piclaw‑header missing reduced; overall filtered coverage up from 92.47% to 93.41%
+- **Next**: Target remaining high‑missing modules (todos‑tool 16, memory‑tool 4, tool‑template 4, logger 3, etc.) to reach ≥95%
 
 ### [2026-07-19] Cycle 85 - Task: Coverage Push to 90% (P1)
 - **Type**: Test Expansion

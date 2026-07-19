@@ -112,4 +112,49 @@ describe('piclaw-header extension', () => {
     const textComp = renderFn(null, theme);
     expect(textComp.text).not.toContain('Update Available');
   });
+
+  // Additional edge cases to cover remaining branches
+  it('skips version check when PI_OFFLINE set', async () => {
+    process.env.PI_OFFLINE = '1';
+    (existsSync as any).mockReturnValue(true);
+    (readFileSync as any).mockReturnValue(JSON.stringify({ name: 'app', version: '1.0.0' }));
+    await initExtension();
+    const setHeader = vi.fn();
+    const ctx = { hasUI: true, ui: { setHeader } };
+    await handlers['session_start'](null, ctx);
+    expect(setHeader).toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+    delete process.env.PI_OFFLINE;
+  });
+
+  it('handles non-ok fetch response gracefully', async () => {
+    (existsSync as any).mockReturnValue(true);
+    (readFileSync as any).mockReturnValue(JSON.stringify({ name: 'app', version: '1.0.0' }));
+    (global.fetch as any).mockResolvedValue({ ok: false, status: 500 } as any);
+    await initExtension();
+    const setHeader = vi.fn();
+    const ctx = { hasUI: true, ui: { setHeader } };
+    await handlers['session_start'](null, ctx);
+    expect(setHeader).toHaveBeenCalled();
+    const renderFn = setHeader.mock.calls[0][0];
+    const theme = { fg: (c,s)=>s, bold: s=>s, dim: s=>s, warning: s=>s, accent: s=>s };
+    const textComp = renderFn(null, theme);
+    // Should not throw and should not show update banner
+    expect(textComp.text).not.toContain('Update Available');
+  });
+
+  it('handles fetch error (network down)', async () => {
+    (existsSync as any).mockReturnValue(true);
+    (readFileSync as any).mockReturnValue(JSON.stringify({ name: 'app', version: '1.0.0' }));
+    (global.fetch as any).mockRejectedValue(new Error('network failure'));
+    await initExtension();
+    const setHeader = vi.fn();
+    const ctx = { hasUI: true, ui: { setHeader } };
+    await handlers['session_start'](null, ctx);
+    expect(setHeader).toHaveBeenCalled();
+    const renderFn = setHeader.mock.calls[0][0];
+    const theme = { fg: (c,s)=>s, bold: s=>s, dim: s=>s, warning: s=>s, accent: s=>s };
+    const textComp = renderFn(null, theme);
+    expect(textComp.text).not.toContain('Update Available');
+  });
 });

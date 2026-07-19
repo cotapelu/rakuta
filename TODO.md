@@ -360,10 +360,11 @@ Last Updated: 2026-07-18
 - [x] **Cycle 82**: Coverage push: removed dead default in subtool-loader switch; added renderCall & fallback tests (7) and path-security edge tests (4). Filtered branch coverage ↑ 82.44%→84.22%; test suite 1724/1724.
 - [x] **Cycle 83**: Team‑ops‑renderer edge‑case tests (7) covering status, agents, messages truncation, workspace, claim/release task, update_status. Filtered branch coverage ~84.12%; test suite 1731/1731.
 - [x] **Cycle 84**: Coverage finale: memory-tool renderResult undefined details test, handleInput non-matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. **Filtered branch coverage 85.06% (target ≥85% achieved).** Test suite 1743/1743.
+- [x] **Cycle 87**: Added edge‑case tests for team‑ops‑renderer (10 tests) and piclaw‑header (3 tests); filtered branch coverage increased to 93.41% (794/850); test suite 1787/1787.
 
 ## Upcoming
-- Achieve ≥95% filtered branch coverage (current ~92%).
-- Target remaining modules: todos-tool (16%), team-ops-renderer (7%), piclaw-header (4%), memory-tool (4%), tool-template (4%), circuit-breaker (3%), and other renderers/subtool-loader.
+- Achieve ≥95% filtered branch coverage (current ~93.5%).
+- Target remaining modules: todos-tool (16), memory-tool (4), tool-template (4), logger (3), piclaw-header (3), circuit-breaker (3), path-security (3), and other renderers/subtool-loader.
 - Maintain test pass rate 100% and clean typecheck.
 
 

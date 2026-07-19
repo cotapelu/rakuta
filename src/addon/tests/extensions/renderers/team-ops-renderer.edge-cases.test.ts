@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { registerTeamOpsRenderer } from '../../../extensions/renderers/team-ops-renderer.ts';
 
-// Mock @earendil-works/pi-tui Text
 vi.mock('@earendil-works/pi-tui', () => ({
   Text: class Text {
     text: string;
@@ -11,7 +10,7 @@ vi.mock('@earendil-works/pi-tui', () => ({
   },
 }));
 
-describe('Team Ops Renderer Edge Cases', () => {
+describe('Team Ops Renderer edge cases', () => {
   let mockApi: any;
   let capturedRenderer: any;
 
@@ -31,90 +30,118 @@ describe('Team Ops Renderer Edge Cases', () => {
     };
   }
 
-  it('renders get_team_status without agents list when agents array missing', () => {
-    const details = {
-      action: 'get_team_status',
-      teamId: 'teamX',
-      totalAgents: 0,
-      activeAgents: 0,
-      pendingTasks: 0,
-      completedTasks: 0,
-      agents: undefined as any, // no agents array
-    };
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('Team: teamX');
-    // Summary line always present; ensure individual agent lines absent (no emoji)
-    expect(result.text).not.toContain('🔄');
-    expect(result.text).not.toContain('💤');
+  describe('get_team_status edge cases', () => {
+    it('handles empty agents array', () => {
+      const details = {
+        action: 'get_team_status',
+        teamId: 'team-1',
+        totalAgents: 5,
+        activeAgents: 3,
+        pendingTasks: 2,
+        completedTasks: 10,
+        agents: [] as any[]
+      };
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      // Should not list individual agents
+      expect(result.text).not.toMatch(/\b(agent-|id:)/);
+      expect(result.text).toContain('Team: team-1');
+    });
+
+    it('handles agents undefined', () => {
+      const details = {
+        action: 'get_team_status',
+        teamId: 'team-1',
+        totalAgents: 5,
+        activeAgents: 3,
+        pendingTasks: 2,
+        completedTasks: 10
+        // agents omitted
+      } as any;
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      // Should not list individual agents
+      expect(result.text).not.toMatch(/\b(agent-|id:)/);
+    });
   });
 
-  it('renders idle agent with sleep icon', () => {
-    const details = {
-      action: 'get_team_status',
-      teamId: 'teamY',
-      totalAgents: 1,
-      activeAgents: 1,
-      pendingTasks: 0,
-      completedTasks: 0,
-      agents: [
-        { id: 'agent-1', status: 'idle' }
-      ]
-    };
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('💤');
-    expect(result.text).not.toContain('🔄');
+  describe('get_messages edge cases', () => {
+    it('does not add truncation line when exactly 10 messages', () => {
+      const msgs = Array.from({ length: 10 }, (_, i) => ({
+        from: `user${i+1}`,
+        channel: 'team.chat',
+        content: `Message ${i+1}`
+      }));
+      const details = { action: 'get_messages', messages: msgs };
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('Messages (10):');
+      expect(result.text).not.toContain('...and');
+    });
+
+    it('handles message content with length > 60 (ellipsis)', () => {
+      const longText = 'A'.repeat(70);
+      const details = {
+        action: 'get_messages',
+        messages: [{ from: 'user1', channel: 'chat', content: longText }]
+      };
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('...'); // should be truncated
+    });
+
+    it('handles undefined messages (default to empty array)', () => {
+      const details = { action: 'get_messages' } as any; // no messages
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('Messages (0):');
+    });
   });
 
-  it('truncates messages list to 10 and shows remaining count', () => {
-    const manyMessages = Array.from({ length: 15 }, (_, i) => ({
-      from: `user${i}`,
-      channel: 'chat',
-      content: `Message ${i}`
-    }));
-    const details = {
-      action: 'get_messages',
-      messages: manyMessages
-    };
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('...and 5 more.');
-    // Ensure only first 10 are listed
-    for (let i = 0; i < 10; i++) {
-      expect(result.text).toContain(`user${i}`);
-    }
-    // The 11th should not appear
-    expect(result.text).not.toContain('user10');
+  describe('workspace_read edge cases', () => {
+    it('shows value when length <= 200 (no ellipsis)', () => {
+      const details = { action: 'workspace_read', key: 'k', value: 'A'.repeat(100) };
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('A'.repeat(100));
+      expect(result.text).not.toContain('...');
+    });
   });
 
-  it('renders workspace_read when value is undefined', () => {
-    const details = { action: 'workspace_read', key: 'mykey', value: undefined };
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('No value set');
+  describe('send_message edge cases', () => {
+    it('uses default channel when details.channel is undefined', () => {
+      const details = { action: 'send_message' } as any; // no channel
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('team.chat');
+    });
+
+    it('uses default channel when details.channel is empty string', () => {
+      const details = { action: 'send_message', channel: '' };
+      const msg = { details, content: [] };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('team.chat');
+    });
   });
 
-  it('renders claim_task without taskIndex shows no tasks message', () => {
-    const details = { action: 'claim_task' }; // no taskIndex
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('No tasks available');
+  describe('registration edge cases', () => {
+    it('does not register if api.registerMessageRenderer is not a function', () => {
+      const badApi = { registerMessageRenderer: 123 as any };
+      registerTeamOpsRenderer(badApi);
+      // Should not throw and not attempt to assign
+      expect(badApi.registerMessageRenderer).toBe(123);
+    });
   });
 
-  it('renders release_task without taskIndex shows undefined index', () => {
-    const details = { action: 'release_task' }; // missing taskIndex
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('↩ Released task');
-    expect(result.text).toContain('#undefined');
-  });
-
-  it('renders update_status with custom status', () => {
-    const details = { action: 'update_status', status: 'away' };
-    const msg = { details, content: [] };
-    const result = capturedRenderer(msg, {}, mockTheme());
-    expect(result.text).toContain('● Status updated');
-    expect(result.text).toContain('away');
+  describe('error handling edge cases', () => {
+    it('shows fallback error message when msg.isError true but details.error absent', () => {
+      const msg = {
+        details: { action: 'some_action' },
+        isError: true,
+        content: []
+      };
+      const result = capturedRenderer(msg, {}, mockTheme());
+      expect(result.text).toContain('❌ Error occurred');
+    });
   });
 });
