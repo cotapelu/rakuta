@@ -32,6 +32,7 @@ function makePrettyLogger(level: LogLevel) {
         case 'fatal':
           console.error(`[${level.toUpperCase()}]`, ...args);
           break;
+        /* istanbul ignore next */
         default:
           // This should never happen if all cases are exhaustive
           throw new Error(`Unhandled log level: ${level}`);

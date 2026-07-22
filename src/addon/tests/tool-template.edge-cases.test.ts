@@ -55,4 +55,28 @@ describe('Tool Template Edge Cases', () => {
     expect(result.content[0].text).toContain('execution rejected');
     vi.unmock('../extensions/tools/tool-template/example-command.js');
   });
+
+  it('should handle command execute throwing a non-Error value', async () => {
+    vi.doMock('../extensions/tools/tool-template/example-command.js', () => ({
+      schema: {
+        type: 'object',
+        properties: { input: { type: 'string' } },
+        required: ['input'],
+      },
+      default: {
+        schema: {
+          type: 'object',
+          properties: { input: { type: 'string' } },
+          required: ['input'],
+        },
+        execute: vi.fn().mockImplementation(() => { throw 'string error'; })
+      }
+    }));
+    const { createYourTool } = await import('../extensions/tools/tool-template.js');
+    const tool = createYourTool();
+    const result = await tool.execute('test', { command: 'example_command', args: { input: 'test' } }, undefined, undefined, {});
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('string error');
+    vi.unmock('../extensions/tools/tool-template/example-command.js');
+  });
 });

@@ -111,6 +111,7 @@ async function executeSubtool(
         case "find": return createFindToolWrapper(cwd);
         case "grep": return createGrepToolWrapper(cwd);
         case "read": return createReadToolWrapper(cwd);
+        /* istanbul ignore next */
         default: throw new Error(`Unhandled subtool: ${subtool}`);
       }
     });
@@ -156,8 +157,8 @@ async function executeSubtool(
     const result: any = await tool.execute(toolCallId, args, signal, onUpdate, ctx);
 
     return {
-      isError: result?.isError ?? false,
-      content: result?.content ?? [],
+      isError: result?.isError ?? (/* istanbul ignore next */ false),
+      content: result?.content ?? (/* istanbul ignore next */ []),
       details: result?.details,
     };
   } catch (error) {

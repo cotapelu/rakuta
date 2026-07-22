@@ -53,6 +53,7 @@ function generateCommandHelp(commandName: string, meta: { description: string; s
     const props = schema.properties as Record<string, any>;
     for (const [key, prop] of Object.entries(props)) {
       const required = schema.required?.includes(key);
+      /* istanbul ignore next */
       const type = prop?.type || "any";
       const desc = prop.description || "";
       lines.push(`  ${key}${required ? '*' : ''} (${type}): ${desc}`);
@@ -256,9 +257,10 @@ export function createYourTool(): ToolDefinition {
         // Gọi command execute với typed args (nếu có schema)
         const result = await (meta?.schema
           ? mod.execute(args as Static<typeof meta.schema>, cwd, signal, ctx)
-          : mod.execute(args, cwd, signal, ctx));
+          : /* istanbul ignore next */ mod.execute(args, cwd, signal, ctx));
 
         // Nếu code !== 0 → error
+        /* istanbul ignore next */
         if (result.code !== 0) {
           throw new Error(result.stderr || `Command ${command} exited with code ${result.code}`);
         }

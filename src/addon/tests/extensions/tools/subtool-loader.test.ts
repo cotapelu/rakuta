@@ -185,4 +185,16 @@ describe('subtool-loader', () => {
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('read failed');
   });
+
+  it('caches tool definitions in the same context (factory called once for multiple uses)', async () => {
+    // Spy on the factory mocks
+    const createHttpSpy = createBashToolDefinition as any;
+    // Execute same subtool twice
+    const ctx = makeCtx();
+    const tool1 = createSubLoaderToolDefinition();
+    await tool1.execute('id1', { subtool: 'http', args: { url: 'https://first' } }, null, () => {}, ctx);
+    await tool1.execute('id2', { subtool: 'http', args: { url: 'https://second' } }, null, () => {}, ctx);
+    // Factory should have been called only once (the second call used cached tool)
+    expect(createHttpSpy).toHaveBeenCalledTimes(1);
+  });
 });

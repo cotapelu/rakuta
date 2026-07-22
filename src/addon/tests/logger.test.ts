@@ -58,6 +58,25 @@ describe('logger', () => {
     });
   });
 
+  it('logs JSON with message only (no meta)', async () => {
+    process.env.PI_LOG_FORMAT = 'json';
+    process.env.PI_LOG_LEVEL = 'info';
+    const { logger: reloadedLogger } = await importLogger();
+    mockConsole();
+
+    reloadedLogger.info('solo');
+
+    expect(console.log).toHaveBeenCalledTimes(1);
+    const loggedArg = getConsoleLogMock().mock.calls[0][0];
+    const parsed = JSON.parse(loggedArg);
+    expect(parsed).toMatchObject({
+      timestamp: expect.any(String),
+      level: 'info',
+      message: 'solo',
+    });
+    expect(parsed).not.toHaveProperty('meta');
+  });
+
   it('logs JSON for exact level set', async () => {
     process.env.PI_LOG_FORMAT = 'json';
     process.env.PI_LOG_LEVEL = 'warn';
