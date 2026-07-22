@@ -122,4 +122,29 @@ describe('Todos Renderer', () => {
     // No tasks shown
     expect(result.text).not.toContain('⏳');
   });
+
+  // Edge‑case tests for missing branch coverage
+  it('returns early if api.registerMessageRenderer is not a function', () => {
+    const badApi = { registerMessageRenderer: 'not a function' } as any;
+    // Should not throw
+    expect(() => registerTodosRenderer(badApi)).not.toThrow();
+  });
+
+  it('renders abandoned status with correct icon and color', () => {
+    const msg = {
+      details: {
+        action: 'list',
+        phases: [
+          {
+            name: 'Phase X',
+            tasks: [{ id: 't1', content: 'Abandoned task', status: 'abandoned' }]
+          }
+        ]
+      },
+      content: []
+    };
+    const result = capturedRenderer(msg, {}, mockTheme());
+    expect(result.text).toContain('❌'); // abandoned icon
+    expect(result.text).toContain('Abandoned task');
+  });
 });

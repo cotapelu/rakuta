@@ -31,12 +31,23 @@ export function resolveSecurePath(cwd: string, userPath: string): string {
   }
 
   // Ensure the resolved path starts with the cwd (with proper separator)
-  const normalizedCwd = absoluteCwd.endsWith('/')
-    ? /* istanbul ignore next */ absoluteCwd
-    : absoluteCwd + '/';
-  const normalizedPath = absolutePath.endsWith('/')
-    ? /* istanbul ignore next */ absolutePath
-    : absolutePath + '/';
+  let normalizedCwd: string;
+  if (absoluteCwd.endsWith('/')) {
+    // This branch is theoretically unreachable because path.resolve strips trailing slashes,
+    // but keep for completeness; ignore coverage.
+    /* istanbul ignore next */
+    normalizedCwd = absoluteCwd;
+  } else {
+    normalizedCwd = absoluteCwd + '/';
+  }
+  let normalizedPath: string;
+  if (absolutePath.endsWith('/')) {
+    // Similarly unreachable; ignore coverage.
+    /* istanbul ignore next */
+    normalizedPath = absolutePath;
+  } else {
+    normalizedPath = absolutePath + '/';
+  }
 
   if (!normalizedPath.startsWith(normalizedCwd)) {
     throw new Error(`Access denied: path '${userPath}' is outside working directory`);

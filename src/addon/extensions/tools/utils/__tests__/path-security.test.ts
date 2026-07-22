@@ -85,4 +85,19 @@ describe('PathSecurity', () => {
 
   // Note: The catch block around resolve() is defensive; triggering it reliably is platform-specific.
   // Skipping test to avoid flakiness.
+
+  // Edge: root cwd and root userPath to cover true branches of normalization ternaries (POSIX only)
+  it('covers normalizedCwd true branch with root cwd (POSIX)', () => {
+    const rootCwd = '/';
+    const filePath = 'tmp/file.ts';
+    const fullPath = resolveSecurePath(rootCwd, filePath);
+    expect(fullPath).toBe(join(rootCwd, filePath));
+  });
+
+  it('covers normalizedPath true branch with root paths', () => {
+    const rootCwd = '/';
+    const rootUser = '/';
+    const fullPath = resolveSecurePath(rootCwd, rootUser);
+    expect(fullPath).toBe('/');
+  });
 });

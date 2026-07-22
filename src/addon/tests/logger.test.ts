@@ -191,4 +191,16 @@ describe('logger', () => {
 
     expect(console.trace).toHaveBeenCalledWith('[TRACE]', 'trace-msg');
   });
+  it('does not log when level does not match PI_LOG_LEVEL in pretty format', async () => {
+    process.env.PI_LOG_FORMAT = 'pretty';
+    process.env.PI_LOG_LEVEL = 'info';
+    const { logger: reloadedLogger } = await importLogger();
+    mockConsole();
+
+    (reloadedLogger as any).warn('should not appear');
+
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.info).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
 });

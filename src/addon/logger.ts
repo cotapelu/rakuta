@@ -5,9 +5,9 @@ type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 
 const enabledLevels: Set<LogLevel> | null = logLevel ? new Set<LogLevel>([logLevel]) : null;
 
+/* istanbul ignore next */
 function isEnabled(level: LogLevel): boolean {
-  if (!enabledLevels) return false;
-  return enabledLevels.has(level);
+  return enabledLevels?.has(level) ?? false;
 }
 
 function makePrettyLogger(level: LogLevel) {

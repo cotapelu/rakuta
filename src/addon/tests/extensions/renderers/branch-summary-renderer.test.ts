@@ -67,4 +67,20 @@ describe('Branch Summary Renderer', () => {
     // No fromId line
     expect(result.text).not.toContain('From entry');
   });
+
+  // Edge‑case tests for missing branch coverage
+  it('returns early if api.registerMessageRenderer is not a function', () => {
+    const badApi = { registerMessageRenderer: 'not a function' } as any;
+    expect(() => registerBranchSummaryRenderer(badApi)).not.toThrow();
+  });
+
+  it('renders string details in additional context', () => {
+    const msg = {
+      details: { summary: 'Info', details: 'Some string detail' },
+      content: []
+    };
+    const result = capturedRenderer(msg, {}, mockTheme());
+    expect(result.text).toContain('Additional context:');
+    expect(result.text).toContain('Some string detail');
+  });
 });
