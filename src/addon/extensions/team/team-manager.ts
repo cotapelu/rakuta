@@ -465,9 +465,8 @@ export class AgentTeam implements AgentTeamRuntime {
         const services = await createAgentSessionServices({
           cwd: sessionCwd,
           agentDir: sessionAgentDir,
-          authStorage: parentRuntime.services.authStorage,
+          modelRuntime: parentRuntime.services.modelRuntime,
           settingsManager: parentRuntime.services.settingsManager,
-          modelRegistry: parentRuntime.services.modelRegistry,
         });
 
         const sessionResult = await createAgentSessionFromServices({

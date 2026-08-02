@@ -213,14 +213,14 @@ async function runIteration(scenario: string, cwd: string, customCode?: string, 
         range: { start: 0, end: 3 },
         newCode: `function add(a: number, b: number): number {\n  // optimized\n  return a + b;\n}`
       }];
-      const safeEdit = await import('./safe_edit.ts');
+      const safeEdit = await import('./safe_edit.js');
       await safeEdit.execute({ operations }, { cwd, exec: ctx?.exec });
       await fsp.rm(tmpDir, { recursive: true, force: true });
       break;
     }
     case 'call_graph_small': {
       const fileRel = 'src/addon/extensions/capability-system/plugins/codebase/capabilities/safe_edit.ts';
-      const callGraph = await import('./call_graph.ts');
+      const callGraph = await import('./call_graph.js');
       await callGraph.execute({
         file: fileRel,
         entryPoints: undefined,
@@ -230,7 +230,7 @@ async function runIteration(scenario: string, cwd: string, customCode?: string, 
     }
     case 'call_graph_large': {
       const fileRel = 'src/addon/extensions/capability-system/plugins/codebase/capabilities/benchmark.ts';
-      const callGraph = await import('./call_graph.ts');
+      const callGraph = await import('./call_graph.js');
       await callGraph.execute({
         file: fileRel,
         entryPoints: undefined,
@@ -247,7 +247,7 @@ async function runIteration(scenario: string, cwd: string, customCode?: string, 
         'src/addon/extensions/capability-system/plugins/codebase/capabilities/call_graph.ts',
         'src/addon/extensions/capability-system/plugins/codebase/capabilities/benchmark.ts'
       ];
-      const depTree = await import('./dependency_tree.ts');
+      const depTree = await import('./dependency_tree.js');
       await depTree.execute({
         files: allFiles,
         entryPoints: undefined

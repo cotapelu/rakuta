@@ -14,8 +14,7 @@ import {
   createAgentSessionFromServices,
   SessionManager,
   SettingsManager,
-  ModelRegistry,
-  AuthStorage,
+  ModelRuntime,
   getAgentDir,
   InteractiveMode,
   initTheme,
@@ -41,8 +40,7 @@ export default async function main() {
   const cwd = process.cwd();
   const agentDir = getAgentDir();
 
-  const authStorage = AuthStorage.create();
-  const modelRegistry = ModelRegistry.create(authStorage);
+  const modelRuntime = await ModelRuntime.create();
   const settingsManager = SettingsManager.create(cwd, agentDir);
 
   // Session manager (always create new session for simplicity)
@@ -54,9 +52,8 @@ export default async function main() {
     const services = await createAgentSessionServices({
       cwd,
       agentDir,
-      authStorage,
+      modelRuntime,
       settingsManager,
-      modelRegistry,
       resourceLoaderOptions: {
         extensionFactories: extensionFactories,
       },

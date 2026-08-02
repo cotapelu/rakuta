@@ -45,18 +45,40 @@ function createMockRuntime(overrides: Partial<AgentSessionRuntime> = {}): AgentS
   const services: AgentSessionServices = {
     cwd: '/tmp',
     agentDir: '/tmp/agent',
-    authStorage: {
-      get: vi.fn(),
-      set: vi.fn(),
-      delete: vi.fn(),
+    modelRuntime: {
+      getModel: vi.fn(),
+      getModels: vi.fn(),
+      getProviders: vi.fn(),
+      getProvider: vi.fn(),
+      getAvailable: vi.fn(),
+      getAvailableSnapshot: vi.fn(),
+      getError: vi.fn(),
+      checkAuth: vi.fn(),
+      getAuth: vi.fn(),
+      listCredentials: vi.fn(),
+      getProviderAuthStatus: vi.fn(),
+      hasConfiguredAuth: vi.fn(),
+      isUsingOAuth: vi.fn(),
+      stream: vi.fn(),
+      complete: vi.fn(),
+      streamSimple: vi.fn(),
+      completeSimple: vi.fn(),
+      login: vi.fn(),
+      logout: vi.fn(),
+      refresh: vi.fn(),
+      registerNativeProvider: vi.fn(),
+      registerProvider: vi.fn(),
+      unregisterProvider: vi.fn(),
+      setRuntimeApiKey: vi.fn(),
+      removeRuntimeApiKey: vi.fn(),
+      getRegisteredProviderConfig: vi.fn(),
+      getRegisteredProviderIds: vi.fn(),
+      getRegisteredNativeProvider: vi.fn(),
+      getCompatibilityRequestConfig: vi.fn(),
     },
     settingsManager: {
       get: vi.fn(),
       set: vi.fn(),
-    },
-    modelRegistry: {
-      getCurrentModel: vi.fn(),
-      listModels: vi.fn(),
     },
     resourceLoader: {
       loadSkill: vi.fn(),
@@ -297,10 +319,10 @@ describe('runtime-context', () => {
   });
 
   describe('getCurrentAuthStorage', () => {
-    it('should return authStorage from services', () => {
+    it('should return modelRuntime from services', () => {
       const runtime = createMockRuntime();
       setCurrentRuntime(runtime);
-      expect(getCurrentAuthStorage()).toBe(runtime.services.authStorage);
+      expect(getCurrentAuthStorage()).toBe(runtime.services.modelRuntime);
     });
   });
 
@@ -313,10 +335,10 @@ describe('runtime-context', () => {
   });
 
   describe('getCurrentModelRegistry', () => {
-    it('should return modelRegistry from services', () => {
+    it('should return modelRuntime from services', () => {
       const runtime = createMockRuntime();
       setCurrentRuntime(runtime);
-      expect(getCurrentModelRegistry()).toBe(runtime.services.modelRegistry);
+      expect(getCurrentModelRegistry()).toBe(runtime.services.modelRuntime);
     });
   });
 
