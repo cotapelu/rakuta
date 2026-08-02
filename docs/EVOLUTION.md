@@ -1,12 +1,13 @@
 # Evolution Roadmap (Current State)
 
 ## Status (2026-07-19)
-- **Overall branch coverage**: ~93% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1787/1787)
+- **Overall branch coverage**: ~95.1% ✅ (target ≥80% achieved)
+- **Test pass rate**: 100% (1813/1813)
 - **Code quality**: Clean typecheck, 0 ESLint warnings
 - **Architecture**: Simplified
 - **Quality Gate**: 99/100 ✅
-- **Audit AST migration**: Completed (all patterns AST-based))
+- **Audit AST migration**: Completed (all patterns AST-based)
+- **Library compatibility**: pi-coding-agent v0.83.0 ✅
 
 ## Completed Iterations
 - ✅ Remove autonomous engine
@@ -26,6 +27,7 @@
   todos-tool missing branches reduced from 37 to 16; quality gate improved to 99/100.
 - ✅ Coverage Incremental Push: Added edge‑case tests for `team-ops-renderer` (10 tests) and `piclaw-header` (3 tests); filtered branch coverage reached **93.41% (794/850)**; test count 1787; team‑ops‑renderer missing branches eliminated; piclaw‑header missing reduced.
 - ✅ Coverage Push to 95%: Added circuit‑breaker comprehensive tests (8), extended tool‑template with non‑Error throw handling, added targeted edge‑case tests for memory‑renderer, subtool‑loader caching, and piclaw‑header scenarios, plus strategic `/* istanbul ignore next */` for unreachable branches; filtered branch coverage reached **95.11% (798/839)**; test count 1801; target ≥95% achieved.
+- ✅ **pi-coding-agent v0.83.0 API Migration**: Updated codebase for breaking API changes (AuthStorage + ModelRegistry → ModelRuntime). Modified 6 source files and 3 test files. Build and all 1813 tests pass. Zero regressions.
 
 ## Current Focus
 ### Audit AST Migration (P1)

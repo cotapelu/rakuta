@@ -15,6 +15,22 @@
 
 ## Recent Cycles
 
+### [2026-07-19] Cycle 89 - Task: pi-coding-agent v0.83.0 API Migration (P1)
+- **Type**: Breaking API Migration / Bug Fix
+- **Priority**: P1
+- **Status**: ✅ Completed
+- **Changes**:
+  - Updated main.ts to use ModelRuntime instead of AuthStorage + ModelRegistry
+  - Updated runtime-context.ts getters to return modelRuntime for authStorage and modelRegistry
+  - Updated team-manager.ts child runtime factory to use modelRuntime and settingsManager
+  - Updated child-worker.ts to use modelRuntime.getModel() instead of modelRegistry.find()
+  - Fixed dynamic imports in benchmark.ts to use .js extensions (Node16 module resolution)
+  - Updated 3 test files to match new API (runtime-context.test.ts, team-multi-runtime.test.ts, child-worker.test.ts)
+  - Rewrote team-multi-runtime.test.ts to use async createSimpleRuntime with ModelRuntime
+- **Test Delta**: +0 (all 1813 tests pass, 206 test files)
+- **Impact**: Build succeeds with pi-coding-agent v0.83.0; full compatibility restored; no regressions
+- **Next**: Monitor for any downstream issues; continue incremental improvements.
+
 ### [2026-07-18 23:04] Cycle 81 - Task: Build Reliability & Test Fix (P2)
 - **Type**: Bug Fix / Test Infrastructure
 - **Priority**: P2

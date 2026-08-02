@@ -1,8 +1,16 @@
 # TODO
 
-Last Updated: 2026-07-18
+Last Updated: 2026-07-19
 
 ## Completed
+- [x] **Fix pi-coding-agent v0.83.0 breaking API changes**
+  - [x] Replace AuthStorage + ModelRegistry with ModelRuntime in main.ts
+  - [x] Update runtime-context.ts getCurrentAuthStorage and getCurrentModelRegistry to return modelRuntime
+  - [x] Update team-manager.ts child runtime factory to use modelRuntime
+  - [x] Update child-worker.ts to use modelRuntime.getModel()
+  - [x] Fix dynamic imports in benchmark.ts to use .js extensions
+  - [x] Update 3 test files to match new API
+  - [x] Build passes, all 1813 tests pass
 - [x] Fix failing plugin capability tests (dev, git, security-system)
   - [x] Correct relative import paths in tests
   - [x] Add missing `async` to `beforeEach` in git test
