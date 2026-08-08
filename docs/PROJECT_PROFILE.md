@@ -1,12 +1,12 @@
 # Project Profile
 
-**Generated**: 2026-08-02T14:07:46.041Z
+**Generated**: 2026-08-08T10:57:29.307Z
 **Source**: Auto-detected at startup
 
 ## Size
 - Category: **LARGE**
 - Evidence:
-  - LOC: 48196
+  - LOC: 48584
   - Files: 343
   - Tests: 206
   - Dependencies: 19
@@ -14,8 +14,8 @@
 ## Risk
 - Category: **HIGH**
 - Evidence:
-  - High-risk keywords: 442
-  - Medium-risk keywords: 1533
+  - High-risk keywords: 447
+  - Medium-risk keywords: 1584
   - Low-risk keywords: 8
 - ⚠️ High-risk keywords detected – full compliance scanning enabled
 
@@ -29,13 +29,13 @@
 - Cost Optimization: Required
 
 ## Team
-- Category: **SMALL**
+- Category: **SOLO**
 - Evidence:
-  - Authors (30d): 2
-  - Commits (30d): 181
+  - Authors (30d): 1
+  - Commits (30d): 79
   - PR estimate: 0
   - CODEOWNERS: No
-- Process: 1 review required
+- Process: Self-merge allowed
 
 ## Applied Thresholds
 
@@ -47,8 +47,8 @@
 | Security Scan | HIGH | CRITICAL | high risk |
 | Performance Gates | Required | Yes | high risk |
 | Compliance Matrix | Full | Yes | high risk |
-| PR Reviews Required | 1 | 1 | small team |
-| SLA Initial Review | <24h | <4h | small team |
+| PR Reviews Required | 1 | 0 | solo team |
+| SLA Initial Review | <24h | <168h | solo team |
 
 ## Manual Override
 

@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-08-07T11:52:30.772Z
+// Generated: 2026-08-08T11:13:08.531Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -719,7 +719,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 163840,
-      maxTokens: 65536,
+      maxTokens: 163840,
     } satisfies Model<"openai-completions">,
     "deepseek/deepseek-v3.2-exp": {
       id: "deepseek/deepseek-v3.2-exp",
@@ -753,7 +753,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 131072,
+      maxTokens: 393216,
     } satisfies Model<"openai-completions">,
     "deepseek/deepseek-v4-flash-0731": {
       id: "deepseek/deepseek-v4-flash-0731",
@@ -770,7 +770,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 65536,
+      maxTokens: 384000,
     } satisfies Model<"openai-completions">,
     "deepseek/deepseek-v4-flash:discounted": {
       id: "deepseek/deepseek-v4-flash:discounted",
@@ -1121,9 +1121,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.09,
-        output: 0.34,
-        cacheRead: 0.05,
+        input: 0.08,
+        output: 0.35,
+        cacheRead: 0.01,
         cacheWrite: 0,
       },
       contextWindow: 262144,
@@ -3557,8 +3557,8 @@ export const CUSTOM_MODELS = {
         cacheRead: 0,
         cacheWrite: 0,
       },
-      contextWindow: 128000,
-      maxTokens: 32768,
+      contextWindow: 262144,
+      maxTokens: 262144,
     } satisfies Model<"openai-completions">,
     "qwen/qwen3-vl-235b-a22b-instruct": {
       id: "qwen/qwen3-vl-235b-a22b-instruct",
@@ -4272,7 +4272,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 524288,
-      maxTokens: 524288,
+      maxTokens: 262144,
     } satisfies Model<"openai-completions">,
     "thinkingmachines/inkling-small": {
       id: "thinkingmachines/inkling-small",
@@ -4387,7 +4387,7 @@ export const CUSTOM_MODELS = {
       cost: {
         input: 0.14,
         output: 0.28,
-        cacheRead: 0.003,
+        cacheRead: 0.0028,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -4402,9 +4402,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.435,
-        output: 0.87,
-        cacheRead: 0.004,
+        input: 0.4,
+        output: 1.5,
+        cacheRead: 0.08,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -4594,8 +4594,8 @@ export const CUSTOM_MODELS = {
         cacheRead: 0.26,
         cacheWrite: 0,
       },
-      contextWindow: 262144,
-      maxTokens: 262144,
+      contextWindow: 1024000,
+      maxTokens: 128000,
     } satisfies Model<"openai-completions">,
     "z-ai/glm-5v-turbo": {
       id: "z-ai/glm-5v-turbo",
@@ -4697,7 +4697,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 65536,
+      maxTokens: 384000,
     } satisfies Model<"openai-completions">,
     "~google/gemini-flash-latest": {
       id: "~google/gemini-flash-latest",
