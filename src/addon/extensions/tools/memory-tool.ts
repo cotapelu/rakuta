@@ -117,11 +117,12 @@ export function registerMemoryTool(api: ExtensionAPI): void {
       nextId = 1;
       for (const entry of ctx.sessionManager.getBranch()) {
         if (entry.type === "message" && entry.message.role === "toolResult" && entry.message.toolName === "memory") {
-          // @ts-ignore
-          const details = entry.message.details;
+          const details = entry.message.details as
+            | { memories?: Memory[]; nextId?: number }
+            | undefined;
           if (details && Array.isArray(details.memories)) {
             memories = details.memories;
-            nextId = details.nextId;
+            if (typeof details.nextId === "number") nextId = details.nextId;
           }
         }
       }
