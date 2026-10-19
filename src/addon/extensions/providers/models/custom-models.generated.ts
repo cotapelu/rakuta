@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-10-19T02:47:34.536Z
+// Generated: 2026-10-19T06:31:23.276Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -866,9 +866,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.3,
-        output: 1.2,
-        cacheRead: 0.006,
+        input: 0.15,
+        output: 0.6,
+        cacheRead: 0.003,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -5337,9 +5337,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.05,
+        input: 0.058,
         output: 0.6,
-        cacheRead: 0.008,
+        cacheRead: 0.007,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -5371,9 +5371,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0049,
-        output: 0.45,
-        cacheRead: 0.0049,
+        input: 0.00392,
+        output: 0.12,
+        cacheRead: 0.00336,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -5422,7 +5422,7 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.249,
+        input: 0.239,
         output: 11.936,
         cacheRead: 0.21,
         cacheWrite: 0,
@@ -5575,13 +5575,13 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.06,
-        output: 1.2,
-        cacheRead: 0.06,
+        input: 0.079,
+        output: 1.4,
+        cacheRead: 0.078,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 131072,
+      maxTokens: 943718,
     } satisfies Model<"openai-completions">,
   },
 } as const;
