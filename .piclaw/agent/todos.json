@@ -3,21 +3,21 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Branch Coverage Improvement (P1)",
+      "name": "Verify wiring",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Add unit tests for quality_gate.ts major functions to increase branch coverage",
+          "content": "npm run typecheck clean",
           "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Add unit tests for analyze.ts and analyze_ast.ts to boost coverage",
+          "content": "npm test full suite green",
           "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Add integration tests for CLI handling tools to increase coverage to ≥80%",
+          "content": "npm run build + smoke-run compiled factory with mock api",
           "status": "pending"
         }
       ]
@@ -25,5 +25,5 @@
   ],
   "nextTaskId": 4,
   "nextPhaseId": 2,
-  "updatedAt": "2026-07-18T18:11:01.781Z"
+  "updatedAt": "2026-11-03T08:26:56.904Z"
 }

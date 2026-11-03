@@ -13,7 +13,15 @@ export default defineConfig({
   },
   test: {
     include: ["src/**/*.test.ts"],
-    exclude: ["node_modules", "dist", "llm-context"],
+    exclude: [
+      "node_modules",
+      "dist",
+      "llm-context",
+      // pi-extension/test/*.test.ts are standalone node:assert scripts that run
+      // with `node <script>` against the pi-extension package's own dist/ build
+      // — no describe/it blocks, and not hermetic for this suite.
+      "src/addon/extensions/providers/pi-extension/test/**",
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
