@@ -17,4 +17,5 @@
 
 export const CUSTOM_PROVIDERS = [
   "kilo",
+  "ofm",
 ] as const;

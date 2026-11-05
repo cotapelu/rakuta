@@ -9,6 +9,7 @@
 
 import { registerKiloProvider } from "./providers/kilo-provider.js";
 import { registerPiExtensionProvider } from "./providers/pi-extension-provider.js";
+import { registerOfmProvider } from "./providers/ofm-provider-provider.js";
 import { registerTodosTool, registerMemoryTool } from "./tools/index.js";
 // Tools moved to plugins: git, test, format, audit, build, metrics, secret-scanner, scripts
 import { registerTeamTool } from "./team/index.js";
@@ -60,6 +61,10 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   // Register the keyless free-model lanes (ofm-kilo, ofm-opencode) and the
   // fallback chains over them from ./providers/pi-extension
   await registerPiExtensionProvider(api);
+
+  // Register the ofm-provider lanes (ofm-kilo, ofm-opencode) and the /ofm command
+  // from ./providers/ofm-provider (token saver, chains, refresh)
+  await registerOfmProvider(api);
 
   registerTodosTool(api);
   registerMemoryTool(api);

@@ -6,3 +6,4 @@
 
 export { registerKiloProvider } from "./kilo-provider.js";
 export { registerPiExtensionProvider } from "./pi-extension-provider.js";
+export { registerOfmProvider } from "./ofm-provider-provider.js";

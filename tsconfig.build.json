@@ -7,5 +7,5 @@
   // pi-extension/test holds standalone Node type-strip scripts (a node:assert
   // harness plus integration drivers that spawn the `pi` binary); they run
   // against that package's own compiled output, never through tsc/vitest.
-  "exclude": ["src/**/*.test.ts", "src/tests/**/*", "src/**/__tests__/**", "src/**/__tests__/temp/**", "src/benchmarks/**", "src/addon/extensions/providers/pi-extension/test/**"]
+  "exclude": ["src/**/*.test.ts", "src/tests/**/*", "src/**/__tests__/**", "src/**/__tests__/temp/**", "src/benchmarks/**", "src/addon/extensions/providers/pi-extension/test/**", "src/addon/extensions/providers/ofm-provider/test/**"]
 }

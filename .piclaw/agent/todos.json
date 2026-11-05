@@ -3,27 +3,17 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Verify wiring",
+      "name": "Verify",
       "tasks": [
         {
           "id": "task-1",
-          "content": "npm run typecheck clean",
+          "content": "Run build and tests",
           "status": "in_progress"
-        },
-        {
-          "id": "task-2",
-          "content": "npm test full suite green",
-          "status": "pending"
-        },
-        {
-          "id": "task-3",
-          "content": "npm run build + smoke-run compiled factory with mock api",
-          "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 4,
+  "nextTaskId": 2,
   "nextPhaseId": 2,
-  "updatedAt": "2026-11-03T08:26:56.904Z"
+  "updatedAt": "2026-11-05T06:08:41.480Z"
 }
