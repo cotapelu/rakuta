@@ -56,7 +56,7 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   await capabilitySystemExtension(api);
 
   // Register providers
-  registerKiloProvider(api);
+  await registerKiloProvider(api);
 
   // Register the keyless free-model lanes (ofm-kilo, ofm-opencode) and the
   // fallback chains over them from ./providers/pi-extension
