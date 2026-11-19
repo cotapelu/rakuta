@@ -3,15 +3,24 @@
     "target": "ES2022",
     "module": "Node16",
     "moduleResolution": "node16",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./",
     "paths": {
-      "@extensions/*": ["./src/addon/extensions/*"],
-      "@typescript-eslint/parser": ["./node_modules/@typescript-eslint/parser/dist/index.js"]
+      "@extensions/*": [
+        "./src/addon/extensions/*"
+      ],
+      "@typescript-eslint/parser": [
+        "./node_modules/@typescript-eslint/parser/dist/index.js"
+      ]
     },
-    "types": ["node", "vitest"],
+    "types": [
+      "node",
+      "vitest"
+    ],
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -20,6 +29,17 @@
     "resolveJsonModule": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/tests/**/*", "src/**/__tests__/**", "src/benchmarks/**", "src/addon/extensions/providers/pi-extension/test/**"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.ts",
+    "src/tests/**/*",
+    "src/**/__tests__/**",
+    "src/benchmarks/**",
+    "src/addon/extensions/providers/pi-extension/test/**",
+    "src/addon/extensions/providers/ofm-provider/test/**"
+  ]
 }

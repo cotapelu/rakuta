@@ -21,6 +21,7 @@ export default defineConfig({
       // with `node <script>` against the pi-extension package's own dist/ build
       // — no describe/it blocks, and not hermetic for this suite.
       "src/addon/extensions/providers/pi-extension/test/**",
+      "src/addon/extensions/providers/ofm-provider/test/**",
     ],
     coverage: {
       provider: "v8",
