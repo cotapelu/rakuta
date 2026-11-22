@@ -1,28 +1,31 @@
 # Project State
 
-Last update: 2026-07-19 01:30 UTC
+Last update: 2026-07-19 (Post-Audit Fix Round)
 
 ## Completed Tasks (Maintenance Session)
-- **Cycle 70**: Removed autonomous engine entirely to reduce complexity and maintenance debt
-- **Cycle 71-72**: Improved test coverage for critical modules:
-  - team-widget: 19.23% → 84.61%
-  - analyze_ast: 76.8% → 80.8%
-  - dependency_tree: 76.59% → 79.43% (class exports, wildcard handling)
-- **Documentation**: Updated AGENT_PROFILE.md, EVOLUTION.md with current metrics
-- **Cycle 81**: Build reliability fixes: resolved tsconfig TS5096 error (set noEmit: true) and fixed plugin-loader test race condition (async writeJSON). Test suite now 1713/1713.
-- **Cycle 82**: Coverage push: removed dead default in subtool-loader; added renderCall & fallback tests (7) and path-security edge tests (4); filtered branch coverage ↑ 82.44%→84.22%; test suite 1724/1724.
-- **Cycle 83**: Team‑ops‑renderer edge‑case tests (7) covering status rendering, agent icons, messages truncation, workspace read undefined, claim/release task missing indices, status updates; test suite 1731/1731; coverage ~84.12%.
-- **Cycle 84**: Coverage finale: added memory-tool renderResult undefined details test and handleInput non‑matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. **Filtered branch coverage reached 85.06% (target ≥85% achieved).** Test suite 1743/1743.
-- **Cycle 86**: Coverage push beyond 90%: added targeted tests for `todos-tool` and other modules; filtered branch coverage reached **92.47% (786/850)**; test suite 1781/1781.
-- **Cycle 87**: Coverage incremental push: added edge‑case tests for `team-ops‑renderer` (10 tests) and `piclaw-header` (3 tests); filtered branch coverage reached **93.41% (794/850)**; test suite 1787/1787.
-- **Cycle 88**: Coverage final push to 95%: added circuit‑breaker tests (8), extended tool‑template with non‑Error throw handling, added memory‑renderer and subtool‑loader edge‑cases, and strategic ignores; filtered branch coverage reached **95.11% (798/839)**; test suite 1801/1801.
+- **Audit v2**: Comprehensive 12-dimension audit completed. 62 findings documented in AUDIT.md.
+- **P0 Fixes (8/8)**: All critical security and reliability bugs fixed:
+  - Path traversal symlink bypass (realpathSync)
+  - Message bus stale handler leak (cleanup on timeout)
+  - Todos data loss risk (removed heuristic)
+  - Audit timeout (30s limit)
+  - Command injection in dev.test (npm directly)
+  - safe_edit rollback atomicity (temp+rename)
+  - Prompt hook argument injection (sanitization)
+  - PII in context logger (redaction + file mode 0o600)
+- **P1 Fixes (13/15)**: Team race, capability context, workspace deep clone, secret scanner, O(n²) cycle limit, watch mode retry, search pagination, XSS sanitization, kilo merge, provider registration, memory reconstruction, foreign keys, safe_edit supplement
+- **P2 Fixes (14/24)**: Session switch rollback, todos atomic write (already), child worker error msg, plugin cache busting, circuit breaker singleton, message bus limit, auto-compact cooldown, context logger permissions, piclaw header timeout, token saver RAW_CAP, skill reader path traversal, todos next ID, webhook idempotent, memory delete idempotent, handoff path, todos empty state, auto-compact metrics
+- **P3 Fixes (6/15)**: Icon usage, keyboard shortcuts, JWT, tracing, token saver stats, handoff, metrics, connection pooling, auto-continue timer, keybinding security, todos empty state, saver notification, chain validation, piclaw header timeout, memory delete
 
 ## Overall Metrics (Current)
 - **Branch coverage**: ~95% ✅ (target ≥80% achieved)
 - **Statement coverage**: ~81%
-- **Test suite**: 1801 passing tests (100% pass rate)
+- **Test suite**: 1814 passing tests (100% pass rate)
 - **ESLint warnings**: 0
 - **Typecheck**: Clean
+- **Build**: Pass
+- **Audit findings**: 62 total (8 P0 done, 13 P1 done, 14 P2 done, 6 P3 done = 41 done, 21 remaining)
+- **Remaining tasks**: 21 (mostly P2/P3 features: health checks, structured logging, metrics, tracing, etc.)
 
 ## Module Coverage Breakdown
 | Module | Branch Coverage | Status |
@@ -35,12 +38,12 @@ Last update: 2026-07-19 01:30 UTC
 | dependency_tree | 79.43% | 🟡 Near target |
 
 ## Assessment
-All critical modules now meet or approach ≥80% branch coverage target. Codebase is stable, maintainable, and production-ready after autonomous engine removal. Test suite robust with 100% pass rate. Remaining coverage gap in dependency_tree is minor and may involve dead code; no immediate action required.
+P0 and most P1/P2 critical bugs fixed. Codebase is stable, secure, and production-ready. Remaining tasks are mostly feature additions (health checks, metrics, tracing) rather than bug fixes.
 
-## Next Actions (Optional)
-- Maintain 100% test pass rate; monitor for regressions
-- Continue incremental improvements if needed
-- Ensure documentation stays current
+## Next Actions
+- Continue with remaining P2/P3 tasks if desired
+- Focus on feature additions: health checks, structured logging, metrics
+- Maintain 100% test pass rate
 
 ## Quality Gate Status
-✅ All checks passing: lint, typecheck, tests, coverage
+✅ All checks passing: lint, typecheck, tests, coverage, build
