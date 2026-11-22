@@ -8,6 +8,7 @@ export class MessageBus extends EventEmitter {
   private parentToChildHandlers = new Map<string, ParentToChildHandler[]>();
   private childToParentHandlers: ChildToParentHandler[] = [];
   private childIncomingHandlers = new Map<string, ((msg: ParentToChildMessage) => void)[]>();
+  private readonly MAX_HANDLERS_PER_CHILD = 100;
 
   private generateCorrelationId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -134,6 +135,10 @@ export class MessageBus extends EventEmitter {
       };
 
       const handlers = this.childIncomingHandlers.get(childId) ?? [];
+      // Enforce max handlers limit to prevent memory leak
+      if (handlers.length >= this.MAX_HANDLERS_PER_CHILD) {
+        handlers.shift(); // Remove oldest handler
+      }
       if (handler) handlers.push(handler);
       this.childIncomingHandlers.set(childId, handlers);
     });

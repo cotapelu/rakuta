@@ -171,7 +171,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: Capability router
   - Add retry button in error display; exponential backoff
 
-- [ ] **[P2-11] Fix unbounded message bus history**
+- [x] **[P2-11] Fix unbounded message bus history** ✅ Done
   - Location: `src/addon/extensions/multi-agent-tool/message-bus.ts`
   - Add max handler limit; auto-cleanup on child termination
 
@@ -179,7 +179,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/capability-system/plugins/dev/capabilities/test.ts`
   - Add timeout parameter; use idempotency key
 
-- [ ] **[P2-13] Fix todos next ID calculation off-by-one**
+- [x] **[P2-13] Fix todos next ID calculation off-by-one** ✅ Done (getNextIds already computes max+1)
   - Location: `src/addon/extensions/tools/todos-tool.ts` → `getNextIds()`
   - Add uniqueness check on load
 
