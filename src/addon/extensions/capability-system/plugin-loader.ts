@@ -303,10 +303,10 @@ export class PluginLoader {
   }
 
   private async dynamicImport(filePath: string): Promise<unknown> {
-    const fileUrl = `file://${filePath}`;
-    await this.clearModuleCache(fileUrl);
+    // Use cache-busting query param for true hot-reload (ESM cache cannot be cleared programmatically)
+    const fileUrl = `file://${filePath}?t=${Date.now()}`;
     const module = await import(fileUrl);
-    this.resolveCache.set(fileUrl, { module, timestamp: Date.now() });
+    this.resolveCache.set(filePath, { module, timestamp: Date.now() });
     return module;
   }
 

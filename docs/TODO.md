@@ -122,7 +122,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Add schema validation on reconstruct; log warnings for malformed entries
   - Risk: MEDIUM — Silent memory loss
 
-- [ ] **[P1-15] Fix safe_edit rollback atomicity (P0 supplement)**
+- [x] **[P1-15] Fix safe_edit rollback atomicity (P0 supplement)** ✅ Done (covered by P0-6)
   - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/safe_edit.ts`
   - Ensure rollback is transactional; verify after P0-6
   - Risk: CRITICAL — Partial state corruption
@@ -135,11 +135,11 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/session-tool/registry.ts`
   - Save metadata to JSON file; load on startup
 
-- [ ] **[P2-2] Fix todos file atomic write race**
+- [x] **[P2-2] Fix todos file atomic write race** ✅ Done (already uses withFileMutationQueue)
   - Location: `src/addon/extensions/tools/todos-tool.ts` → `saveTodoToFile()`
   - Use `withFileMutationQueue` consistently; add file-level lock
 
-- [ ] **[P2-3] Fix multi-agent child worker model resolution**
+- [x] **[P2-3] Fix multi-agent child worker model resolution** ✅ Done
   - Location: `src/addon/extensions/multi-agent-tool/worker/child-worker.ts`
   - Include available models in error; add fallback to parent model
 
@@ -147,7 +147,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/session-tool/manager.ts` → `switchTo()`
   - Try/catch with rollback on failure
 
-- [ ] **[P2-5] Fix plugin loader cache invalidation (hot-reload)**
+- [x] **[P2-5] Fix plugin loader cache invalidation (hot-reload)** ✅ Done
   - Location: `src/addon/extensions/capability-system/plugin-loader.ts`
   - Use cache-busting query params for true hot-reload
 
@@ -187,7 +187,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
   - Add cooldown (min 5 min between compactions); check if already compacting
 
-- [ ] **[P2-15] Fix context logger file permissions**
+- [x] **[P2-15] Fix context logger file permissions** ✅ Done (covered by P0-8)
   - Location: `src/addon/extensions/context-logger.ts`
   - Set file mode 0o600; use appendFileSync with mode option
 
@@ -281,11 +281,11 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/providers/ofm-provider/chain-store.ts`
   - Validate links on write; reject invalid chains
 
-- [ ] **[P3-14] Fix piclaw header network call no timeout**
+- [x] **[P3-14] Fix piclaw header network call no timeout** ✅ Done (covered by P2-16)
   - Location: `src/addon/extensions/piclaw-header.ts` → `checkForUpdate()`
   - Add connection timeout; use AbortSignal.timeout()
 
-- [ ] **[P3-15] Fix memory tool delete not idempotent (P2 supplement)**
+- [x] **[P3-15] Fix memory tool delete not idempotent (P2 supplement)** ✅ Done (covered by P2-21)
   - Location: `src/addon/extensions/tools/memory-tool.ts`
   - Return success if already deleted
 

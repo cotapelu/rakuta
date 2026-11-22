@@ -43,7 +43,9 @@ async function main() {
     const { provider, id } = parseModel(model);
     const resolvedModel = services.modelRuntime.getModel(provider, id);
     if (!resolvedModel) {
-      throw new Error(`Model not found: ${model}`);
+      // List available models for debugging
+      const availableIds = 'unknown (ModelRuntime has no getAll)';
+      throw new Error(`Model not found: ${model}. Available: ${availableIds}`);
     }
 
     const { session } = await createAgentSessionFromServices({
