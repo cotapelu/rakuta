@@ -235,7 +235,8 @@ export function registerMemoryTool(api: ExtensionAPI): void {
             }
             const index = memories.findIndex(m => m.id === id);
             if (index === -1) {
-              return { content: [{ type: "text", text: `Memory #${id} not found` }], details: { action, memories: [...memories], nextId, targetId: id, error: `#${id} not found` }, isError: false };
+              // Idempotent: return success if already deleted
+              return { content: [{ type: "text", text: `Memory #${id} already deleted or not found` }], details: { action, memories: [...memories], nextId, targetId: id }, isError: false };
             }
             const deleted = memories.splice(index, 1)[0];
             api.appendEntry("memory", { ...deleted, _deleted: true });

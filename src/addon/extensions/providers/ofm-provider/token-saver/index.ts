@@ -86,7 +86,7 @@ export function compressText(text: string, stats: RtkStats, shape: string): stri
   const bytesIn = text.length
   stats.bytesBefore += bytesIn
 
-  if (bytesIn < MIN_COMPRESS_SIZE || bytesIn > RAW_CAP) {
+  if (bytesIn < MIN_COMPRESS_SIZE || bytesIn >= RAW_CAP) {
     stats.bytesAfter += bytesIn
     return text
   }

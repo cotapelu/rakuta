@@ -190,8 +190,7 @@ describe('memory tool execute', () => {
       const result = await tool.execute('call', { action: 'delete', id: 99 }, null, null, {});
 
       expect(result.isError).toBe(false);
-      expect(result.content[0].text).toBe('Memory #99 not found');
-      expect(result.details.error).toBe('#99 not found');
+      expect(result.content[0].text).toBe('Memory #99 already deleted or not found');
     });
   });
 

@@ -83,6 +83,7 @@ export function refreshWidget(ui: ExtensionUIContext): Promise<void> {
 
       if (teams.size === 0) {
         lines.push(ui.theme.fg("muted", "No active teams"));
+        lines.push(ui.theme.fg("dim", "Use team_run({tasks: [...]}) to create a team"));
         ui.setWidget("team", lines);
         resolve();
         return;

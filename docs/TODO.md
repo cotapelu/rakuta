@@ -195,7 +195,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/piclaw-header.ts` → `checkForUpdate()`
   - Add connection timeout; use AbortSignal.timeout()
 
-- [ ] **[P2-17] Fix token saver RAW_CAP not enforced**
+- [x] **[P2-17] Fix token saver RAW_CAP not enforced** ✅ Done
   - Location: `src/addon/extensions/providers/ofm-provider/token-saver/index.ts`
   - Use `>=` instead of `>` for RAW_CAP check
 
@@ -207,11 +207,11 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
   - Log compaction events with context usage percentage
 
-- [ ] **[P2-20] Fix team widget no empty state**
+- [x] **[P2-20] Fix team widget no empty state** ✅ Done
   - Location: `src/addon/extensions/team/team-widget.ts`
   - Add hint: "Use team_run({tasks: [...]}) to create a team"
 
-- [ ] **[P2-21] Fix memory tool delete not idempotent**
+- [x] **[P2-21] Fix memory tool delete not idempotent** ✅ Done
   - Location: `src/addon/extensions/tools/memory-tool.ts` → delete action
   - Return success if already deleted
 
@@ -219,7 +219,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/providers/ofm-provider/catalog.ts`
   - Add short TTL cache (30s); respect AbortSignal
 
-- [ ] **[P2-23] Fix skill reader path traversal**
+- [x] **[P2-23] Fix skill reader path traversal** ✅ Done
   - Location: `src/addon/extensions/tools/skill-reader/read-skill.ts`
   - Validate skill name (alphanumeric + hyphen); reject path traversal
 

@@ -39,6 +39,14 @@ export async function executeLoadSkill(
   _ctx?: any
 ) {
   const { skill } = args;
+  // Validate skill name to prevent path traversal
+  if (skill && (typeof skill !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(skill))) {
+    return {
+      stdout: '',
+      stderr: `Invalid skill name: ${skill}. Only alphanumeric, hyphen, and underscore allowed.`,
+      code: 1,
+    };
+  }
   const skillsDir = getSkillsDir();
 
   try {
