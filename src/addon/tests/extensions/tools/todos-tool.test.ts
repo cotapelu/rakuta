@@ -608,7 +608,7 @@ describe('renderTodosResult', () => {
   it('shows no tasks as dim', () => {
     const phase: TodoPhase = { id: 'phase-1', name: 'P1', tasks: [] };
     const comp = renderTodosResult({ details: { phases: [phase] } } as any, { expanded: false, isPartial: false }, mockTheme);
-    expect(comp.text).toBe('No todos');
+    expect(comp.text).toBe('No todos\nUse todos({add_phase: {...}}) to create todos');
   });
 });
 

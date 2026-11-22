@@ -249,7 +249,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/providers/ofm-provider/saver-stats.ts`
   - Optional file persistence
 
-- [ ] **[P3-6] Fix handoff contract file path inconsistency**
+- [x] **[P3-6] Fix handoff contract file path inconsistency** ✅ Done
   - Location: `src/addon/extensions/session-tool/operations/handoff.ts`
   - Use actual session ID from createChild for bus paths
 
@@ -269,7 +269,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/keybinding/keybinding-extension.ts`
   - Validate command exists before sending
 
-- [ ] **[P3-11] Fix todos renderer no empty state guidance**
+- [x] **[P3-11] Fix todos renderer no empty state guidance** ✅ Done
   - Location: `src/addon/extensions/renderers/todos-renderer.ts`
   - Add hint: "Use todos({add_phase: {...}}) to create todos"
 

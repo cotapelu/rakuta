@@ -793,7 +793,7 @@ export function renderTodosResult(result: { details?: TodoToolDetails }, options
 
   const phases = details.phases.filter((p: any) => p.tasks.length > 0);
   const allTasks = phases.flatMap((p: any) => p.tasks);
-  if (allTasks.length === 0) return new Text(theme.fg("dim", "No todos"), 0, 0);
+  if (allTasks.length === 0) return new Text(theme.fg("dim", "No todos") + "\n" + theme.fg("dim", "Use todos({add_phase: {...}}) to create todos"), 0, 0);
 
   const lines: string[] = [theme.fg("toolTitle", `Todos: ${allTasks.length} tasks`)];
   for (const phase of phases) {
