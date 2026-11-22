@@ -9,6 +9,7 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
+import { ICONS } from "../utils/icons.js";
 
 interface TeamStatusDetails {
   teamId: string;
@@ -73,22 +74,22 @@ function renderWorkspaceRead(details: any, theme: any): string[] {
 }
 
 function renderWorkspaceWrite(details: any, theme: any): string[] {
-  return [`\n${theme.fg("success", "✓ Wrote to workspace")}: ${details.key}`];
+  return [`\n${theme.fg("success", ICONS.success + " Wrote to workspace")}: ${details.key}`];
 }
 
 function renderSendMessage(details: any, theme: any): string[] {
-  return [`\n${theme.fg("success", "✓ Message sent")} to ${details.channel || 'team.chat'}`];
+  return [`\n${theme.fg("success", ICONS.success + " Message sent")} to ${details.channel || 'team.chat'}`];
 }
 
 function renderClaimTask(details: any, theme: any): string[] {
   if (details.taskIndex !== undefined) {
-    return [`\n${theme.fg("success", "✓ Claimed task")} #${details.taskIndex}`];
+    return [`\n${theme.fg("success", ICONS.success + " Claimed task")} #${details.taskIndex}`];
   }
   return [`\n${theme.fg("warning", "No tasks available")}`];
 }
 
 function renderCompleteTask(details: any, theme: any): string[] {
-  return [`\n${theme.fg("success", "✓ Completed task")} #${details.taskIndex}`];
+  return [`\n${theme.fg("success", ICONS.success + " Completed task")} #${details.taskIndex}`];
 }
 
 function renderReleaseTask(details: any, theme: any): string[] {
@@ -96,7 +97,7 @@ function renderReleaseTask(details: any, theme: any): string[] {
 }
 
 function renderUpdateStatus(details: any, theme: any): string[] {
-  return [`\n${theme.fg("accent", "● Status updated")}: ${details.status}`];
+  return [`\n${theme.fg("accent", ICONS.statusUpdated + " Status updated")}: ${details.status}`];
 }
 
 export function registerTeamOpsRenderer(api: ExtensionAPI): void {

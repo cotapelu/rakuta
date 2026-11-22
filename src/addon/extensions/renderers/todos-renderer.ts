@@ -8,6 +8,7 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
+import { ICONS } from "../utils/icons.js";
 // import { styleError, styleSuccess, styleWarning, styleText } from "../utils/render-utils.js"; // unused
 
 interface TodoPhase {
@@ -45,7 +46,7 @@ export function registerTodosRenderer(api: ExtensionAPI): void {
     const lines: string[] = [];
 
     // Header
-    lines.push(theme.fg("accent", "📋 TODO List").bold());
+    lines.push(theme.fg("accent", `${ICONS.todo} TODO List`).bold());
 
     // Global stats if available
     if (details.totalTasks !== undefined && details.completedTasks !== undefined) {
@@ -87,10 +88,10 @@ export function registerTodosRenderer(api: ExtensionAPI): void {
 
 function getStatusIcon(status: string): string {
   switch (status) {
-    case "completed": return "✅";
-    case "in_progress": return "🔄";
-    case "abandoned": return "❌";
-    default: return "⏳";
+    case "completed": return ICONS.completed;
+    case "in_progress": return ICONS.inProgress;
+    case "abandoned": return ICONS.abandoned;
+    default: return ICONS.pending;
   }
 }
 

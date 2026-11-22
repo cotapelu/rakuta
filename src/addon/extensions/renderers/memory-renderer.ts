@@ -8,6 +8,7 @@
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
+import { ICONS } from "../utils/icons.js";
 import { styleError } from "../utils/render-utils.js";
 
 interface Memory {
@@ -75,7 +76,7 @@ export function registerMemoryRenderer(api: ExtensionAPI): void {
       const showMemories = details.memories.slice(0, 15);
       const query = details.query || "";
       for (const mem of showMemories) {
-        const icon = query && mem.tags?.some(t => t.toLowerCase().includes(query.toLowerCase())) ? "🏷️" : "📝";
+        const icon = query && mem.tags?.some(t => t.toLowerCase().includes(query.toLowerCase())) ? ICONS.tag : ICONS.memory;
         const id = theme.fg("accent", `#${mem.id}`);
         const preview = mem.text.length > 60 ? mem.text.substring(0, 60) + "..." : mem.text;
         const text = theme.fg("text", preview);
