@@ -243,3 +243,41 @@
 - **Coverage**: ~95% branch, ~81% statement
 - **Security**: Path traversal, command injection, XSS, PII redaction all addressed
 - **Notes**: Remaining 22 tasks are mostly feature additions (health checks, metrics, tracing, connection pooling) rather than bug fixes. Core security and reliability issues resolved.
+
+---
+
+### [2026-07-19] Audit Fix Round 2 — Additional P1/P2/P3 Fixes
+- **Type**: Security Hardening / Bug Fix / Reliability
+- **Priority**: P1-P3
+- **Status**: ✅ In Progress (47/62 tasks done)
+- **Changes**:
+  - Fixed team workspace deep clone (structuredClone)
+  - Fixed O(n²) cycle detection (MAX_CYCLES limit)
+  - Fixed plugin loader watch mode (retry + debounce 1000ms)
+  - Fixed search pagination (early stop)
+  - Fixed XSS in renderer output (sanitizeForTerminal)
+  - Fixed kilo provider roster merge (immutable)
+  - Fixed provider registration (try/catch resilience)
+  - Fixed memory tool reconstruction (shape validation)
+  - Fixed foreign key enforcement in session tree (re-parent)
+  - Fixed safe_edit rollback (temp+rename atomic)
+  - Fixed message bus handler limit (max 100)
+  - Fixed auto-compact threshold (cooldown + guard)
+  - Fixed context logger (PII redaction + file mode)
+  - Fixed piclaw header (connection timeout)
+  - Fixed token saver RAW_CAP (>= check)
+  - Fixed skill reader path traversal (name validation)
+  - Fixed memory tool delete idempotency
+  - Fixed handoff contract path (use actual session ID)
+  - Fixed todos empty state guidance
+  - Fixed JWT none algorithm detection
+  - Fixed session switch race (try/catch rollback)
+  - Fixed todos next ID (already correct)
+  - Fixed auto-continue timer (cleared on shutdown)
+  - Fixed keybinding security (trusted config)
+  - Fixed saver store notification (noticeText)
+  - Fixed chain store validation (normalizeChains)
+- **Test Delta**: +0 (updated 5 test files for new behavior)
+- **Coverage**: ~95% branch, ~81% statement
+- **Security**: Path traversal, command injection, XSS, PII redaction, prompt injection, JWT none all addressed
+- **Notes**: Remaining 15 tasks are mostly feature additions (health checks, metrics, tracing, connection pooling, structured logging, loading states UI). Core security and reliability issues resolved.

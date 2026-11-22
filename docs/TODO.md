@@ -66,7 +66,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Deep clone in `toObject()`; use read-write lock pattern
   - Risk: HIGH — Partial state visibility
 
-- [ ] **[P1-4] Fix secret scanner false negatives**
+- [x] **[P1-4] Fix secret scanner false negatives** ✅ Done
   - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/quality_gate.ts`
   - Add AST-based detection for string literals in suspicious contexts
   - Add entropy-based detection for high-entropy strings

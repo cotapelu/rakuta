@@ -291,6 +291,19 @@ async function computeSecretsScore(cwd: string, files: string[]): Promise<Catego
     path.includes('__tests__') || path.includes('__mocks__') || path.includes('__fixtures__') ||
     path.endsWith('.test.ts') || path.endsWith('.spec.ts') || path.endsWith('.test.js') || path.endsWith('.spec.js');
 
+  // Helper: calculate Shannon entropy of a string
+  function shannonEntropy(str: string): number {
+    const freq: Record<string, number> = {};
+    for (const c of str) freq[c] = (freq[c] || 0) + 1;
+    const len = str.length;
+    let entropy = 0;
+    for (const count of Object.values(freq)) {
+      const p = count / len;
+      entropy -= p * Math.log2(p);
+    }
+    return entropy;
+  }
+
   // Patterns that indicate hardcoded secrets (more specific)
   const patterns = [
     // AWS keys
@@ -315,6 +328,15 @@ async function computeSecretsScore(cwd: string, files: string[]): Promise<Catego
       for (const regex of patterns) {
         if (regex.test(content)) {
           return { score: 0, max: 10, details: `Potential secret pattern found in ${relPath}` };
+        }
+      }
+      // Entropy-based detection: find high-entropy strings (likely secrets) in suspicious contexts
+      const secretContextRegex = /(?:key|token|secret|password|passwd|credential)\s*[:=]\s*['"`]([^'"`]{16,})['"`]/gi;
+      let match;
+      while ((match = secretContextRegex.exec(content)) !== null) {
+        const value = match[1];
+        if (shannonEntropy(value) > 3.5) {
+          return { score: 0, max: 10, details: `High-entropy secret-like string found in ${relPath}` };
         }
       }
     } catch (e) {
