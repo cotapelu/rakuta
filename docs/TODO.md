@@ -159,7 +159,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: Throughout `src/addon/extensions/`
   - Use `createLogger` utility; add correlation ID propagation
 
-- [ ] **[P2-8] Add health check endpoints**
+- [x] **[P2-8] Add health check endpoints**
   - Location: New capability or extension
   - Check session manager, plugin loader, provider connectivity
 
@@ -215,7 +215,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/tools/memory-tool.ts` → delete action
   - Return success if already deleted
 
-- [ ] **[P2-22] Fix OFM provider listing cache**
+- [x] **[P2-22] Fix OFM provider listing cache**
   - Location: `src/addon/extensions/providers/ofm-provider/catalog.ts`
   - Add short TTL cache (30s); respect AbortSignal
 
@@ -231,7 +231,7 @@ Last update: 2026-07-19 (Post-Audit v2)
 
 ## P3 — Backlog (15 tasks)
 
-- [ ] **[P3-1] Fix inconsistent icon usage across renderers**
+- [x] **[P3-1] Fix inconsistent icon usage across renderers**
   - Create shared icon registry; use consistent emoji set
 
 - [ ] **[P3-2] Add keyboard shortcuts for common actions**
@@ -245,7 +245,7 @@ Last update: 2026-07-19 (Post-Audit v2)
 - [ ] **[P3-4] Add distributed tracing (OpenTelemetry)**
   - Instrument HTTP calls and capability executions
 
-- [ ] **[P3-5] Persist token saver stats**
+- [x] **[P3-5] Persist token saver stats**
   - Location: `src/addon/extensions/providers/ofm-provider/saver-stats.ts`
   - Optional file persistence
 
