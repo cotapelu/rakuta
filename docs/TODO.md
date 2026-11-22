@@ -151,7 +151,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/capability-system/plugin-loader.ts`
   - Use cache-busting query params for true hot-reload
 
-- [ ] **[P2-6] Fix circuit breaker state not shared**
+- [x] **[P2-6] Fix circuit breaker state not shared** ✅ Done
   - Location: `src/addon/extensions/tools/utils/circuit-breaker.ts`
   - Make singleton or context-injected
 
@@ -163,7 +163,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: New capability or extension
   - Check session manager, plugin loader, provider connectivity
 
-- [ ] **[P2-9] Sanitize error messages (no internal paths)**
+- [x] **[P2-9] Sanitize error messages (no internal paths)** ✅ Done
   - Location: Multiple (safe_edit, audit, search)
   - Show relative paths only; log full details server-side
 
@@ -203,7 +203,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/providers/ofm-provider/chains.ts` → `decideLink()`
   - Add failure tracking per link; skip dead links
 
-- [ ] **[P2-19] Fix auto-compact no metrics**
+- [x] **[P2-19] Fix auto-compact no metrics** ✅ Done (added console.warn with context usage)
   - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
   - Log compaction events with context usage percentage
 

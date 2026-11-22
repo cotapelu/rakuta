@@ -98,3 +98,15 @@ export interface CircuitBreakerOptions {
 export function createCircuitBreaker(options?: CircuitBreakerOptions): CircuitBreaker {
   return new CircuitBreaker(options);
 }
+
+// Singleton instance for shared state across calls
+let globalCircuitBreaker: CircuitBreaker | null = null;
+export function getGlobalCircuitBreaker(options?: CircuitBreakerOptions): CircuitBreaker {
+  if (!globalCircuitBreaker) {
+    globalCircuitBreaker = new CircuitBreaker(options);
+  }
+  return globalCircuitBreaker;
+}
+export function resetGlobalCircuitBreaker(): void {
+  globalCircuitBreaker = null;
+}

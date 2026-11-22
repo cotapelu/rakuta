@@ -55,6 +55,25 @@ export function sanitizeForTerminal(text: string): string {
 }
 
 /**
+ * Sanitize an error message to avoid leaking internal paths.
+ * Replaces absolute paths with relative or basename only.
+ */
+export function sanitizeErrorMessage(msg: string, cwd?: string): string {
+  if (typeof msg !== 'string') return String(msg);
+  let result = msg;
+  if (cwd) {
+    // Replace absolute cwd prefix with './'
+    result = result.replace(new RegExp(cwd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '/?', 'g'), './');
+  }
+  // Replace common absolute path patterns (Unix)
+  result = result.replace(/\/[a-zA-Z0-9_./-]+\.(ts|js|tsx|jsx|json)/g, (match) => {
+    const parts = match.split('/');
+    return parts[parts.length - 1]; // basename only
+  });
+  return result;
+}
+
+/**
  * Inline styled string helpers for embedding in larger text blocks.
  * These return the styled string directly (no Text wrapper).
  */
