@@ -153,13 +153,37 @@ async function getJson(url: string, { headers = {}, signal }: { headers?: Record
 }
 
 /** Fetch the OpenCode free lane's listing, wearing the client fingerprint. */
-export function fetchOpencodeListing(signal?: AbortSignal) {
-  return getJson(OPENECODE_LISTING, { headers: gatewayHeaders({ session: sessionFor('listing'), accept: 'application/json' }), signal })
+/** Simple TTL cache for listing responses (30s). */
+const LISTING_CACHE_TTL_MS = 30_000
+const listingCache = new Map<string, { data: any; expires: number }>()
+
+function getCachedListing(url: string): any | null {
+  const entry = listingCache.get(url)
+  if (entry && Date.now() < entry.expires) return entry.data
+  if (entry) listingCache.delete(url)
+  return null
+}
+
+function setCachedListing(url: string, data: any): void {
+  listingCache.set(url, { data, expires: Date.now() + LISTING_CACHE_TTL_MS })
+}
+
+/** Fetch the OpenCode free lane's listing, wearing the client fingerprint. */
+export async function fetchOpencodeListing(signal?: AbortSignal) {
+  const cached = getCachedListing(OPENECODE_LISTING)
+  if (cached) return cached
+  const data = await getJson(OPENECODE_LISTING, { headers: gatewayHeaders({ session: sessionFor('listing'), accept: 'application/json' }), signal })
+  setCachedListing(OPENECODE_LISTING, data)
+  return data
 }
 
 /** Fetch Kilo's public listing. No credential at all: the free pool is anonymous. */
-export function fetchKiloListing(signal?: AbortSignal) {
-  return getJson(KILO_LISTING, { headers: { accept: 'application/json' }, signal })
+export async function fetchKiloListing(signal?: AbortSignal) {
+  const cached = getCachedListing(KILO_LISTING)
+  if (cached) return cached
+  const data = await getJson(KILO_LISTING, { headers: { accept: 'application/json' }, signal })
+  setCachedListing(KILO_LISTING, data)
+  return data
 }
 
 /** Is this id on the keyless pool? The listing mixes paid and free ids. */
