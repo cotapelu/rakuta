@@ -66,12 +66,17 @@ export class SharedWorkspace {
   }
 
   /**
-   * Get all entries as plain object
+   * Get all entries as plain object (deep clone to prevent mutation)
    */
   toObject(): Record<string, unknown> {
     const obj: Record<string, unknown> = {};
     for (const [key, entry] of this.data) {
-      obj[key] = entry.value;
+      // Deep clone to prevent callers from mutating internal state
+      try {
+        obj[key] = structuredClone(entry.value);
+      } catch {
+        obj[key] = entry.value;
+      }
     }
     return obj;
   }

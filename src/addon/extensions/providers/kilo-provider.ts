@@ -92,7 +92,8 @@ export async function fetchKiloModels(signal?: AbortSignal): Promise<any[]> {
 
 /** Merge build-time roster with live rows: add new ids, update existing ones. */
 function mergeRosters(base: any[], live: any[]): any[] {
-  const merged = base.map((m) => ({ ...m }));
+  // Return a new array (immutable) to prevent race conditions
+  const merged = base.map((m) => ({ ...m, ...(m.cost ? { cost: { ...m.cost } } : {}) }));
   const byId = new Map(merged.map((m) => [m.id, m]));
   for (const lm of live) {
     const existing = byId.get(lm.id);

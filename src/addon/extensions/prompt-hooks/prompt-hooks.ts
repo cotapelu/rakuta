@@ -126,18 +126,25 @@ export function parseCommandArgs(input: string): string[] {
  * @returns Substituted string
  */
 export function substitutePromptArgs(content: string, args: string[]): string {
+  // Sanitize args: strip control characters and limit length to prevent injection
+  const sanitizedArgs = args.map(arg => {
+    if (typeof arg !== 'string') return '';
+    // Remove control characters (except newlines/tabs) and limit to 10000 chars
+    return arg.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').slice(0, 10000);
+  });
+
   let result = content;
 
   result = result.replace(/\$(\d+)/g, (_, n) => {
     const index = parseInt(n, 10) - 1;
-    return index >= 0 && index < args.length ? args[index] : '';
+    return index >= 0 && index < sanitizedArgs.length ? sanitizedArgs[index] : '';
   });
 
-  result = result.replace(/\$(?:@|ARGUMENTS)/g, () => args.join(' '));
+  result = result.replace(/\$(?:@|ARGUMENTS)/g, () => sanitizedArgs.join(' '));
 
   result = result.replace(/\$\{(\d+):-(.*?)\}/g, (_, n, def) => {
     const index = parseInt(n, 10) - 1;
-    const arg = args[index];
+    const arg = sanitizedArgs[index];
     return (arg !== undefined && arg !== '') ? arg : def;
   });
 
@@ -145,7 +152,7 @@ export function substitutePromptArgs(content: string, args: string[]): string {
     const start = parseInt(startStr, 10) - 1;
     if (start < 0) return '';
     const length = lenStr ? parseInt(lenStr, 10) : undefined;
-    const slice = length !== undefined ? args.slice(start, start + length) : args.slice(start);
+    const slice = length !== undefined ? sanitizedArgs.slice(start, start + length) : sanitizedArgs.slice(start);
     return slice.join(' ');
   });
 

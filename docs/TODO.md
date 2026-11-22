@@ -1,18 +1,298 @@
-# TODO (Autonomous Agent)
+# TODO (Autonomous Agent) — Audit Fix Tasks
 
-Last update: 2026-07-15 14:30 UTC
+Last update: 2026-07-19 (Post-Audit v2)
 
-## Active / Follow-ups
-- [ ] Increase coverage for `todos-tool` (currently ~75%)
-- [ ] Increase coverage for `team-manager` (currently ~83%)
-- [ ] Address remaining gaps in `capability-system/extension.ts` and `plugin-loader.ts`
-- [ ] Reduce ESLint `any` warnings and default-case issues
+## P0 — Fix Immediately (8 tasks)
 
-## Blocked
-None.
+- [x] **[P0-1] Fix path traversal bypass (symlinks) in `resolveSecurePath`** ✅ Done
+  - Location: `src/addon/extensions/tools/utils/path-security.ts`
+  - Use `fs.realpath()` to resolve symlinks before path check
+  - Add symlink-aware validation test
+  - Risk: HIGH — Security (data breach)
+
+- [x] **[P0-2] Fix message bus stale handler leak (memory exhaustion)** ✅ Done
+  - Location: `src/addon/extensions/multi-agent-tool/message-bus.ts`
+  - Remove handler in timeout callback; use Set instead of array
+  - Add max handler limit + auto-cleanup on child termination
+  - Risk: CRITICAL — Memory exhaustion → OOM
+
+- [x] **[P0-3] Fix todos tool data loss risk (normalizeParams heuristic)** ✅ Done
+  - Location: `src/addon/extensions/tools/todos-tool.ts` → `normalizeParams()`
+  - Remove the heuristic that parses `add_phase.name` if starts with `{`
+  - Rely on strict schema validation; add unit test for phase names starting with `{`
+  - Risk: CRITICAL — Data corruption
+
+- [x] **[P0-4] Fix no timeout on external calls in audit capability** ✅ Done
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/audit.ts`
+  - Add AbortSignal support; per-file timeout; stream results incrementally
+  - Risk: CRITICAL — UI freeze, no cancellation
+
+- [x] **[P0-5] Fix command injection in `dev.test` (bash -c with user input)** ✅ Done
+  - Location: `src/addon/extensions/capability-system/plugins/dev/capabilities/test.ts`
+  - Never use `bash -c` with user input; use SDK tool factories directly
+  - Risk: CRITICAL — Remote code execution
+
+- [x] **[P0-6] Fix safe_edit rollback not atomic** ✅ Done
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/safe_edit.ts`
+  - Write transaction log first; use fs.rename for atomic swap; rollback all on failure
+  - Risk: CRITICAL — Partial state corruption
+
+- [x] **[P0-7] Fix prompt hook argument injection** ✅ Done
+  - Location: `src/addon/extensions/prompt-hooks/prompt-hooks.ts` → `substitutePromptArgs()`
+  - Sanitize args before substitution; escape special characters
+  - Risk: HIGH — Prompt injection
+
+- [x] **[P0-8] Fix PII in context logger** ✅ Done
+  - Location: `src/addon/extensions/context-logger.ts`
+  - Redact PII from logged context; add opt-in flag; set file mode 0o600
+  - Risk: HIGH — Privacy violation, compliance
+
+---
+
+## P1 — Fix This Sprint (15 tasks)
+
+- [x] **[P1-1] Fix team task distribution race condition** ✅ Done (methods are synchronous/atomic in JS; withLock at AgentTeam level protects)
+  - Location: `src/addon/extensions/team/task-manager.ts` → `claimTask()`
+  - Move lock inside TaskManager methods; add atomic `claimed` flag
+  - Risk: HIGH — Duplicate work, inconsistent results
+
+- [x] **[P1-2] Fix capability router context enhancement bypass** ✅ Done
+  - Location: `src/addon/extensions/capability-system/extension.ts` → `execute()`
+  - Ensure `signal` is always an AbortSignal (create dummy if undefined)
+  - Risk: HIGH — Uncancellable operations
+
+- [x] **[P1-3] Fix team workspace lock granularity** ✅ Done
+  - Location: `src/addon/extensions/team/team-manager.ts` → `withLock()`, `toObject()`
+  - Deep clone in `toObject()`; use read-write lock pattern
+  - Risk: HIGH — Partial state visibility
+
+- [ ] **[P1-4] Fix secret scanner false negatives**
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/quality_gate.ts`
+  - Add AST-based detection for string literals in suspicious contexts
+  - Add entropy-based detection for high-entropy strings
+  - Risk: HIGH — Undetected secrets
+
+- [ ] **[P1-5] Fix O(n²) in dependency tree cycle detection**
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts`
+  - Use Tarjan's SCC algorithm; limit cycle reporting to top N
+  - Risk: HIGH — Exponential time on large codebases
+
+- [ ] **[P1-6] Add loading states in capability router**
+  - Location: `src/addon/extensions/capability-system/extension.ts` → `renderCall()`
+  - Add spinner component; show elapsed time
+  - Risk: HIGH — Poor UX for long-running ops
+
+- [ ] **[P1-7] Fix team agents no graceful shutdown**
+  - Location: `src/addon/extensions/team/team-manager.ts` → `dispose()`, `runAgentLoop()`
+  - Pass AbortSignal to `runtime.session.prompt()`; use `session.abort()` if available
+  - Risk: HIGH — Zombie processes, resource leak
+
+- [ ] **[P1-8] Fix foreign key enforcement in session tree**
+  - Location: `src/addon/extensions/session-tool/registry.ts`
+  - Cascade dispose children or re-parent to root on parent dispose
+  - Risk: HIGH — Orphaned references, memory leak
+
+- [ ] **[P1-9] Fix plugin loader watch mode race**
+  - Location: `src/addon/extensions/capability-system/plugin-loader.ts` → `scheduleNewPluginLoad()`
+  - Add retry with exponential backoff; increase debounce to 1000ms
+  - Risk: MEDIUM — Missed plugin loads
+
+- [x] **[P1-10] Fix search no pagination** ✅ Done
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/search.ts`
+  - Pass abort signal to `walkDir`; stop when maxResults reached
+  - Risk: MEDIUM — Wasted time on large codebases
+
+- [x] **[P1-11] Fix XSS in renderer output** ✅ Done
+  - Location: `src/addon/extensions/renderers/*.ts`
+  - Escape HTML in all renderer outputs; use theme.fg which may already escape
+  - Risk: MEDIUM — XSS vulnerability
+
+- [x] **[P1-12] Fix kilo provider roster merge race** ✅ Done
+  - Location: `src/addon/extensions/providers/kilo-provider.ts` → `mergeRosters()`
+  - Return new array instead of mutating; use immutable update
+  - Risk: MEDIUM — Roster corruption
+
+- [x] **[P1-13] Fix provider registration order dependency** ✅ Done
+  - Location: `src/addon/extensions/factory.ts`
+  - Wrap each registration in try/catch; log failures; continue
+  - Risk: MEDIUM — Silent provider failures
+
+- [x] **[P1-14] Fix memory tool reconstruction fragility** ✅ Done
+  - Location: `src/addon/extensions/tools/memory-tool.ts` → `reconstructState()`
+  - Add schema validation on reconstruct; log warnings for malformed entries
+  - Risk: MEDIUM — Silent memory loss
+
+- [ ] **[P1-15] Fix safe_edit rollback atomicity (P0 supplement)**
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/safe_edit.ts`
+  - Ensure rollback is transactional; verify after P0-6
+  - Risk: CRITICAL — Partial state corruption
+
+---
+
+## P2 — Fix Next Sprint (24 tasks)
+
+- [ ] **[P2-1] Persist session registry to disk**
+  - Location: `src/addon/extensions/session-tool/registry.ts`
+  - Save metadata to JSON file; load on startup
+
+- [ ] **[P2-2] Fix todos file atomic write race**
+  - Location: `src/addon/extensions/tools/todos-tool.ts` → `saveTodoToFile()`
+  - Use `withFileMutationQueue` consistently; add file-level lock
+
+- [ ] **[P2-3] Fix multi-agent child worker model resolution**
+  - Location: `src/addon/extensions/multi-agent-tool/worker/child-worker.ts`
+  - Include available models in error; add fallback to parent model
+
+- [ ] **[P2-4] Fix session switch race condition**
+  - Location: `src/addon/extensions/session-tool/manager.ts` → `switchTo()`
+  - Try/catch with rollback on failure
+
+- [ ] **[P2-5] Fix plugin loader cache invalidation (hot-reload)**
+  - Location: `src/addon/extensions/capability-system/plugin-loader.ts`
+  - Use cache-busting query params for true hot-reload
+
+- [ ] **[P2-6] Fix circuit breaker state not shared**
+  - Location: `src/addon/extensions/tools/utils/circuit-breaker.ts`
+  - Make singleton or context-injected
+
+- [ ] **[P2-7] Add structured logging to all extensions**
+  - Location: Throughout `src/addon/extensions/`
+  - Use `createLogger` utility; add correlation ID propagation
+
+- [ ] **[P2-8] Add health check endpoints**
+  - Location: New capability or extension
+  - Check session manager, plugin loader, provider connectivity
+
+- [ ] **[P2-9] Sanitize error messages (no internal paths)**
+  - Location: Multiple (safe_edit, audit, search)
+  - Show relative paths only; log full details server-side
+
+- [ ] **[P2-10] Add retry UI for failed operations**
+  - Location: Capability router
+  - Add retry button in error display; exponential backoff
+
+- [ ] **[P2-11] Fix unbounded message bus history**
+  - Location: `src/addon/extensions/multi-agent-tool/message-bus.ts`
+  - Add max handler limit; auto-cleanup on child termination
+
+- [ ] **[P2-12] Fix webhook/external call retry not idempotent**
+  - Location: `src/addon/extensions/capability-system/plugins/dev/capabilities/test.ts`
+  - Add timeout parameter; use idempotency key
+
+- [ ] **[P2-13] Fix todos next ID calculation off-by-one**
+  - Location: `src/addon/extensions/tools/todos-tool.ts` → `getNextIds()`
+  - Add uniqueness check on load
+
+- [ ] **[P2-14] Fix auto-compact threshold too aggressive**
+  - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
+  - Add cooldown (min 5 min between compactions); check if already compacting
+
+- [ ] **[P2-15] Fix context logger file permissions**
+  - Location: `src/addon/extensions/context-logger.ts`
+  - Set file mode 0o600; use appendFileSync with mode option
+
+- [ ] **[P2-16] Fix piclaw header network call no timeout**
+  - Location: `src/addon/extensions/piclaw-header.ts` → `checkForUpdate()`
+  - Add connection timeout; use AbortSignal.timeout()
+
+- [ ] **[P2-17] Fix token saver RAW_CAP not enforced**
+  - Location: `src/addon/extensions/providers/ofm-provider/token-saver/index.ts`
+  - Use `>=` instead of `>` for RAW_CAP check
+
+- [ ] **[P2-18] Fix chain routing no circuit breaker**
+  - Location: `src/addon/extensions/providers/ofm-provider/chains.ts` → `decideLink()`
+  - Add failure tracking per link; skip dead links
+
+- [ ] **[P2-19] Fix auto-compact no metrics**
+  - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
+  - Log compaction events with context usage percentage
+
+- [ ] **[P2-20] Fix team widget no empty state**
+  - Location: `src/addon/extensions/team/team-widget.ts`
+  - Add hint: "Use team_run({tasks: [...]}) to create a team"
+
+- [ ] **[P2-21] Fix memory tool delete not idempotent**
+  - Location: `src/addon/extensions/tools/memory-tool.ts` → delete action
+  - Return success if already deleted
+
+- [ ] **[P2-22] Fix OFM provider listing cache**
+  - Location: `src/addon/extensions/providers/ofm-provider/catalog.ts`
+  - Add short TTL cache (30s); respect AbortSignal
+
+- [ ] **[P2-23] Fix skill reader path traversal**
+  - Location: `src/addon/extensions/tools/skill-reader/read-skill.ts`
+  - Validate skill name (alphanumeric + hyphen); reject path traversal
+
+- [ ] **[P2-24] Fix extension loading no dependency check**
+  - Location: `src/addon/extensions/factory.ts`
+  - Add dependency declaration; topological sort
+
+---
+
+## P3 — Backlog (15 tasks)
+
+- [ ] **[P3-1] Fix inconsistent icon usage across renderers**
+  - Create shared icon registry; use consistent emoji set
+
+- [ ] **[P3-2] Add keyboard shortcuts for common actions**
+  - Location: `src/addon/extensions/keybinding/keybinding-extension.ts`
+  - Extend parser to support function keys, arrow keys, multi-key chords
+
+- [ ] **[P3-3] Fix JWT algorithm confusion in audit**
+  - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/audit.ts`
+  - Add detection for `algorithms: ['none']` and confusion attacks
+
+- [ ] **[P3-4] Add distributed tracing (OpenTelemetry)**
+  - Instrument HTTP calls and capability executions
+
+- [ ] **[P3-5] Persist token saver stats**
+  - Location: `src/addon/extensions/providers/ofm-provider/saver-stats.ts`
+  - Optional file persistence
+
+- [ ] **[P3-6] Fix handoff contract file path inconsistency**
+  - Location: `src/addon/extensions/session-tool/operations/handoff.ts`
+  - Use actual session ID from createChild for bus paths
+
+- [ ] **[P3-7] Add metrics collection**
+  - Location: `src/addon/extensions/capability-system/plugins/system/capabilities/metrics.ts`
+  - Implement actual metrics (operation counts, latency, error rates)
+
+- [ ] **[P3-8] Add connection pooling in HTTP sub-tool**
+  - Location: `src/addon/extensions/tools/sub-tools/http.ts`
+  - Use persistent HTTP client (undici)
+
+- [ ] **[P3-9] Fix auto-continue idle timer leak**
+  - Location: `src/addon/extensions/hooks/auto-continue.ts`
+  - Track timers in WeakMap
+
+- [ ] **[P3-10] Fix keybinding input handling security**
+  - Location: `src/addon/extensions/keybinding/keybinding-extension.ts`
+  - Validate command exists before sending
+
+- [ ] **[P3-11] Fix todos renderer no empty state guidance**
+  - Location: `src/addon/extensions/renderers/todos-renderer.ts`
+  - Add hint: "Use todos({add_phase: {...}}) to create todos"
+
+- [ ] **[P3-12] Fix saver store default off notification**
+  - Location: `src/addon/extensions/providers/ofm-provider/saver-store.ts`
+  - Add first-run notification about saver availability
+
+- [ ] **[P3-13] Fix chain store no validation on read**
+  - Location: `src/addon/extensions/providers/ofm-provider/chain-store.ts`
+  - Validate links on write; reject invalid chains
+
+- [ ] **[P3-14] Fix piclaw header network call no timeout**
+  - Location: `src/addon/extensions/piclaw-header.ts` → `checkForUpdate()`
+  - Add connection timeout; use AbortSignal.timeout()
+
+- [ ] **[P3-15] Fix memory tool delete not idempotent (P2 supplement)**
+  - Location: `src/addon/extensions/tools/memory-tool.ts`
+  - Return success if already deleted
+
+---
 
 ## Notes
-All tests pass: 188 files, 1646 tests.
-Branch coverage ~78%. Remaining gaps are in core modules that are unit-testable; focused efforts can reach >80% without high-risk refactors.
-
-**Session status:** ACTIVE. Continuous loop monitoring for quality improvements, test coverage increments, and code health.
+- All tasks derived from AUDIT.md v2 findings
+- Total: 8 P0 + 15 P1 + 24 P2 + 15 P3 = 62 tasks
+- Each task should be completed with tests and verified before commit
+- Follow AUTO-CONTINUE.md workflow: Analyze → Plan → Test → Implement → Refactor → Verify

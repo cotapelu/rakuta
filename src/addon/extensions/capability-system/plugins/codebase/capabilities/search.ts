@@ -110,7 +110,10 @@ export async function execute(params: { query: string; filePattern?: string; max
 
   const context: ScanContext = { cwd, query, maxResults, caseSensitive, filePattern, matches };
   try {
-    await walkDir(cwd, (fp) => handleFile(fp, context));
+    await walkDir(cwd, async (fp) => {
+      if (matches.length >= maxResults) return; // Stop early when enough results
+      await handleFile(fp, context);
+    });
   } catch {
     // ignore
   }

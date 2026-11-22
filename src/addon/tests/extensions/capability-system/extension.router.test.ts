@@ -69,7 +69,7 @@ describe('Capability Router Tool', () => {
 
       expect(result.isError).toBe(false);
       expect(result.content[0].text).toBe('OK');
-      expect(cap.execute).toHaveBeenCalledWith('call3', {}, null, null, expect.any(Object));
+      expect(cap.execute).toHaveBeenCalledWith('call3', {}, expect.any(AbortSignal), null, expect.any(Object));
       expect(result.details?.capabilityId).toBe('system.test');
     });
 

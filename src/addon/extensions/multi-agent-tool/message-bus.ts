@@ -112,11 +112,18 @@ export class MessageBus extends EventEmitter {
     timeoutMs = 30000
   ): Promise<ParentToChildMessage | null> {
     return new Promise((resolve) => {
+      let handler: (msg: ParentToChildMessage) => void;
       const timer = setTimeout(() => {
+        // Clean up stale handler on timeout to prevent memory leak
+        if (handler) {
+          const handlers = this.childIncomingHandlers.get(childId) ?? [];
+          const idx = handlers.indexOf(handler);
+          if (idx >= 0) handlers.splice(idx, 1);
+        }
         resolve(null);
       }, timeoutMs);
 
-      const handler = (msg: ParentToChildMessage) => {
+      handler = (msg: ParentToChildMessage) => {
         if (msg.type === type) {
           clearTimeout(timer);
           const handlers = this.childIncomingHandlers.get(childId) ?? [];
@@ -127,7 +134,7 @@ export class MessageBus extends EventEmitter {
       };
 
       const handlers = this.childIncomingHandlers.get(childId) ?? [];
-      handlers.push(handler);
+      if (handler) handlers.push(handler);
       this.childIncomingHandlers.set(childId, handlers);
     });
   }

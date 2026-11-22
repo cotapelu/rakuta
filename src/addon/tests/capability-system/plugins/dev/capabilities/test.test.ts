@@ -16,7 +16,7 @@ describe('dev.test capability', () => {
   it('should run npm test by default', async () => {
     const ctx = mockCtx({ stdout: 'Tests passed', code: 0 });
     const result = await testCap.execute({}, ctx);
-    expect(ctx.exec).toHaveBeenCalledWith('bash', ['-c', 'npm test'], { cwd: '/test' });
+    expect(ctx.exec).toHaveBeenCalledWith('npm', ['test'], { cwd: '/test' });
     expect(result.isError).toBe(false);
     expect(result.content[0].text).toBe('Tests passed');
     expect(result.details.files).toBeUndefined();
@@ -26,21 +26,21 @@ describe('dev.test capability', () => {
   it('should run npm test with specific files', async () => {
     const ctx = mockCtx({ stdout: '1 passing', code: 0 });
     const result = await testCap.execute({ files: ['src/foo.test.ts'] }, ctx);
-    expect(ctx.exec).toHaveBeenCalledWith('bash', ['-c', 'npm test -- "src/foo.test.ts"'], { cwd: '/test' });
+    expect(ctx.exec).toHaveBeenCalledWith('npm', ['test', '--', 'src/foo.test.ts'], { cwd: '/test' });
     expect(result.details.files).toEqual(['src/foo.test.ts']);
   });
 
   it('should add watch flag when watch=true', async () => {
     const ctx = mockCtx({ stdout: 'watching...', code: 0 });
     const result = await testCap.execute({ watch: true }, ctx);
-    expect(ctx.exec).toHaveBeenCalledWith('bash', ['-c', 'npm test -- --watch'], { cwd: '/test' });
+    expect(ctx.exec).toHaveBeenCalledWith('npm', ['test', '--', '--watch'], { cwd: '/test' });
     expect(result.details.watch).toBe(true);
   });
 
   it('should combine files and watch', async () => {
     const ctx = mockCtx({ stdout: 'watching files...', code: 0 });
     const result = await testCap.execute({ files: ['a.test.ts', 'b.test.ts'], watch: true }, ctx);
-    expect(ctx.exec).toHaveBeenCalledWith('bash', ['-c', 'npm test -- "a.test.ts" "b.test.ts" -- --watch'], { cwd: '/test' });
+    expect(ctx.exec).toHaveBeenCalledWith('npm', ['test', '--', 'a.test.ts', 'b.test.ts', '--', '--watch'], { cwd: '/test' });
   });
 
   it('should handle non-zero exit', async () => {
@@ -64,6 +64,6 @@ describe('dev.test capability', () => {
       exec: vi.fn(async () => ({ stdout: 'OK', stderr: '', code: 0, killed: false })),
     } as any;
     await testCap.execute({}, ctx);
-    expect(ctx.exec).toHaveBeenCalledWith('bash', ['-c', 'npm test'], { cwd: realCwd });
+    expect(ctx.exec).toHaveBeenCalledWith('npm', ['test'], { cwd: realCwd });
   });
 });

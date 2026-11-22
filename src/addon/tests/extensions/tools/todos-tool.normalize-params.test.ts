@@ -49,12 +49,13 @@ describe('todos-tool normalizeParams branch coverage', () => {
     });
   });
 
-  describe('add_phase.name JSON replacement branch', () => {
-    it('replaces add_phase with parsed JSON when name is a JSON object string', () => {
+  describe('add_phase.name JSON replacement branch (removed for security)', () => {
+    it('keeps add_phase name as-is when name starts with { (no heuristic parsing)', () => {
       const result = normalizeParams({
         add_phase: { name: '{"name":"P2","tasks":[{"content":"T2"}]}', tasks: [] }
       });
-      expect(result.add_phase).toEqual({ name: 'P2', tasks: [{ content: 'T2' }] });
+      // Heuristic removed: name should remain as-is
+      expect(result.add_phase).toEqual({ name: '{"name":"P2","tasks":[{"content":"T2"}]}', tasks: [] });
     });
   });
 

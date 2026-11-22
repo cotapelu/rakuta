@@ -45,6 +45,16 @@ export function renderWarning(theme: any, message: string): Text {
 }
 
 /**
+ * Sanitize user-provided text for safe terminal rendering.
+ * Strips ANSI escape sequences to prevent terminal injection.
+ */
+export function sanitizeForTerminal(text: string): string {
+  if (typeof text !== 'string') return '';
+  // Strip ANSI escape sequences (CSI, OSC, etc.)
+  return text.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, '');
+}
+
+/**
  * Inline styled string helpers for embedding in larger text blocks.
  * These return the styled string directly (no Text wrapper).
  */

@@ -5,6 +5,35 @@ import type { ExtensionAPI, BeforeProviderRequestEvent } from "@earendil-works/p
 import { getAgentDir } from "@earendil-works/pi-coding-agent";
 
 const AGENT_DIR = getAgentDir();
+
+/**
+ * Redact PII from an object before logging.
+ * Replaces common PII patterns (emails, phone numbers, SSNs, tokens) with [REDACTED].
+ */
+function redactPII(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'string') {
+    return obj
+      .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[REDACTED_EMAIL]')
+      .replace(/\b\d{3}[-.]?\d{2}[-.]?\d{4}\b/g, '[REDACTED_SSN]')
+      .replace(/\b\d{10,}\b/g, '[REDACTED_PHONE]')
+      .replace(/(?:api[_-]?key|token|secret|password|passwd)\s*[:=]\s*['"`][^'"`]{8,}['"`]/gi, '[REDACTED_SECRET]');
+  }
+  if (Array.isArray(obj)) return obj.map(redactPII);
+  if (typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+      const lowerKey = key.toLowerCase();
+      if (lowerKey.includes('password') || lowerKey.includes('secret') || lowerKey.includes('token') || lowerKey.includes('apikey') || lowerKey.includes('api_key')) {
+        result[key] = '[REDACTED]';
+      } else {
+        result[key] = redactPII(value);
+      }
+    }
+    return result;
+  }
+  return obj;
+}
 const CONFIG_DIR_NAME = dirname(AGENT_DIR).split(/[/\\]/).pop() || ".pi";
 
 /**
@@ -52,14 +81,18 @@ export default function (pi: ExtensionAPI): any {
 
 			// Cast payload to expected shape (model, context, options)
 			const payload = event.payload as { model: unknown; context: unknown; options: unknown };
+
+			// Redact PII from context before logging
+			const redactedContext = redactPII(payload.context);
+
 			const logEntry = JSON.stringify({
 				timestamp: new Date().toISOString(),
 				model: payload.model,
-				context: payload.context,
+				context: redactedContext,
 				options: payload.options,
 			}) + "\n";
 
-			appendFileSync(effectiveLogFile, logEntry);
+			appendFileSync(effectiveLogFile, logEntry, { mode: 0o600 });
 		} catch (err) {
 			// Log error but don't break the request flow
 			console.error("[ContextLogger] Failed to write log:", err);

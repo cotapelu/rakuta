@@ -1439,6 +1439,8 @@ export async function execute(params: { includeTests?: boolean }, ctx: any): Pro
   }
 
   const srcDir = join(cwd, 'src');
+  const AUDIT_TIMEOUT_MS = 30000; // 30s timeout to prevent UI freeze
+  const startTime = Date.now();
   try {
     await fsp.access(srcDir);
     await walkDir(srcDir, 'src');
@@ -1469,6 +1471,11 @@ export async function execute(params: { includeTests?: boolean }, ctx: any): Pro
   const checklist: Record<string, boolean> = {};
 
   for (const dim of dimensionAudits) {
+    // Check timeout before each dimension
+    if (Date.now() - startTime > AUDIT_TIMEOUT_MS) {
+      console.warn(`Audit timed out after ${AUDIT_TIMEOUT_MS}ms`);
+      break;
+    }
     let issues = [];
     try {
       issues = await dim.fn(cwd, files);

@@ -5,7 +5,8 @@
  * stay within the allowed working directory.
  */
 
-import { resolve } from 'path';
+import { resolve, dirname, basename, sep } from 'path';
+import { realpathSync, existsSync } from 'fs';
 
 /**
  * Normalizes and validates that a user-provided path resolves within the cwd.
@@ -23,41 +24,60 @@ export function resolveSecurePath(cwd: string, userPath: string): string {
   // Resolve to absolute path
   const absoluteCwd = resolve(cwd);
   let absolutePath: string;
-  
+
   try {
     absolutePath = resolve(absoluteCwd, userPath);
   } catch {
     throw new Error(`Invalid path: ${userPath}`);
   }
 
-  // Ensure the resolved path starts with the cwd (with proper separator)
+  // Resolve symlinks: use realpathSync on the existing portion of the path.
+  // If the full path exists, resolve it fully. Otherwise, resolve the parent
+  // directory and append the basename. This prevents symlink-based traversal.
+  let realCwd: string;
+  let realPath: string;
+  try {
+    realCwd = realpathSync(absoluteCwd);
+  } catch {
+    realCwd = absoluteCwd;
+  }
+  try {
+    if (existsSync(absolutePath)) {
+      realPath = realpathSync(absolutePath);
+    } else {
+      // File doesn't exist yet (e.g., new file write): resolve parent dir
+      const parentDir = dirname(absolutePath);
+      if (existsSync(parentDir)) {
+        realPath = resolve(realpathSync(parentDir), basename(absolutePath));
+      } else {
+        realPath = absolutePath;
+      }
+    }
+  } catch {
+    realPath = absolutePath;
+  }
+
+  // Check resolved (symlink-aware) path against real cwd
   let normalizedCwd: string;
-  if (absoluteCwd.endsWith('/')) {
-    // This branch is theoretically unreachable because path.resolve strips trailing slashes,
-    // but keep for completeness; ignore coverage.
-    /* istanbul ignore next */
-    normalizedCwd = absoluteCwd;
+  if (realCwd.endsWith(sep)) {
+    normalizedCwd = realCwd;
   } else {
-    normalizedCwd = absoluteCwd + '/';
+    normalizedCwd = realCwd + sep;
   }
   let normalizedPath: string;
-  if (absolutePath.endsWith('/')) {
-    // Similarly unreachable; ignore coverage.
-    /* istanbul ignore next */
-    normalizedPath = absolutePath;
+  if (realPath.endsWith(sep)) {
+    normalizedPath = realPath;
   } else {
-    normalizedPath = absolutePath + '/';
+    normalizedPath = realPath + sep;
   }
 
   if (!normalizedPath.startsWith(normalizedCwd)) {
     throw new Error(`Access denied: path '${userPath}' is outside working directory`);
   }
 
-  // Additional check: prevent symlink attacks by ensuring no '..' in path segments
-  // (resolve already handles this, but double-check)
-  const pathSegments = absolutePath.split('/');
+  // Additional check: prevent '..' in real path segments (defense in depth)
+  const pathSegments = realPath.split(sep);
   for (const segment of pathSegments) {
-    /* istanbul ignore next */
     if (segment === '..') {
       throw new Error(`Access denied: path '${userPath}' contains parent directory reference`);
     }

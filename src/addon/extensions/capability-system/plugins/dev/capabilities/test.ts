@@ -14,16 +14,15 @@ export async function execute(params: { files?: string[]; watch?: boolean } = {}
   const cwd = ctx.cwd || process.cwd();
 
   try {
-    let cmd = "npm test";
+    const args = ["test"];
     if (params.files?.length) {
-      const files = params.files.map(f => `"${f}"`).join(' ');
-      cmd += ` -- ${files}`;
+      args.push("--", ...params.files);
     }
     if (params.watch) {
-      cmd += " -- --watch";
+      args.push("--", "--watch");
     }
 
-    const result = await ctx.exec("bash", ["-c", cmd], { cwd });
+    const result = await ctx.exec("npm", args, { cwd });
 
     return {
       content: [{ type: "text" as const, text: result.stdout || (result.stderr || "No output") }],

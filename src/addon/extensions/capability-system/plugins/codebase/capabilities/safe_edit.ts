@@ -144,11 +144,27 @@ function groupOperationsByFile(operations: EditOperation[]): Map<string, EditOpe
 }
 
 async function rollbackAll(backups: Map<string, string>, cwd: string): Promise<void> {
+  // Write all backups atomically: write to temp files first, then rename.
+  // This ensures each file is restored atomically (no partial writes).
+  const tempFiles: Array<{ securePath: string; tempPath: string; backup: string }> = [];
   for (const [f, backup] of backups) {
     try {
       const securePath = resolveSecurePath(cwd, f);
-      await fs.writeFile(securePath, backup, 'utf-8');
-    } catch {}
+      const tempPath = securePath + `.rollback.${Date.now()}.${process.pid}.tmp`;
+      await fs.writeFile(tempPath, backup, 'utf-8');
+      tempFiles.push({ securePath, tempPath, backup });
+    } catch {
+      // Continue with other files even if one fails
+    }
+  }
+  // Now rename all temp files to their final paths (atomic per-file)
+  for (const { securePath, tempPath } of tempFiles) {
+    try {
+      await fs.rename(tempPath, securePath);
+    } catch {
+      // Clean up temp file on failure
+      try { await fs.unlink(tempPath); } catch {}
+    }
   }
 }
 

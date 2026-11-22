@@ -121,8 +121,19 @@ export function registerMemoryTool(api: ExtensionAPI): void {
             | { memories?: Memory[]; nextId?: number }
             | undefined;
           if (details && Array.isArray(details.memories)) {
-            memories = details.memories;
-            if (typeof details.nextId === "number") nextId = details.nextId;
+            // Validate memory shape: each memory must have id, text, created
+            const validMemories = details.memories.filter((m: any) =>
+              m && typeof m === 'object' &&
+              typeof m.id === 'number' &&
+              typeof m.text === 'string' &&
+              typeof m.created === 'number'
+            );
+            if (validMemories.length !== details.memories.length) {
+              console.warn(`[memory] Skipped ${details.memories.length - validMemories.length} malformed memory entries`);
+            }
+            memories = validMemories;
+            if (typeof details.nextId === 'number' && details.nextId > 0) nextId = details.nextId;
+            else nextId = memories.length > 0 ? Math.max(...memories.map((m: any) => m.id)) + 1 : 1;
           }
         }
       }

@@ -352,19 +352,9 @@ export function normalizeParams(params: unknown): any {
     }
   }
 
-  if (normalized.add_phase && typeof normalized.add_phase === "object") {
-    const addPhase = normalized.add_phase as Record<string, unknown>;
-    if (addPhase.name && typeof addPhase.name === "string" && addPhase.name.startsWith("{")) {
-      try {
-        const parsed = JSON.parse(addPhase.name);
-        if (typeof parsed === "object" && parsed !== null) {
-          normalized.add_phase = parsed;
-        }
-      } catch {
-        // Keep original if parse fails
-      }
-    }
-  }
+  // Removed heuristic that parsed add_phase.name if it started with '{'
+  // This could silently overwrite user data if a phase name legitimately starts with '{'
+  // Strict schema validation should handle all cases instead
 
   if (normalized.add_phase && typeof normalized.add_phase === "object") {
     const addPhase = normalized.add_phase as Record<string, unknown>;

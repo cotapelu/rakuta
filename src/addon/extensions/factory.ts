@@ -54,12 +54,20 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   // Loads plugins from ./plugins folder and registers capability router tool
   await capabilitySystemExtension(api);
 
-  // Register providers
-  await registerKiloProvider(api);
+  // Register providers (wrapped in try/catch for resilience)
+  try {
+    await registerKiloProvider(api);
+  } catch (e) {
+    console.error('[Factory] Kilo provider registration failed:', e);
+  }
 
   // Register the ofm-provider lanes (ofm-kilo, ofm-opencode) and the /ofm command
   // from ./providers/ofm-provider (token saver, chains, refresh)
-  await registerOfmProvider(api);
+  try {
+    await registerOfmProvider(api);
+  } catch (e) {
+    console.error('[Factory] OFM provider registration failed:', e);
+  }
 
   registerTodosTool(api);
   registerMemoryTool(api);

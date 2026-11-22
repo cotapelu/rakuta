@@ -300,12 +300,15 @@ function createCapabilityRouterTool(api: any) {
         // Log: capability is starting
         console.log(`[CapabilityRouter] Starting: ${cap.name} (${cap.id})`);
 
+        // Ensure signal is always an AbortSignal for cancellation support
+        const effectiveSignal = signal instanceof AbortSignal ? signal : new AbortController().signal;
+
         enhancedCtx = {
           ...ctx,
           cwd: ctx.cwd || process.cwd(),
           exec: async (command: string, args: string[], options: { cwd?: string; env?: Record<string, string> } = {}): Promise<{ code: number; stdout: string; stderr: string }> => {
             const cwd = options.cwd || ctx.cwd || process.cwd();
-            const execResult = await api.exec(command, args, { ...options, cwd, signal });
+            const execResult = await api.exec(command, args, { ...options, cwd, signal: effectiveSignal });
             return { code: execResult.code, stdout: execResult.stdout, stderr: execResult.stderr };
           },
           getCurrentCapability: () => cap,
@@ -321,17 +324,17 @@ function createCapabilityRouterTool(api: any) {
               cwd: ctx.cwd || process.cwd(),
               exec: (cmd, args, opts = {}) => {
                 const cwd = opts.cwd || ctx.cwd || process.cwd();
-                return api.exec(cmd, args, { ...opts, cwd, signal }) as Promise<{ code: number; stdout: string; stderr: string }>;
+                return api.exec(cmd, args, { ...opts, cwd, signal: effectiveSignal }) as Promise<{ code: number; stdout: string; stderr: string }>;
               },
               getCurrentCapability: () => innerCap,
               getCapability: (id2) => registry.get(id2),
               listCapabilitiesByTag: (tag) => registry.listAll().filter(c => c.tags.includes(tag)),
               callCapability: () => Promise.reject(new Error("Nested callCapability not supported"))
             };
-            return innerCap.execute(toolCallId, params, signal, onUpdate, innerCtx);
+            return innerCap.execute(toolCallId, params, effectiveSignal, onUpdate, innerCtx);
           }
         };
-        result = await cap.execute(toolCallId, capParams, signal, onUpdate, enhancedCtx);
+        result = await cap.execute(toolCallId, capParams, effectiveSignal, onUpdate, enhancedCtx);
         // Ensure result has capabilityId in details for renderer
         if (result && typeof result === 'object') {
           result.details = result.details || {};
