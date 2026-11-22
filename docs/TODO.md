@@ -143,7 +143,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/multi-agent-tool/worker/child-worker.ts`
   - Include available models in error; add fallback to parent model
 
-- [ ] **[P2-4] Fix session switch race condition**
+- [x] **[P2-4] Fix session switch race condition** ✅ Done
   - Location: `src/addon/extensions/session-tool/manager.ts` → `switchTo()`
   - Try/catch with rollback on failure
 
@@ -183,7 +183,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/tools/todos-tool.ts` → `getNextIds()`
   - Add uniqueness check on load
 
-- [ ] **[P2-14] Fix auto-compact threshold too aggressive**
+- [x] **[P2-14] Fix auto-compact threshold too aggressive** ✅ Done
   - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
   - Add cooldown (min 5 min between compactions); check if already compacting
 
@@ -191,7 +191,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/context-logger.ts`
   - Set file mode 0o600; use appendFileSync with mode option
 
-- [ ] **[P2-16] Fix piclaw header network call no timeout**
+- [x] **[P2-16] Fix piclaw header network call no timeout** ✅ Done
   - Location: `src/addon/extensions/piclaw-header.ts` → `checkForUpdate()`
   - Add connection timeout; use AbortSignal.timeout()
 

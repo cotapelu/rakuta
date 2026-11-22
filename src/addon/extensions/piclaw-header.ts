@@ -41,10 +41,13 @@ async function checkForUpdate(): Promise<string | undefined> {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
+        // Also set a connection timeout for DNS resolution
+        const connectionTimeoutId = setTimeout(() => controller.abort(), 5000);
         const response = await fetch("https://registry.npmjs.org/@earendil-works/pi-coding-agent/latest", {
             signal: controller.signal,
         });
         clearTimeout(timeoutId);
+        clearTimeout(connectionTimeoutId);
         if (!response.ok) return undefined;
         const data = await response.json();
         // @ts-ignore
@@ -53,7 +56,7 @@ async function checkForUpdate(): Promise<string | undefined> {
             return latestVersion;
         }
     } catch {
-        // ignore errors
+        // ignore errors — AbortController handles cleanup
     }
     return undefined;
 }
