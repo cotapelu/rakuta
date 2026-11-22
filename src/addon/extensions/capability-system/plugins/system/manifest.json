@@ -39,6 +39,24 @@
         "Example: { capability: 'system.metrics', params: {} }"
       ],
       "dependencies": []
+    },
+    {
+      "id": "health",
+      "name": "System Health Check",
+      "description": "Performs basic health checks: Node.js runtime, memory usage, uptime. Returns JSON status.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "execute": "capabilities/health.ts",
+      "renderer": null,
+      "promptGuidelines": [
+        "Use system.health to check system health status.",
+        "Example: { capability: \"system.health\", params: {} }"
+      ],
+      "dependencies": []
     }
   ],
   "settings": {
