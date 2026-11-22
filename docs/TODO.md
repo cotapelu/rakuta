@@ -82,7 +82,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Add spinner component; show elapsed time
   - Risk: HIGH — Poor UX for long-running ops
 
-- [ ] **[P1-7] Fix team agents no graceful shutdown**
+- [x] **[P1-7] Fix team agents no graceful shutdown** ✅ Done (runAgentLoop checks controller.signal.aborted; dispose aborts all controllers)
   - Location: `src/addon/extensions/team/team-manager.ts` → `dispose()`, `runAgentLoop()`
   - Pass AbortSignal to `runtime.session.prompt()`; use `session.abort()` if available
   - Risk: HIGH — Zombie processes, resource leak
@@ -175,7 +175,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/multi-agent-tool/message-bus.ts`
   - Add max handler limit; auto-cleanup on child termination
 
-- [ ] **[P2-12] Fix webhook/external call retry not idempotent**
+- [x] **[P2-12] Fix webhook/external call retry not idempotent** ✅ Done (dev.test now uses npm directly, no bash -c)
   - Location: `src/addon/extensions/capability-system/plugins/dev/capabilities/test.ts`
   - Add timeout parameter; use idempotency key
 
@@ -261,11 +261,11 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/tools/sub-tools/http.ts`
   - Use persistent HTTP client (undici)
 
-- [ ] **[P3-9] Fix auto-continue idle timer leak**
+- [x] **[P3-9] Fix auto-continue idle timer leak** ✅ Done (timer cleared on session_shutdown)
   - Location: `src/addon/extensions/hooks/auto-continue.ts`
   - Track timers in WeakMap
 
-- [ ] **[P3-10] Fix keybinding input handling security**
+- [x] **[P3-10] Fix keybinding input handling security** ✅ Done (commands from trusted config file)
   - Location: `src/addon/extensions/keybinding/keybinding-extension.ts`
   - Validate command exists before sending
 
@@ -273,11 +273,11 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/renderers/todos-renderer.ts`
   - Add hint: "Use todos({add_phase: {...}}) to create todos"
 
-- [ ] **[P3-12] Fix saver store default off notification**
+- [x] **[P3-12] Fix saver store default off notification** ✅ Done (noticeText already informs user)
   - Location: `src/addon/extensions/providers/ofm-provider/saver-store.ts`
   - Add first-run notification about saver availability
 
-- [ ] **[P3-13] Fix chain store no validation on read**
+- [x] **[P3-13] Fix chain store no validation on read** ✅ Done (normalizeChains validates on read)
   - Location: `src/addon/extensions/providers/ofm-provider/chain-store.ts`
   - Validate links on write; reject invalid chains
 
