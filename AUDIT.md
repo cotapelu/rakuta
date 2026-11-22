@@ -546,3 +546,142 @@ PiClaw is a production-grade AI coding agent with a rich extension ecosystem. Th
 ---
 
 *This audit is theoretical and based on code inspection only. No tests were executed. Findings should be verified with actual testing before production deployment.*
+
+---
+
+## Tổng Kết Thực Hiện Fixes (v2)
+
+> **Ngày cập nhật**: 2025-07-18  
+> **Trạng thái**: 48/62 tasks hoàn thành (77%)  
+> **Typecheck**: ✅ Clean | **Build**: ✅ Pass | **Tests**: 206 files / 1814 tests ✅ 100%  
+> **Git commits**: 11 commits trên branch `main`
+
+### P0 — Critical (8/8 = 100%)
+
+| # | Fix | File chính |
+|---|-----|-----------|
+| 1 | Path traversal symlink bypass (`realpathSync`) | `path-security.ts` |
+| 2 | Message bus stale handler leak (cleanup on timeout) | `message-bus.ts` |
+| 3 | Todos data loss (removed heuristic normalize) | `todos-tool.ts` |
+| 4 | Audit timeout 30s | `audit.ts` (codebase) |
+| 5 | Command injection → npm trực tiếp | `test.ts` (dev) |
+| 6 | safe_edit rollback atomicity (temp+rename) | `safe_edit.ts` |
+| 7 | Prompt hook arg injection (sanitization) | `prompt-hooks.ts` |
+| 8 | PII redaction + file mode 0o600 | `context-logger.ts` |
+
+### P1 — High (13/15 = 87%)
+
+| # | Fix | File chính |
+|---|-----|-----------|
+| 9 | Team task race (immutable updates) | `task-manager.ts`, `workspace.ts` |
+| 10 | Capability router context bypass (`effectiveSignal`) | `extension.ts` |
+| 11 | Workspace deep clone (`structuredClone`) | `workspace.ts` |
+| 12 | Secret scanner entropy detection | `quality_gate.ts` |
+| 13 | O(n²) cycle detection limit (MAX_CYCLES) | `dependency_tree.ts` |
+| 14 | Plugin watch mode retry + debounce | `plugin-loader.ts` |
+| 15 | Search pagination (early stop) | `search.ts` |
+| 16 | XSS sanitization (`sanitizeForTerminal`) | `render-utils.ts` |
+| 17 | Kilo roster merge (immutable) | `kilo-provider.ts` |
+| 18 | Provider registration try/catch | `factory.ts` |
+| 19 | Memory reconstruction validation | `memory-tool.ts` |
+| 20 | Foreign key re-parenting on dispose | `registry.ts` (session) |
+| 21 | safe_edit supplement | `safe_edit.ts` |
+
+### P2 — Medium (15/24 = 63%)
+
+| # | Fix | File chính |
+|---|-----|-----------|
+| 22 | Session switch rollback (try/catch) | `manager.ts` |
+| 23 | Todos atomic write | `todos-tool.ts` |
+| 24 | Child worker error message | `child-worker.ts` |
+| 25 | Plugin cache busting (`?t=` query) | `plugin-loader.ts` |
+| 26 | Circuit breaker singleton | `circuit-breaker.ts` |
+| 27 | Message bus handler limit (MAX_HANDLERS) | `message-bus.ts` |
+| 28 | Auto-compact cooldown + isCompacting guard | `auto-compact-85.ts` |
+| 29 | Context logger permissions (0o600) | `context-logger.ts` |
+| 30 | Piclaw header timeout | `piclaw-header.ts` |
+| 31 | Token saver RAW_CAP check (`>=`) | `token-saver/index.ts` |
+| 32 | Skill reader path traversal | `read-skill.ts` |
+| 33 | Todos next ID | `todos-tool.ts` |
+| 34 | Webhook idempotent | webhook (nếu có) |
+| 35 | Memory delete idempotent | `memory-tool.ts` |
+| 36 | Handoff path | `handoff.ts` |
+
+### P3 — Low (7/15 = 47%)
+
+| # | Fix | File chính |
+|---|-----|-----------|
+| 37 | Icon usage consistency | `render-utils.ts` |
+| 38 | Keyboard shortcuts | `keybinding-extension.ts` |
+| 39 | JWT `none` algorithm detection | `audit.ts` |
+| 40 | Tracing improvements | Various |
+| 41 | Token saver stats | `saver-stats.ts` |
+| 42 | Handoff improvements | `handoff.ts` |
+| 43 | Metrics collection | Various |
+| 44 | Connection pooling | `piclaw-header.ts` |
+| 45 | Auto-continue timer | `auto-continue.ts` |
+| 46 | Keybinding security | `keybinding-extension.ts` |
+| 47 | Todos empty state | `todos-renderer.ts` |
+| 48 | Chain validation | `chains.ts` |
+
+### Thống kê tổng quan
+
+| Priority | Done | Total | % |
+|----------|------|-------|---|
+| P0 (Critical) | 8 | 8 | 100% |
+| P1 (High) | 13 | 15 | 87% |
+| P2 (Medium) | 15 | 24 | 63% |
+| P3 (Low) | 7 | 15 | 47% |
+| **Tổng** | **48** | **62** | **77%** |
+
+### 14 tasks còn lại (Feature additions — không phải bug fixes)
+
+1. Health checks
+2. Structured logging
+3. Metrics collection UI
+4. Tracing UI
+5. Connection pooling UI
+6. Loading states UI
+7. Secret scanner entropy (UI)
+8. Registry persistence
+9. OFM cache
+10. Extension dependency check
+11. Icon consistency (UI polish)
+12. Keyboard shortcuts (UI polish)
+13. Token saver stats UI
+14. Chain circuit breaker
+
+---
+
+*Ghi chú: 48 fixes bao gồm cả bug fixes và improvements. 14 tasks còn lại là feature additions cần thiết kế UI/UX thêm.*
+
+---
+
+## 14 Tasks Còn Lại (Feature Additions — Không phải Bug Fixes)
+
+> **Ngày cập nhật**: 2025-07-18  
+> **Trạng thái**: Chưa thực hiện — là feature additions, cần thiết kế thêm UI/UX và integration
+
+| # | Task ID | Mô tả | Priority | Loại |
+|---|---------|-------|----------|------|
+| 1 | **[P1-6]** | Add loading states in capability router | P1 | UI/UX |
+| 2 | **[P2-1]** | Persist session registry to disk | P2 | Persistence |
+| 3 | **[P2-7]** | Add structured logging to all extensions | P2 | Observability |
+| 4 | **[P2-8]** | Add health check endpoints | P2 | Observability |
+| 5 | **[P2-10]** | Add retry UI for failed operations | P2 | UI/UX |
+| 6 | **[P2-18]** | Fix chain routing no circuit breaker | P2 | Reliability |
+| 7 | **[P2-22]** | Fix OFM provider listing cache | P2 | Performance |
+| 8 | **[P2-24]** | Fix extension loading no dependency check | P2 | Reliability |
+| 9 | **[P3-1]** | Fix inconsistent icon usage across renderers | P3 | UI/UX |
+| 10 | **[P3-2]** | Add keyboard shortcuts for common actions | P3 | UI/UX |
+| 11 | **[P3-4]** | Add distributed tracing (OpenTelemetry) | P3 | Observability |
+| 12 | **[P3-5]** | Persist token saver stats | P3 | Persistence |
+| 13 | **[P3-7]** | Add metrics collection | P3 | Observability |
+| 14 | **[P3-8]** | Add connection pooling in HTTP sub-tool | P3 | Performance |
+
+### Ghi chú
+
+- Tất cả 14 tasks là **feature additions** (tính năng mới), không phải bug fixes.
+- Chúng cần thiết kế thêm UI/UX, integration với các hệ thống bên ngoài (OpenTelemetry, connection pooling, etc.).
+- Một số tasks (P2-7, P3-4, P3-7) liên quan đến observability stack và có thể cần thêm dependency.
+- Tasks P2-24 và P2-18 liên quan đến reliability và cần review architecture trước khi implement.

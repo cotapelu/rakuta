@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-11-22T15:07:13.512Z
+// Generated: 2026-11-22T20:47:39.729Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -4357,7 +4357,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 131072,
-      maxTokens: 65536,
+      maxTokens: 117964,
     } satisfies Model<"openai-completions">,
     "openai/gpt-oss-safeguard-120b": {
       id: "openai/gpt-oss-safeguard-120b",
@@ -6413,8 +6413,8 @@ export const CUSTOM_MODELS = {
         cacheRead: 0.03,
         cacheWrite: 0,
       },
-      contextWindow: 1048575,
-      maxTokens: 943717,
+      contextWindow: 1048576,
+      maxTokens: 131072,
     } satisfies Model<"openai-completions">,
     "z-ai/glm-5.3-flashx": {
       id: "z-ai/glm-5.3-flashx",
