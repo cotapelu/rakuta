@@ -72,7 +72,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Add entropy-based detection for high-entropy strings
   - Risk: HIGH — Undetected secrets
 
-- [ ] **[P1-5] Fix O(n²) in dependency tree cycle detection**
+- [x] **[P1-5] Fix O(n²) in dependency tree cycle detection** ✅ Done
   - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/dependency_tree.ts`
   - Use Tarjan's SCC algorithm; limit cycle reporting to top N
   - Risk: HIGH — Exponential time on large codebases
@@ -87,12 +87,12 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Pass AbortSignal to `runtime.session.prompt()`; use `session.abort()` if available
   - Risk: HIGH — Zombie processes, resource leak
 
-- [ ] **[P1-8] Fix foreign key enforcement in session tree**
+- [x] **[P1-8] Fix foreign key enforcement in session tree** ✅ Done
   - Location: `src/addon/extensions/session-tool/registry.ts`
   - Cascade dispose children or re-parent to root on parent dispose
   - Risk: HIGH — Orphaned references, memory leak
 
-- [ ] **[P1-9] Fix plugin loader watch mode race**
+- [x] **[P1-9] Fix plugin loader watch mode race** ✅ Done
   - Location: `src/addon/extensions/capability-system/plugin-loader.ts` → `scheduleNewPluginLoad()`
   - Add retry with exponential backoff; increase debounce to 1000ms
   - Risk: MEDIUM — Missed plugin loads

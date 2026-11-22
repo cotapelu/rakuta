@@ -356,15 +356,23 @@ export class PluginLoader {
       const pluginPath = join(this.options.pluginsDir, pluginFolder);
       const manifestPath = join(pluginPath, MANIFEST_FILENAME);
 
-      // Only load if manifest exists now
-      if (existsSync(manifestPath)) {
-        this.loadPlugin(pluginFolder).catch(err => {
-          console.error(`[PluginLoader] Delayed load failed for ${pluginFolder}:`, err);
-        });
-      } else {
-        console.warn(`[PluginLoader] Manifest not found for ${pluginFolder} after delay, skipping`);
-      }
-    }, 500); // 500ms debounce allows file system operations to complete
+      // Retry with exponential backoff if manifest not found yet
+      let retries = 0;
+      const maxRetries = 5;
+      const tryLoad = () => {
+        if (existsSync(manifestPath)) {
+          this.loadPlugin(pluginFolder).catch(err => {
+            console.error(`[PluginLoader] Delayed load failed for ${pluginFolder}:`, err);
+          });
+        } else if (retries < maxRetries) {
+          retries++;
+          setTimeout(tryLoad, 200 * Math.pow(2, retries));
+        } else {
+          console.warn(`[PluginLoader] Manifest not found for ${pluginFolder} after ${maxRetries} retries, skipping`);
+        }
+      };
+      tryLoad();
+    }, 1000); // 1000ms debounce allows file system operations to complete
 
     this.newPluginTimers.set(pluginFolder, timer);
   }

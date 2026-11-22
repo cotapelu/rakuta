@@ -242,6 +242,8 @@ function buildEdgesArray(nodes: Map<string, NodeInfo>): Array<{ from: string; to
   return edges;
 }
 
+const MAX_CYCLES = 100; // Limit cycle detection to prevent exponential blowup
+
 function detectCycles(nodes: Map<string, NodeInfo>): string[][] {
   const cycles: string[][] = [];
   const visited = new Set<string>();
@@ -249,6 +251,7 @@ function detectCycles(nodes: Map<string, NodeInfo>): string[][] {
   const onStack = new Set<string>();
 
   for (const nodeId of nodes.keys()) {
+    if (cycles.length >= MAX_CYCLES) break;
     if (!visited.has(nodeId)) {
       dfsDetectCycle(nodeId, nodes, visited, stack, onStack, cycles);
     }
@@ -257,12 +260,14 @@ function detectCycles(nodes: Map<string, NodeInfo>): string[][] {
 }
 
 function dfsDetectCycle(nodeId: string, nodes: Map<string, NodeInfo>, visited: Set<string>, stack: string[], onStack: Set<string>, cycles: string[][]): void {
+  if (cycles.length >= MAX_CYCLES) return;
   visited.add(nodeId);
   stack.push(nodeId);
   onStack.add(nodeId);
 
   const node = nodes.get(nodeId)!;
   for (const [toId] of node.imports) {
+    if (cycles.length >= MAX_CYCLES) break;
     if (!visited.has(toId)) {
       dfsDetectCycle(toId, nodes, visited, stack, onStack, cycles);
     } else if (onStack.has(toId)) {

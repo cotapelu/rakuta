@@ -209,10 +209,18 @@ export class SessionRegistry {
 
   /**
    * Unregister a session (mark as disposed)
+   * Also re-parents any child sessions to root to avoid orphaned references.
    */
   unregister(sessionId: string, reason?: string): boolean {
     const meta = this.sessions.get(sessionId);
     if (!meta) return false;
+
+    // Re-parent children to root (or parent's parent) to avoid orphaned references
+    for (const [id, m] of this.sessions) {
+      if (m.parentId === sessionId && m.state !== SessionState.DISPOSED) {
+        m.parentId = meta.parentId; // re-parent to grandparent (or null for root)
+      }
+    }
 
     meta.state = SessionState.DISPOSED;
     meta.isActive = false;
