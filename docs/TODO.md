@@ -238,7 +238,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/keybinding/keybinding-extension.ts`
   - Extend parser to support function keys, arrow keys, multi-key chords
 
-- [ ] **[P3-3] Fix JWT algorithm confusion in audit**
+- [x] **[P3-3] Fix JWT algorithm confusion in audit** ✅ Done
   - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/audit.ts`
   - Add detection for `algorithms: ['none']` and confusion attacks
 

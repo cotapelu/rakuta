@@ -339,6 +339,27 @@ export function detectJwtVerification(content: string): { line: number; column: 
           if (hasRS256) {
             hasProperVerify = true;
           } else {
+            // Check for 'none' algorithm (critical vulnerability)
+            let hasNone = false;
+            if (optionsArg?.type === 'ObjectExpression') {
+              for (const prop of optionsArg.properties) {
+                if (prop.type === 'Property' && prop.key?.type === 'Identifier' && prop.key.name === 'algorithms') {
+                  const val = prop.value;
+                  if (val.type === 'ArrayExpression') {
+                    for (const el of val.elements) {
+                      if (el.type === 'Literal' && el.value === 'none') {
+                        hasNone = true;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            if (hasNone) {
+              // 'none' algorithm is a critical vulnerability
+              found = node;
+              return;
+            }
             // Verify exists but does not specify RS256 -> flag
             found = node;
             return;
