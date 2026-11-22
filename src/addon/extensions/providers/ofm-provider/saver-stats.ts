@@ -13,6 +13,9 @@
 import type { RtkStats } from './token-saver/index.js'
 import { PROVIDER_ID as OPENECODE_ID } from './opencode.js'
 import { PROVIDER_ID as KILO_ID } from './kilo.js'
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { join } from 'node:path'
+import { homedir } from 'node:os'
 
 /** What one lane last reported. */
 export interface LaneSavings {
@@ -20,12 +23,47 @@ export interface LaneSavings {
   stats: RtkStats
 }
 
+const STATS_FILE = join(homedir(), '.piclaw', 'saver-stats.json')
+
 /** `provider id -> last reading`. */
 const readings = new Map<string, LaneSavings>()
+
+/** Load persisted stats from disk (best-effort). */
+function loadPersisted(): void {
+  try {
+    const raw = readFileSync(STATS_FILE, 'utf8')
+    const parsed = JSON.parse(raw) as Record<string, LaneSavings>
+    for (const [provider, reading] of Object.entries(parsed)) {
+      if (reading && typeof reading.at === 'number' && reading.stats) {
+        readings.set(provider, reading)
+      }
+    }
+  } catch {
+    // No file or invalid — start empty
+  }
+}
+
+/** Persist stats to disk (best-effort). */
+function persistStats(): void {
+  try {
+    const obj: Record<string, LaneSavings> = {}
+    for (const [provider, reading] of readings) {
+      obj[provider] = reading
+    }
+    mkdirSync(join(homedir(), '.piclaw'), { recursive: true })
+    writeFileSync(STATS_FILE, JSON.stringify(obj, null, 2), 'utf8')
+  } catch {
+    // Best-effort; don't crash on write failure
+  }
+}
+
+// Load on module init
+loadPersisted()
 
 /** Replace the reading for one lane. Called from the lane's `onPayload`. */
 export function recordSavings(provider: string, stats: RtkStats) {
   readings.set(provider, { at: Date.now(), stats })
+  persistStats()
 }
 
 /** The reading for one lane, or undefined when it has not sent a request yet. */
