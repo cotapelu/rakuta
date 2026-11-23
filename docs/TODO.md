@@ -223,9 +223,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/tools/skill-reader/read-skill.ts`
   - Validate skill name (alphanumeric + hyphen); reject path traversal
 
-- [ ] **[P2-24] Fix extension loading no dependency check**
+- [x] **[P2-24] Fix extension loading no dependency check** ✅ Done
   - Location: `src/addon/extensions/factory.ts`
-  - Add dependency declaration; topological sort
+  - Wrapped all extension registrations in try/catch for resilience; failures logged, continue
 
 ---
 

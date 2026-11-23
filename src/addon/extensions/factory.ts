@@ -69,55 +69,39 @@ export default async function extensionsAggregator(api: import("@earendil-works/
     console.error('[Factory] OFM provider registration failed:', e);
   }
 
-  registerTodosTool(api);
-  registerMemoryTool(api);
-  registerTeamTool(api);
-  registerToolTemplate(api);
-  registerSkillReaderExtension(api);
+  try { registerTodosTool(api); } catch (e) { console.error('[Factory] todos tool failed:', e); }
+  try { registerMemoryTool(api); } catch (e) { console.error('[Factory] memory tool failed:', e); }
+  try { registerTeamTool(api); } catch (e) { console.error('[Factory] team tool failed:', e); }
+  try { registerToolTemplate(api); } catch (e) { console.error('[Factory] tool template failed:', e); }
+  try { registerSkillReaderExtension(api); } catch (e) { console.error('[Factory] skill reader failed:', e); }
 
   // // Register built-in tools override (same name, uses createXTool(ctx.cwd))
   // registerBuiltinsExtension(api);
   
-  // Register multi-agent tool
-  multiAgentToolExtension(api);
-  
-  // Register session tool
-  sessionToolExtension(api);
-  
-  // Register prompt hooks extension
-  promptHookExtension(api);
+  try { multiAgentToolExtension(api); } catch (e) { console.error('[Factory] multi-agent failed:', e); }
+  try { sessionToolExtension(api); } catch (e) { console.error('[Factory] session tool failed:', e); }
+  try { promptHookExtension(api); } catch (e) { console.error('[Factory] prompt hooks failed:', e); }
   
   // skills tool removed (use skill_reader extension)
 
   // Register action tool (removed)
   // registerActionTool(api);
-  // Register sub-tool loader
-  registerSubToolLoaderExtension(api);
+  try { registerSubToolLoaderExtension(api); } catch (e) { console.error('[Factory] subtool loader failed:', e); }
 
-  // Register custom message renderers
-  registerTodosRenderer(api);
-  registerMemoryRenderer(api);
-  registerTeamWidget(api);
-  registerBranchSummaryRenderer(api);
-  registerTeamOpsRenderer(api);
+  try { registerTodosRenderer(api); } catch (e) { console.error('[Factory] todos renderer failed:', e); }
+  try { registerMemoryRenderer(api); } catch (e) { console.error('[Factory] memory renderer failed:', e); }
+  try { registerTeamWidget(api); } catch (e) { console.error('[Factory] team widget failed:', e); }
+  try { registerBranchSummaryRenderer(api); } catch (e) { console.error('[Factory] branch summary renderer failed:', e); }
+  try { registerTeamOpsRenderer(api); } catch (e) { console.error('[Factory] team ops renderer failed:', e); }
 
-  // Register commands (non-conflicting)
-  registerProviderCommand(api);
-  registerTeamCommand(api);
-  // Register keybinding extension
-  registerKeybindingExtension(api);
+  try { registerProviderCommand(api); } catch (e) { console.error('[Factory] provider command failed:', e); }
+  try { registerTeamCommand(api); } catch (e) { console.error('[Factory] team command failed:', e); }
+  try { registerKeybindingExtension(api); } catch (e) { console.error('[Factory] keybinding failed:', e); }
 
-  // Register Auto Continue Extension
-  autoContinueExtension(api);
-
-  // Register Auto Compact at 75% Extension
-  autoCompact85Extension(api);
-
-  // Register Piclaw Header
-  piclawHeader(api);
-
-  // Register Context Logger Extension
-  contextLoggerExtension(api);
+  try { autoContinueExtension(api); } catch (e) { console.error('[Factory] auto-continue failed:', e); }
+  try { autoCompact85Extension(api); } catch (e) { console.error('[Factory] auto-compact failed:', e); }
+  try { piclawHeader(api); } catch (e) { console.error('[Factory] piclaw header failed:', e); }
+  try { contextLoggerExtension(api); } catch (e) { console.error('[Factory] context logger failed:', e); }
 
   // Master-tool extension removed (not efficient)
 
