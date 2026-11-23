@@ -112,6 +112,62 @@ export class SessionRegistry {
   }
 
   /**
+   * Persist registry metadata to a JSON file.
+   */
+  async saveToFile(filePath: string): Promise<void> {
+    const data = {
+      activeSessionId: this.activeSessionId,
+      sessions: Array.from(this.sessions.values()).map(m => ({
+        id: m.id,
+        filePath: m.filePath,
+        parentId: m.parentId,
+        createdAt: m.createdAt.toISOString(),
+        name: m.name,
+        tags: m.tags,
+        state: m.state,
+        isActive: m.isActive,
+      })),
+    };
+    const dir = (await import('node:path')).dirname(filePath);
+    const fs = await import('node:fs/promises');
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  }
+
+  /**
+   * Load registry metadata from a JSON file. Session refs are set to null.
+   */
+  async loadFromFile(filePath: string): Promise<boolean> {
+    const fs = await import('node:fs/promises');
+    try {
+      const raw = await fs.readFile(filePath, 'utf-8');
+      const data = JSON.parse(raw);
+      if (!data || !Array.isArray(data.sessions)) return false;
+      this.sessions.clear();
+      this.parentMap.clear();
+      this.activeSessionId = data.activeSessionId ?? null;
+      for (const s of data.sessions) {
+        const meta: SessionMetadata = {
+          id: s.id,
+          filePath: s.filePath,
+          parentId: s.parentId ?? null,
+          createdAt: new Date(s.createdAt),
+          name: s.name,
+          tags: s.tags ?? [],
+          state: s.state ?? SessionState.INACTIVE,
+          sessionRef: null,
+          isActive: s.isActive ?? false,
+        };
+        this.sessions.set(meta.id, meta);
+        this.parentMap.set(meta.id, meta.parentId);
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Register a new session with optional metadata
    * @param session The AgentSession instance
    * @param options Optional metadata (name, tags, parentId)

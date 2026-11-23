@@ -11,6 +11,7 @@ export function initializeSessionTool(): void {
   manager = new MultiSessionManager(runtime, {
     allowMultipleChildren: true,
     maxSessions: 0,
+    persistPath: (runtime.services?.agentDir ? runtime.services.agentDir + '/sessions.json' : ''),
   });
   console.log('Session tool initialized');
 }

@@ -131,9 +131,9 @@ Last update: 2026-07-19 (Post-Audit v2)
 
 ## P2 — Fix Next Sprint (24 tasks)
 
-- [ ] **[P2-1] Persist session registry to disk**
-  - Location: `src/addon/extensions/session-tool/registry.ts`
-  - Save metadata to JSON file; load on startup
+- [x] **[P2-1] Persist session registry to disk** ✅ Done
+  - Location: `src/addon/extensions/session-tool/registry.ts`, `manager.ts`, `index.ts`
+  - Added saveToFile/loadFromFile to SessionRegistry; manager persists on create/switch/dispose; loads on init
 
 - [x] **[P2-2] Fix todos file atomic write race** ✅ Done (already uses withFileMutationQueue)
   - Location: `src/addon/extensions/tools/todos-tool.ts` → `saveTodoToFile()`
