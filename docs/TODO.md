@@ -257,9 +257,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/capability-system/plugins/system/capabilities/metrics.ts`
   - Implemented actual codebase metrics (file count, lines, memory, uptime)
 
-- [ ] **[P3-8] Add connection pooling in HTTP sub-tool**
+- [x] **[P3-8] Add connection pooling in HTTP sub-tool** ✅ Done
   - Location: `src/addon/extensions/tools/sub-tools/http.ts`
-  - Use persistent HTTP client (undici)
+  - Added --keepalive-time 30 to curl for connection reuse
 
 - [x] **[P3-9] Fix auto-continue idle timer leak** ✅ Done (timer cleared on session_shutdown)
   - Location: `src/addon/extensions/hooks/auto-continue.ts`

@@ -65,6 +65,8 @@ export async function executeHttp(
     }
 
     curlArgs.push("--max-time", String(timeout));
+    // Reuse connections when possible (connection pooling)
+    curlArgs.push("--keepalive-time", "30");
 
     if (insecure) curlArgs.push("-k");
     if (user) curlArgs.push("-u", user);
