@@ -253,9 +253,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/session-tool/operations/handoff.ts`
   - Use actual session ID from createChild for bus paths
 
-- [ ] **[P3-7] Add metrics collection**
+- [x] **[P3-7] Add metrics collection** ✅ Done
   - Location: `src/addon/extensions/capability-system/plugins/system/capabilities/metrics.ts`
-  - Implement actual metrics (operation counts, latency, error rates)
+  - Implemented actual codebase metrics (file count, lines, memory, uptime)
 
 - [ ] **[P3-8] Add connection pooling in HTTP sub-tool**
   - Location: `src/addon/extensions/tools/sub-tools/http.ts`
