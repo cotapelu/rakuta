@@ -216,6 +216,13 @@ function createCapabilityRouterTool(api: any) {
       }
     }
 
+    // Loading spinner for in-progress operations
+    if (options.isPartial) {
+      const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+      const frame = spinnerFrames[Math.floor(Date.now() / 100) % spinnerFrames.length];
+      component.addChild(new Text(`\n${theme.fg("accent", `${frame} Running...`)}`, 0, 0));
+    }
+
     // Timing
     if (startedAt !== undefined) {
       const label = options.isPartial ? "Elapsed" : "Took";
@@ -412,7 +419,7 @@ function createCapabilityRouterTool(api: any) {
 
       // If running and no interval yet, start it for elapsed updates
       if (state.startedAt !== undefined && options.isPartial && !state.interval) {
-        state.interval = setInterval(() => context.invalidate(), 1000);
+        state.interval = setInterval(() => context.invalidate(), 500);
       }
 
       // If finished or error, stop interval and record end time

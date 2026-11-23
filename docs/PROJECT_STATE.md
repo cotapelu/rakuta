@@ -5,7 +5,7 @@ Last update: 2026-07-19 (Post-Audit Fix Round 3)
 ## Completed Tasks (Maintenance Session)
 - **Audit v2**: Comprehensive 12-dimension audit completed. 62 findings documented in AUDIT.md.
 - **P0 Fixes (8/8)**: All critical security and reliability bugs fixed.
-- **P1 Fixes (14/15)**: All except loading states UI (P1-6).
+- **P1 Fixes (15/15)**: All P1 issues fixed, including loading states UI (P1-6).
 - **P2 Fixes (15/24)**: Core reliability fixes done. Remaining 9 are feature additions.
 - **P3 Fixes (7/15)**: Minor polish done. Remaining 8 are feature additions.
 

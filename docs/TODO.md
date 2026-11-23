@@ -77,9 +77,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Use Tarjan's SCC algorithm; limit cycle reporting to top N
   - Risk: HIGH — Exponential time on large codebases
 
-- [ ] **[P1-6] Add loading states in capability router**
-  - Location: `src/addon/extensions/capability-system/extension.ts` → `renderCall()`
-  - Add spinner component; show elapsed time
+- [x] **[P1-6] Add loading states in capability router** ✅ Done
+  - Location: `src/addon/extensions/capability-system/extension.ts` → `renderResult()`
+  - Added spinner frames and elapsed time display; interval 500ms for live updates
   - Risk: HIGH — Poor UX for long-running ops
 
 - [x] **[P1-7] Fix team agents no graceful shutdown** ✅ Done (runAgentLoop checks controller.signal.aborted; dispose aborts all controllers)
