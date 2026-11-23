@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-11-23T15:49:53.165Z
+// Generated: 2026-11-23T22:41:10.646Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -1462,8 +1462,8 @@ export const CUSTOM_MODELS = {
       input: ["text", "image"],
       cost: {
         input: 0.05,
-        output: 0.19,
-        cacheRead: 0.0125,
+        output: 0.18,
+        cacheRead: 0.025,
         cacheWrite: 0,
       },
       contextWindow: 262144,
@@ -6584,7 +6584,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 943718,
+      maxTokens: 393216,
     } satisfies Model<"openai-completions">,
     "~deepseek/deepseek-pro-latest": {
       id: "~deepseek/deepseek-pro-latest",

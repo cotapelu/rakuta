@@ -291,6 +291,25 @@ Last update: 2026-07-19 (Post-Audit v2)
 
 ---
 
+## Additional Audit Findings (Post-Audit v2)
+
+- [x] **[A-1] Fix command injection in computer-use executeRead (bash -c with path)** ✅ Done
+  - Location: `src/addon/extensions/tools/sub-tools/computer-use.ts` → `executeRead()`
+  - Escape single quotes in path before interpolating into bash -c command
+  - Risk: CRITICAL — command injection
+
+- [x] **[A-2] Fix team-ops update_status not persisting status** ✅ Done
+  - Location: `src/addon/extensions/team/team-ops-tool.ts` → `update_status` case
+  - Persist status to workspace for coordination
+  - Risk: MEDIUM — status not recorded
+
+- [x] **[A-3] Fix provider-command secret leak in error messages** ✅ Done
+  - Location: `src/addon/extensions/commands/provider-command.ts` → `handleAdd()`
+  - Redact apiKey from error messages
+  - Risk: HIGH — secret leakage
+
+---
+
 ## Notes
 - All tasks derived from AUDIT.md v2 findings
 - Total: 8 P0 + 15 P1 + 24 P2 + 15 P3 = 62 tasks

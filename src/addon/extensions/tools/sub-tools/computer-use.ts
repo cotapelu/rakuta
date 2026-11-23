@@ -146,7 +146,9 @@ export async function executeRead(
   const { path, offset, limit } = args as { path: string; offset?: number; limit?: number };
   try {
     // Use bash + cat + tail/head for streaming
-    let cmd = `cat '${path}'`;
+    // Escape single quotes in path to prevent command injection
+    const safePath = path.replace(/'/g, "'\\''");
+    let cmd = `cat '${safePath}'`;
     if (offset && offset > 0) cmd += ` | tail -n +${offset}`;
     if (limit !== undefined) cmd += ` | head -n ${limit}`;
 

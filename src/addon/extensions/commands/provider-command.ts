@@ -83,7 +83,9 @@ function handleAdd(ctx: any, args: string[]): void {
     ctx.modelRegistry.registerProvider(providerName, { name: providerName, baseUrl, apiKey });
     ctx.ui.notify(`Added provider ${providerName}`, "info");
   } catch (e: any) {
-    ctx.ui.notify(`Failed: ${e.message}`, "error");
+    const msg = e instanceof Error ? e.message : String(e);
+    // Avoid leaking apiKey in error messages
+    ctx.ui.notify(`Failed to add provider ${providerName}: ${msg.replace(apiKey, "[REDACTED]")}`, "error");
   }
 }
 

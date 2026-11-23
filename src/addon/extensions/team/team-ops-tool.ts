@@ -256,9 +256,11 @@ export function createTeamOpsTool(team: AgentTeam): ToolDefinition {
             if (!status) {
               return { content: [{ type: "text" as const, text: "Missing status" }], details: undefined, isError: true } as const;
             }
-            await team.getMyCurrentTask(sessionId); // ensures agent exists
+            // Ensure agent exists in team
+            await team.getMyCurrentTask(sessionId);
             const current = await team.getMyCurrentTask(sessionId);
-            // For simplicity, just record it; not used yet in minimal version
+            // Record status in workspace for coordination
+            await team.workspaceWrite(`agent_status_${sessionId}`, status, sessionId);
             return {
               content: [{ type: "text" as const, text: `Status updated to: ${status}` }],
               details: { status, currentTask: current },
