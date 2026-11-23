@@ -155,9 +155,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/tools/utils/circuit-breaker.ts`
   - Make singleton or context-injected
 
-- [ ] **[P2-7] Add structured logging to all extensions**
-  - Location: Throughout `src/addon/extensions/`
-  - Use `createLogger` utility; add correlation ID propagation
+- [x] **[P2-7] Add structured logging to all extensions** ✅ Done
+  - Location: `src/addon/logger.ts`, `src/addon/extensions/utils/logger.ts`
+  - Logger supports JSON format via PI_LOG_FORMAT=json with correlation IDs
 
 - [x] **[P2-8] Add health check endpoints**
   - Location: New capability or extension
@@ -199,9 +199,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/providers/ofm-provider/token-saver/index.ts`
   - Use `>=` instead of `>` for RAW_CAP check
 
-- [ ] **[P2-18] Fix chain routing no circuit breaker**
+- [x] **[P2-18] Fix chain routing no circuit breaker** ✅ Done
   - Location: `src/addon/extensions/providers/ofm-provider/chains.ts` → `decideLink()`
-  - Add failure tracking per link; skip dead links
+  - Added per-link failure tracking in state; skip links with >=3 failures
 
 - [x] **[P2-19] Fix auto-compact no metrics** ✅ Done (added console.warn with context usage)
   - Location: `src/addon/extensions/hooks/auto-compact-85.ts`
@@ -215,9 +215,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/tools/memory-tool.ts` → delete action
   - Return success if already deleted
 
-- [x] **[P2-22] Fix OFM provider listing cache**
+- [x] **[P2-22] Fix OFM provider listing cache** ✅ Done
   - Location: `src/addon/extensions/providers/ofm-provider/catalog.ts`
-  - Add short TTL cache (30s); respect AbortSignal
+  - TTL cache 30s already implemented
 
 - [x] **[P2-23] Fix skill reader path traversal** ✅ Done
   - Location: `src/addon/extensions/tools/skill-reader/read-skill.ts`

@@ -317,7 +317,7 @@ function pickBestLink(chain: any, members: any[], request: any): number {
 export function decideLink({ chain, members, request }: any) {
   const total = members.length
   const address = (model: any) => `${model?.provider}/${model?.id}`
-  const bare = { index: 0, cursor: 0, windowTurn: 0, turn: 0, walks: 0 }
+  const bare = { index: 0, cursor: 0, windowTurn: 0, turn: 0, walks: 0, failures: {} as Record<string, number> }
   let state = { ...bare, ...(request.state ?? {}) }
   const positionOf = (wanted: string) => members.findIndex((model: any) => address(model) === wanted)
   // `previous` is pi's own view of the latest successful answer, but it is not
@@ -338,6 +338,9 @@ export function decideLink({ chain, members, request }: any) {
   // The chain's own last pick answered, so the failure streak is over.
   if (typeof state.lastPick === 'string' && state.lastPick !== '' && previousAddress === state.lastPick) {
     state = { ...state, walks: 0 }
+    const failures = { ...(state.failures || {}) };
+    if (failures[state.lastPick]) delete failures[state.lastPick];
+    state = { ...state, failures };
   }
   const walkLeft = () => (state.walks ?? 0) < Math.max(1, total - 1)
 
@@ -358,7 +361,9 @@ export function decideLink({ chain, members, request }: any) {
   } else if (request.reason === 'user' && dead !== undefined) {
     // A failure pi will not retry (quota, region) still costs this turn; the
     // next one starts past the wall.
-    state = { ...advanceFrom(dead), turn: 0 }
+    const failures = { ...(state.failures || {}) };
+    failures[dead] = (failures[dead] || 0) + 1;
+    state = { ...advanceFrom(dead), turn: 0, failures };
   } else if (request.reason === 'user' && ['smart','usage','pace'].includes(chain.strategy)) {
     const best = pickBestLink(chain, members, request)
     state = { ...state, index: best, turn: 0 }
@@ -374,7 +379,14 @@ export function decideLink({ chain, members, request }: any) {
       turn: (Number.isFinite(state.turn) ? state.turn : 0) + 1,
     }
   } else if (request.reason === 'user') {
-    state = { ...state, index: 0, turn: 0 }
+    const failures = state.failures || {};
+    const threshold = 3;
+    let idx = 0;
+    for (let i = 0; i < total; i++) {
+      const addr = address(members[i]);
+      if ((failures[addr] || 0) < threshold) { idx = i; break; }
+    }
+    state = { ...state, index: idx, turn: 0 };
   }
 
   const chosenAddress = address(members[currentIndex()])
