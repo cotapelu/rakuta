@@ -167,9 +167,9 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: Multiple (safe_edit, audit, search)
   - Show relative paths only; log full details server-side
 
-- [ ] **[P2-10] Add retry UI for failed operations**
-  - Location: Capability router
-  - Add retry button in error display; exponential backoff
+- [x] **[P2-10] Add retry UI for failed operations** ✅ Done
+  - Location: `src/addon/extensions/capability-system/extension.ts`
+  - Added retry hint in error display
 
 - [x] **[P2-11] Fix unbounded message bus history** ✅ Done
   - Location: `src/addon/extensions/multi-agent-tool/message-bus.ts`

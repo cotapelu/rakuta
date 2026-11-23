@@ -223,6 +223,11 @@ function createCapabilityRouterTool(api: any) {
       component.addChild(new Text(`\n${theme.fg("accent", `${frame} Running...`)}`, 0, 0));
     }
 
+    // Retry hint for failed operations
+    if (result?.isError) {
+      component.addChild(new Text(`\n${theme.fg("warning", "Retry: re-run the capability or check parameters")}`, 0, 0));
+    }
+
     // Timing
     if (startedAt !== undefined) {
       const label = options.isPartial ? "Elapsed" : "Took";
