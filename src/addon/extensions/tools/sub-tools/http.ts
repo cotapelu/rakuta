@@ -8,6 +8,7 @@
 import { Type } from "typebox";
 import * as fs from "fs/promises";
 import { tmpdir } from "os";
+import { withSpan } from "../../utils/tracing.js";
 
 export const httpSchema = Type.Object({
   method: Type.Optional(Type.String({ description: "GET, POST, PUT, DELETE, PATCH (default: GET)" })),
@@ -74,7 +75,7 @@ export async function executeHttp(
 
     curlArgs.push(url);
 
-    const result = await ctx!.exec("curl", curlArgs, { cwd, signal });
+    const result = await withSpan("http.request", { "http.method": method, "http.url": url }, async () => ctx!.exec("curl", curlArgs, { cwd, signal }));
 
     // Cleanup temp file if created
     if (tempFilePath) {

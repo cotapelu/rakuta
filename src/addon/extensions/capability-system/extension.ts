@@ -13,6 +13,7 @@ import type { Capability } from "./types.js";
 import type { CapabilityContext } from "./types.js";
 import type { AgentToolResult } from "@earendil-works/pi-coding-agent";
 import { createCapabilityDiscoveryCapability } from "./prompt-integration.js";
+import { withSpan } from "../utils/tracing.js";
 
 // Simple truncateToVisualLines implementation (matches pi-tui internal)
 function truncateToVisualLines(text: string, maxLines: number, width: number): { visualLines: string[]; skippedCount: number } {
@@ -346,7 +347,7 @@ function createCapabilityRouterTool(api: any) {
             return innerCap.execute(toolCallId, params, effectiveSignal, onUpdate, innerCtx);
           }
         };
-        result = await cap.execute(toolCallId, capParams, effectiveSignal, onUpdate, enhancedCtx);
+        result = await withSpan(`capability.${cap.id}`, { "capability.id": cap.id }, async () => cap.execute(toolCallId, capParams, effectiveSignal, onUpdate, enhancedCtx));
         // Ensure result has capabilityId in details for renderer
         if (result && typeof result === 'object') {
           result.details = result.details || {};

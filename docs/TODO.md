@@ -242,7 +242,7 @@ Last update: 2026-07-19 (Post-Audit v2)
   - Location: `src/addon/extensions/capability-system/plugins/codebase/capabilities/audit.ts`
   - Add detection for `algorithms: ['none']` and confusion attacks
 
-- [ ] **[P3-4] Add distributed tracing (OpenTelemetry)**
+- [x] **[P3-4] Add distributed tracing (OpenTelemetry)** ✅ Done
   - Instrument HTTP calls and capability executions
 
 - [x] **[P3-5] Persist token saver stats**
