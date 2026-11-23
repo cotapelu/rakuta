@@ -72,7 +72,6 @@ describe('skill-reader tool', () => {
     const result = (await tool.execute('test-call', { command: 'read_skill', args: { skill: 'audit' } }, undefined, undefined, {})) as any;
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('error');
-    vi.unmock('./skill-reader/read-skill.js');
   });
 
   it('should handle command module missing execute function', async () => {
@@ -84,7 +83,6 @@ describe('skill-reader tool', () => {
     const result = (await tool.execute('test-call', { command: 'read_skill', args: { skill: 'audit' } }, undefined, undefined, {})) as any;
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('missing execute function');
-    vi.unmock('./skill-reader/read-skill.js');
   });
 
   it('should handle command execute rejection', async () => {
@@ -95,7 +93,6 @@ describe('skill-reader tool', () => {
     const result = (await tool.execute('test-call', { command: 'read_skill', args: { skill: 'audit' } }, undefined, undefined, {})) as any;
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('execution rejected');
-    vi.unmock('./skill-reader/read-skill.js');
   });
 
   it('should handle command returning non-zero exit code', async () => {
@@ -106,7 +103,6 @@ describe('skill-reader tool', () => {
     const result = (await tool.execute('test-call', { command: 'read_skill', args: { skill: 'audit' } }, undefined, undefined, {})) as any;
     expect(result.isError).toBe(true);
     expect(result.details?.stderr).toContain('failure');
-    vi.unmock('./skill-reader/read-skill.js');
   });
 
   it('should handle command using executeLoadSkill alias', async () => {
@@ -118,7 +114,6 @@ describe('skill-reader tool', () => {
     const result = await tool.execute('test-call', { command: 'read_skill', args: { skill: 'audit' } }, undefined, undefined, {});
     expect(result.content[0].text).toBe('alias works');
     expect(result.isError).toBe(false);
-    vi.unmock('./skill-reader/read-skill.js');
   });
 
   // Additional edge cases for getAvailableSkills could be added here if needed.

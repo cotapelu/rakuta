@@ -29,7 +29,6 @@ describe('Tool Template Edge Cases', () => {
     expect(result.isError).toBe(true);
     // The error should indicate that execute is not a function or similar
     expect(result.content[0].text).toMatch(/execute.*not a function|Tool 'example_command' error/i);
-    vi.unmock('../extensions/tools/tool-template/example-command.js');
   });
 
   it('should handle command execute rejection', async () => {
@@ -53,7 +52,6 @@ describe('Tool Template Edge Cases', () => {
     const result = await tool.execute('test', { command: 'example_command', args: { input: 'test' } }, undefined, undefined, {});
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('execution rejected');
-    vi.unmock('../extensions/tools/tool-template/example-command.js');
   });
 
   it('should handle command execute throwing a non-Error value', async () => {
@@ -77,6 +75,5 @@ describe('Tool Template Edge Cases', () => {
     const result = await tool.execute('test', { command: 'example_command', args: { input: 'test' } }, undefined, undefined, {});
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('string error');
-    vi.unmock('../extensions/tools/tool-template/example-command.js');
   });
 });

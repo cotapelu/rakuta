@@ -28,6 +28,10 @@ export function resetSessionTool(): void {
   manager = null;
 }
 
+export function getSessionManager(): MultiSessionManager | null {
+  return manager;
+}
+
 export function createSessionTool(): ToolDefinition {
   return createSessionToolRouter({ initialize: resolveManager });
 }

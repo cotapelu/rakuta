@@ -234,7 +234,7 @@ Last update: 2026-07-19 (Post-Audit v2)
 - [x] **[P3-1] Fix inconsistent icon usage across renderers**
   - Create shared icon registry; use consistent emoji set
 
-- [ ] **[P3-2] Add keyboard shortcuts for common actions**
+- [x] **[P3-2] Add keyboard shortcuts for common actions** ✅ Done
   - Location: `src/addon/extensions/keybinding/keybinding-extension.ts`
   - Extend parser to support function keys, arrow keys, multi-key chords
 

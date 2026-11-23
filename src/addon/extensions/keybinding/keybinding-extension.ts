@@ -42,6 +42,78 @@ function loadKeybindings(): Record<string, string> {
   }
 }
 
+function decodeModifiers(mod?: string): string[] {
+  if (!mod) return [];
+  const num = parseInt(mod, 10);
+  if (isNaN(num)) return [];
+  const m = num - 1;
+  const mods: string[] = [];
+  if (m & 4) mods.push("ctrl");
+  if (m & 2) mods.push("alt");
+  if (m & 1) mods.push("shift");
+  return mods;
+}
+
+const TILDE_KEY_MAP: Record<string, string> = {
+  "15": "f5",
+  "17": "f6",
+  "18": "f7",
+  "19": "f8",
+  "20": "f9",
+  "21": "f10",
+  "23": "f11",
+  "24": "f12",
+};
+
+export function normalizeTerminalKey(data: string): string | null {
+  if (data.length === 1) {
+    const code = data.charCodeAt(0);
+    if (code === 27) return null; // escape, ignore
+    if (code >= 1 && code <= 26) {
+      const letter = String.fromCharCode(code + 96);
+      return `ctrl+${letter}`;
+    }
+    return data.toLowerCase();
+  }
+
+  if (!data.startsWith("\x1b")) return null;
+
+  // SS3 function keys F1-F4
+  if (data.length === 3 && data[1] === "O") {
+    const ss3Map: Record<string, string> = { P: "f1", Q: "f2", R: "f3", S: "f4" };
+    const key = ss3Map[data[2]];
+    if (key) return key;
+  }
+
+  // CSI sequences
+  const csi = data.slice(2); // strip \x1b[
+  // Simple arrows
+  const simpleArrow: Record<string, string> = { A: "up", B: "down", C: "right", D: "left" };
+  if (simpleArrow[csi]) return simpleArrow[csi];
+
+  const m = csi.match(/^(\d+)?(?:;(\d+))?([A-Za-z~])$/);
+  if (m) {
+    const keyNum = m[1];
+    const mod = m[2];
+    const final = m[3];
+    let base: string | null = null;
+    if (final === "A") base = "up";
+    else if (final === "B") base = "down";
+    else if (final === "C") base = "right";
+    else if (final === "D") base = "left";
+    else if (final === "H") base = "home";
+    else if (final === "F") base = "end";
+    else if (final === "~" && keyNum && TILDE_KEY_MAP[keyNum]) base = TILDE_KEY_MAP[keyNum];
+    if (base) {
+      const mods = decodeModifiers(mod);
+      if (mods.length > 0) return `${mods.join("+")}+${base}`;
+      return base;
+    }
+  }
+
+  return null;
+}
+
 export function registerKeybindingExtension(api: ExtensionAPI): void {
   // Listen for session start to set up keybindings
   api.on("session_start", async (_event, ctx: ExtensionContext) => {
@@ -70,29 +142,13 @@ export function registerKeybindingExtension(api: ExtensionAPI): void {
         return; // don't consume
       }
 
-      // data is a string; we want to interpret as raw key sequence
-      // For combos, we need to parse control sequences. For simplicity, we treat normalized key string as representation.
-      // We'll convert incoming data to a comparable string. For simple keys, it's just the char.
-      // For ctrl+letter, terminal sends control bytes (e.g., ctrl+r = 0x12). We'll map common ones.
-      // To keep it simple, we only support single printable characters and a few common combos via their string names.
-      // We'll check if data matches an entry in keyToCmd directly by string comparison.
-      // However, when user presses 't', data = 't'. If binding is "t", it matches.
-      // For ctrl+r, data is '\u0012' (ASCII 18). Our normalized key is "ctrl+r". We need to map.
-      // We'll create a mapping from actual received char to normalized.
-      let received = data;
-      // Normalize control characters
-      if (data.length === 1) {
-        const code = data.charCodeAt(0);
-        if (code >= 1 && code <= 26) {
-          // ctrl+A = 1 -> ctrl+a
-          const letter = String.fromCharCode(code + 96); // 1->a
-          received = `ctrl+${letter}`;
-        } else if (code === 27) {
-          // Escape - ignore
-          return;
-        }
+      // Normalize incoming terminal data into a comparable key name.
+      // Supports single chars, ctrl+letter, function keys (F1-F12), arrows,
+      // and modifier combinations (ctrl/alt/shift).
+      const normalizedReceived = normalizeTerminalKey(data);
+      if (!normalizedReceived) {
+        return; // let input pass through
       }
-      const normalizedReceived = received.toLowerCase();
 
       const cmd = keyToCmd.get(normalizedReceived);
       if (cmd) {

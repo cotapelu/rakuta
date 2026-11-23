@@ -3,17 +3,32 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Verify",
+      "name": "Fix code issues",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Run build and tests",
-          "status": "in_progress"
+          "content": "Fix vi.mock not at top-level warnings",
+          "status": "completed"
+        },
+        {
+          "id": "task-2",
+          "content": "Resolve TODO in prompts/index.ts",
+          "status": "completed"
+        },
+        {
+          "id": "task-3",
+          "content": "Review and clean up unnecessary @ts-ignore",
+          "status": "completed"
+        },
+        {
+          "id": "task-4",
+          "content": "Verify typecheck and tests still pass after fixes",
+          "status": "completed"
         }
       ]
     }
   ],
-  "nextTaskId": 2,
+  "nextTaskId": 5,
   "nextPhaseId": 2,
-  "updatedAt": "2026-11-05T06:08:41.480Z"
+  "updatedAt": "2026-11-22T22:25:42.715Z"
 }

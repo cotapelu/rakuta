@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-11-22T20:47:39.729Z
+// Generated: 2026-11-23T15:44:14.615Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -866,7 +866,7 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0443,
+        input: 0.0434,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
@@ -1009,6 +1009,23 @@ export const CUSTOM_MODELS = {
       },
       contextWindow: 1048576,
       maxTokens: 32768,
+    } satisfies Model<"openai-completions">,
+    "dots-studio/dots-3-note-preview:free": {
+      id: "dots-studio/dots-3-note-preview:free",
+      name: "Dots Studio: Dots3-Note Preview (free)",
+      api: "openai-completions",
+      provider: "kilo",
+      baseUrl: "https://api.kilo.ai/api/gateway",
+      reasoning: true,
+      input: ["text", "image"],
+      cost: {
+        input: 0,
+        output: 0,
+        cacheRead: 0,
+        cacheWrite: 0,
+      },
+      contextWindow: 512000,
+      maxTokens: 460800,
     } satisfies Model<"openai-completions">,
     "elorian/glimpse": {
       id: "elorian/glimpse",
@@ -1433,7 +1450,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 131072,
-      maxTokens: 117964,
+      maxTokens: 16384,
     } satisfies Model<"openai-completions">,
     "google/gemma-4-26b-a4b-it": {
       id: "google/gemma-4-26b-a4b-it",
@@ -4351,9 +4368,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.017,
-        output: 0.085,
-        cacheRead: 0.0085,
+        input: 0.0153,
+        output: 0.0765,
+        cacheRead: 0.00765,
         cacheWrite: 0,
       },
       contextWindow: 131072,
@@ -5184,8 +5201,8 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.1,
-        output: 0.9,
+        input: 0.05,
+        output: 0.7,
         cacheRead: 0.025,
         cacheWrite: 0,
       },
@@ -5762,9 +5779,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.075,
-        output: 0.3,
-        cacheRead: 0.015,
+        input: 0.0375,
+        output: 0.15,
+        cacheRead: 0.0075,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -6595,13 +6612,13 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0443,
+        input: 0.0434,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 131072,
+      maxTokens: 943718,
     } satisfies Model<"openai-completions">,
     "~google/gemini-flash-latest": {
       id: "~google/gemini-flash-latest",

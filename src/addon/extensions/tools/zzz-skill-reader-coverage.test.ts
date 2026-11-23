@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 
+// Mock fs.readdirSync to throw an error
+vi.mock('fs', () => ({
+  readdirSync: () => { throw new Error('permission denied'); }
+}));
+
 describe('skill-reader coverage (unreadable skills dir)', () => {
   beforeAll(() => {
     // Clear module cache to ensure fresh import with mock
     vi.resetModules();
   });
-
-  // Mock fs.readdirSync to throw an error
-  vi.mock('fs', () => ({
-    readdirSync: () => { throw new Error('permission denied'); }
-  }));
 
   let createSkillLoaderTool: any;
 

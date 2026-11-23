@@ -29,7 +29,7 @@ const PROMPT_REGISTRY = new Map<string, import('@earendil-works/pi-coding-agent'
 // Register built-in prompts (module initialization)
 PROMPT_REGISTRY.set(defaultAssistantPrompt.name, defaultAssistantPrompt);
 PROMPT_REGISTRY.set(codeReviewPrompt.name, codeReviewPrompt);
-// TODO: Register additional prompts here
+// Additional built-in prompts can be registered here via PROMPT_REGISTRY.set()
 
 /**
  * Get all registered prompts as array
@@ -61,6 +61,4 @@ export function hasBuiltinPrompt(name: string): boolean {
 }
 
 // Export individual prompts for direct access if needed
-export { defaultAssistantPrompt };
-// export { codeReviewPrompt };
-// export { testPrompt };
+export { defaultAssistantPrompt, codeReviewPrompt };

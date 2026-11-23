@@ -4,6 +4,8 @@
  */
 
 import { Type } from "typebox";
+import { getGlobalLoader } from "../../../plugin-loader.js";
+import { getSessionManager } from "../../../../session-tool/index.js";
 
 export const schema = Type.Object({}, { additionalProperties: false });
 
@@ -37,6 +39,45 @@ export async function execute(params: Record<string, never>, ctx: any): Promise<
     checks.uptime = { status: "ok", detail: `${uptime}s` };
   } catch (e) {
     checks.uptime = { status: "error", detail: String(e) };
+    overall = "unhealthy";
+  }
+
+  // Check 4: Session manager
+  try {
+    const sm = getSessionManager();
+    if (sm) {
+      checks.sessionManager = { status: "ok", detail: `active sessions available` };
+    } else {
+      checks.sessionManager = { status: "warning", detail: "not initialized" };
+      if (overall === "healthy") overall = "degraded";
+    }
+  } catch (e) {
+    checks.sessionManager = { status: "error", detail: String(e) };
+    overall = "unhealthy";
+  }
+
+  // Check 5: Plugin loader
+  try {
+    const loader = getGlobalLoader();
+    if (loader) {
+      const stats = loader.getStats();
+      checks.pluginLoader = { status: "ok", detail: `${stats.totalPlugins} plugins, ${stats.totalCapabilities} capabilities` };
+    } else {
+      checks.pluginLoader = { status: "warning", detail: "not initialized" };
+      if (overall === "healthy") overall = "degraded";
+    }
+  } catch (e) {
+    checks.pluginLoader = { status: "error", detail: String(e) };
+    overall = "unhealthy";
+  }
+
+  // Check 6: Provider connectivity (basic: env keys present)
+  try {
+    const hasProviderKey = Boolean(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.KILO_API_KEY);
+    checks.providerConnectivity = { status: hasProviderKey ? "ok" : "warning", detail: hasProviderKey ? "provider credentials present" : "no provider credentials detected" };
+    if (!hasProviderKey && overall === "healthy") overall = "degraded";
+  } catch (e) {
+    checks.providerConnectivity = { status: "error", detail: String(e) };
     overall = "unhealthy";
   }
 
