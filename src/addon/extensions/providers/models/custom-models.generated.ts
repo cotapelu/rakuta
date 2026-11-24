@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-11-24T05:16:14.788Z
+// Generated: 2026-11-24T08:37:01.697Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -866,7 +866,7 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0443,
+        input: 0.045,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
@@ -2889,8 +2889,8 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.5,
-        output: 2.2,
+        input: 0.25,
+        output: 2,
         cacheRead: 0.1,
         cacheWrite: 0,
       },
@@ -4903,23 +4903,6 @@ export const CUSTOM_MODELS = {
       contextWindow: 262144,
       maxTokens: 235929,
     } satisfies Model<"openai-completions">,
-    "qwen/qwen3-max-thinking": {
-      id: "qwen/qwen3-max-thinking",
-      name: "Qwen: Qwen 3 Max Thinking",
-      api: "openai-completions",
-      provider: "kilo",
-      baseUrl: "https://api.kilo.ai/api/gateway",
-      reasoning: true,
-      input: ["text"],
-      cost: {
-        input: 1.2,
-        output: 6,
-        cacheRead: 0.24,
-        cacheWrite: 0,
-      },
-      contextWindow: 256000,
-      maxTokens: 65536,
-    } satisfies Model<"openai-completions">,
     "qwen/qwen3-next-80b-a3b-instruct": {
       id: "qwen/qwen3-next-80b-a3b-instruct",
       name: "Qwen3-Next 80B-A3B Instruct",
@@ -6397,7 +6380,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 943718,
+      maxTokens: 131072,
     } satisfies Model<"openai-completions">,
     "z-ai/glm-5.3-flashx": {
       id: "z-ai/glm-5.3-flashx",
@@ -6578,7 +6561,7 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0443,
+        input: 0.045,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,

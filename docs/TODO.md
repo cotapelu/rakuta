@@ -365,3 +365,38 @@ Last update: 2026-07-19 (Post-Audit v2)
 - Total: 8 P0 + 15 P1 + 24 P2 + 15 P3 = 62 tasks
 - Each task should be completed with tests and verified before commit
 - Follow AUTO-CONTINUE.md workflow: Analyze → Plan → Test → Implement → Refactor → Verify
+
+---
+
+## Additional Audit Findings (N-1..N-10) — From AUDIT.md (2026-07-19)
+
+- [x] **[N-1] Remove duplicate built-in tools registration** — `src/addon/extensions/buildin-tools/index.ts` is dead code (disabled in factory.ts). Remove or consolidate with `src/tools/builtin-tools.ts`.
+  - Risk: LOW — Dead code, confusion
+
+- [ ] **[N-2] Consolidate duplicate Mutex implementations** — `src/addon/extensions/utils/mutex.ts` (lock/unlock API) and `src/addon/extensions/tools/utils/mutex.ts` (run API) serve similar purpose. Consolidate into one.
+  - Risk: LOW — Maintenance burden
+
+- [x] **[N-3] Remove unused diff.js file** — `src/addon/extensions/capability-system/plugins/git/capabilities/diff.js` is leftover from TS migration.
+  - Risk: LOW — Dead code
+
+- [x] **[N-4] Clean up test temp files** — `__tests__/temp/` contains stale temp files (ast-*.ts, call-*.ts, query-*.ts).
+  - Risk: LOW — Repo bloat
+
+- [ ] **[N-5] Reduce `any` type usage** — Extensive `any` types throughout codebase reduce type safety. Many `@ts-ignore` and `@ts-expect-error` directives.
+  - Risk: MEDIUM — Type safety degradation
+  - Note: Gradual improvement; focus on public APIs first.
+
+- [ ] **[N-6] Split large files** — Several files exceed 500 lines: team-manager.ts (~800), todos-tool.ts (~600), catalog.ts (~400).
+  - Risk: LOW — Maintainability
+
+- [ ] **[N-7] Replace console.log with structured logger** — Many `console.log`/`console.error` calls instead of using logger utility.
+  - Risk: LOW — Inconsistent logging
+
+- [ ] **[N-8] Extract hardcoded URLs to config** — URLs like `https://registry.npmjs.org/...` and `https://opencode.ai` hardcoded in multiple places.
+  - Risk: LOW — Configuration inflexibility
+
+- [ ] **[N-9] Extract magic numbers to named constants** — Timeouts, limits, thresholds scattered without named constants.
+  - Risk: LOW — Maintainability
+
+- [ ] **[N-10] Standardize error handling pattern** — Some functions throw errors, others return `{ isError: true }`. No consistent pattern.
+  - Risk: MEDIUM — Unpredictable behavior
