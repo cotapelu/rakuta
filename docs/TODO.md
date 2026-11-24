@@ -400,3 +400,20 @@ Last update: 2026-07-19 (Post-Audit v2)
 
 - [ ] **[N-10] Standardize error handling pattern** — Some functions throw errors, others return `{ isError: true }`. No consistent pattern.
   - Risk: MEDIUM — Unpredictable behavior
+
+---
+
+## Audit Round 5 (2026-07-19) — Full manual + automated audit
+
+All findings from this audit cycle have been addressed:
+- A-1..A-13: ✅ Fixed (see AUDIT.md)
+- npm i conflict: ✅ Fixed (@opentelemetry/api ^1.9.0)
+- Quality Gate false positive: ✅ Fixed (renamed key→nk in call_graph.ts)
+- Quality Gate: ✅ 96/100 PASS
+- Tests: ✅ 1814 pass
+- Build: ✅ pass
+- Typecheck: ✅ clean
+- Lint: ✅ 0 errors
+
+Remaining (N-5..N-10): Low/Medium priority, non-blocking. See AUDIT.md for details.
+- [x] **Audit Round 5 complete** ✅ Done

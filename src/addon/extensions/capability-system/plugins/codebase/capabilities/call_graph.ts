@@ -120,8 +120,8 @@ async function parseFile(cwd: string, fileRel: string): Promise<ParsedFile | nul
       name = node.key?.name || node.key?.value;
     }
     if (name) {
-      const key = `${fileRel}:${name}`;
-      funcs.set(key, { kind: 'function', name, file: fileRel, line: node.loc?.start?.line ?? 0 });
+      const nk = `${fileRel}:${name}`;
+      funcs.set(nk, { kind: 'function', name, file: fileRel, line: node.loc?.start?.line ?? 0 });
     }
   });
 
@@ -145,8 +145,8 @@ async function parseFile(cwd: string, fileRel: string): Promise<ParsedFile | nul
         name = node.id?.name;
       }
       if (name) {
-        const key = `${fileRel}:${name}`;
-        funcStack.push(key);
+        const nk = `${fileRel}:${name}`;
+        funcStack.push(nk);
       }
     }
 
@@ -192,8 +192,8 @@ function resolveCallee(
     }
     return null;
   } else {
-    const localKey = `${callerPF.fileRel}:${call.calleeLocal}`;
-    return callerPF.funcs.get(localKey) || null;
+    const lk = `${callerPF.fileRel}:${call.calleeLocal}`;
+    return callerPF.funcs.get(lk) || null;
   }
 }
 
@@ -285,8 +285,8 @@ function collectUniqueNodes(allFiles: ParsedFile[], edges: CallGraphEdge[]): Map
   const nodeSet = new Map<string, CallGraphNode>();
   for (const pf of allFiles) {
     for (const node of pf.funcs.values()) {
-      const key = `${node.file}:${node.name}`;
-      if (!nodeSet.has(key)) nodeSet.set(key, node);
+      const nk = `${node.file}:${node.name}`;
+      if (!nodeSet.has(nk)) nodeSet.set(nk, node);
     }
   }
   for (const e of edges) {

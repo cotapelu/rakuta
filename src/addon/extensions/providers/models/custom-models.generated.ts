@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-11-24T08:37:01.697Z
+// Generated: 2026-11-24T14:57:24.044Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -866,7 +866,7 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.045,
+        input: 0.047,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
@@ -934,9 +934,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.0498,
-        output: 0.1992,
-        cacheRead: 0.000996,
+        input: 0.14,
+        output: 0.42,
+        cacheRead: 0.0042,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -1551,7 +1551,7 @@ export const CUSTOM_MODELS = {
         cacheRead: 0.012,
         cacheWrite: 0,
       },
-      contextWindow: 131072,
+      contextWindow: 262144,
       maxTokens: 32768,
     } satisfies Model<"openai-completions">,
     "inclusionai/ling-3.0-flash-fin": {
@@ -2624,23 +2624,6 @@ export const CUSTOM_MODELS = {
       },
       contextWindow: 131072,
       maxTokens: 131072,
-    } satisfies Model<"openai-completions">,
-    "moonshotai/kimi-k2-0905": {
-      id: "moonshotai/kimi-k2-0905",
-      name: "Kimi K2 Instruct 0905",
-      api: "openai-completions",
-      provider: "kilo",
-      baseUrl: "https://api.kilo.ai/api/gateway",
-      reasoning: false,
-      input: ["text"],
-      cost: {
-        input: 0.6,
-        output: 2.5,
-        cacheRead: 0,
-        cacheWrite: 0,
-      },
-      contextWindow: 262144,
-      maxTokens: 98304,
     } satisfies Model<"openai-completions">,
     "moonshotai/kimi-k2.5": {
       id: "moonshotai/kimi-k2.5",
@@ -6380,7 +6363,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 131072,
+      maxTokens: 943718,
     } satisfies Model<"openai-completions">,
     "z-ai/glm-5.3-flashx": {
       id: "z-ai/glm-5.3-flashx",
@@ -6561,13 +6544,13 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.045,
+        input: 0.047,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 131072,
+      maxTokens: 943718,
     } satisfies Model<"openai-completions">,
     "~google/gemini-flash-latest": {
       id: "~google/gemini-flash-latest",
