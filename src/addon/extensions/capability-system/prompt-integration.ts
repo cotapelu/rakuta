@@ -72,6 +72,8 @@ export function parseSlashCommand(input: string): string | null {
   const cmd = input.slice(1).trim();
   if (!cmd) return null;
   const capabilityId = cmd.replace(/\s/g, '.');
+  // Validate capability ID against safe pattern (alphanumeric, dots, hyphens, underscores)
+  if (!/^[a-zA-Z0-9._-]+$/.test(capabilityId)) return null;
   const registry = getCapabilityRegistry();
   return registry.has(capabilityId) ? capabilityId : null;
 }

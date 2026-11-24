@@ -293,6 +293,56 @@ Last update: 2026-07-19 (Post-Audit v2)
 
 ## Additional Audit Findings (Post-Audit v2)
 
+- [x] **[A-4] Fix computer-use executeFind pattern not validated (security)** ✅ Done
+  - Location: `src/addon/extensions/tools/sub-tools/computer-use.ts` → `executeFind()`
+  - Validate find -name pattern; reject shell metacharacters
+  - Risk: HIGH — command injection
+
+- [x] **[A-5] Fix http sub-tool command injection risk via headers/body** ✅ Done
+  - Location: `src/addon/extensions/tools/sub-tools/http.ts`
+  - Ensure body/headers passed via temp file and -H args, never shell-interpolated
+  - Risk: HIGH — command injection
+
+- [x] **[A-6] Fix child-worker swallows unhandled rejections and abrupt exit** ✅ Done
+  - Location: `src/addon/extensions/multi-agent-tool/worker/child-worker.ts`
+  - Log rejections instead of swallowing; graceful shutdown on cancel
+  - Risk: MEDIUM — reliability
+
+- [x] **[A-7] Fix team-ops workspace_write type loss (stores value as string)** ✅ Done
+  - Location: `src/addon/extensions/team/team-ops-tool.ts` → `workspace_write` case
+  - Preserve value type; use JSON.stringify for non-string values
+  - Risk: MEDIUM — data integrity
+
+- [x] **[A-8] Fix context-logger blocking I/O (appendFileSync in async hook)** ✅ Done
+  - Location: `src/addon/extensions/context-logger.ts`
+  - Use async appendFile; buffer writes
+  - Risk: MEDIUM — performance
+
+- [x] **[A-9] Fix utils/mutex no reentrancy guard (lock may stay locked)** ✅ Done
+  - Location: `src/addon/extensions/tools/utils/mutex.ts` → `lock()`
+  - Add timeout and reentrancy guard; ensure unlock on throw
+  - Risk: MEDIUM — reliability
+
+- [x] **[A-10] Fix session export not implemented (placeholder)** ✅ Done
+  - Location: `src/addon/extensions/session-tool/operations/export.ts`
+  - Implement actual export or return clear not-implemented error
+  - Risk: LOW — feature gap
+
+- [x] **[A-11] Fix prompt-integration parseSlashCommand may create invalid capability IDs** ✅ Done
+  - Location: `src/addon/extensions/capability-system/prompt-integration.ts`
+  - Validate generated capability ID against safe pattern
+  - Risk: MEDIUM — correctness
+
+- [x] **[A-12] Fix multi-agent runtime no graceful cancellation on terminate** ✅ Done
+  - Location: `src/addon/extensions/multi-agent-tool/runtime.ts`
+  - Send cancel message before terminate; await graceful shutdown
+  - Risk: MEDIUM — resource leak
+
+- [x] **[A-13] Fix provider-command apiKey leak in logs** ✅ Done
+  - Location: `src/addon/extensions/commands/provider-command.ts` → `handleAdd()`
+  - Redact apiKey from all log output, not just error messages
+  - Risk: HIGH — secret leakage
+
 - [x] **[A-1] Fix command injection in computer-use executeRead (bash -c with path)** ✅ Done
   - Location: `src/addon/extensions/tools/sub-tools/computer-use.ts` → `executeRead()`
   - Escape single quotes in path before interpolating into bash -c command

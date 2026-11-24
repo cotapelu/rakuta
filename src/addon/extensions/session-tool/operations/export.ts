@@ -26,7 +26,7 @@ export function operationExport(
     content: [
       {
         type: 'text',
-        text: `📤 Exported session ${sessionId} to ${exportPath} (format: ${format})\n(Export implementation depends on AgentSession API)`,
+        text: `⚠️ Session export is not yet fully implemented.\nTarget: ${exportPath} (format: ${format})\n(Session data for ${sessionId} is available in the session registry; full file export requires AgentSession API integration)`,
       },
     ],
     details: { operation: 'export', sessionId: meta.id, format, path: exportPath },

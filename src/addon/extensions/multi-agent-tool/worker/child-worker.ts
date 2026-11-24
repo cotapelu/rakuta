@@ -77,7 +77,14 @@ async function main() {
         } else if (msg.type === 'input') {
           messageBus.sendToChild(config.id, msg as any);
         }
-      })().catch(() => {}); // swallow unhandled rejections
+      })().catch((err) => {
+        // Log rejections instead of swallowing
+        console.error('[child-worker] Unhandled rejection:', err instanceof Error ? err.message : String(err));
+        port.postMessage({
+          type: 'error',
+          payload: { message: err instanceof Error ? err.message : String(err), recoverable: false },
+        });
+      });
     });
 
     port.on('close', () => process.exit(0));

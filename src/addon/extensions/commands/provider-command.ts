@@ -84,8 +84,11 @@ function handleAdd(ctx: any, args: string[]): void {
     ctx.ui.notify(`Added provider ${providerName}`, "info");
   } catch (e: any) {
     const msg = e instanceof Error ? e.message : String(e);
-    // Avoid leaking apiKey in error messages
-    ctx.ui.notify(`Failed to add provider ${providerName}: ${msg.replace(apiKey, "[REDACTED]")}`, "error");
+    // Avoid leaking apiKey in error messages and logs (redact all occurrences)
+    const safeMsg = msg.split(apiKey).join("[REDACTED]");
+    ctx.ui.notify(`Failed to add provider ${providerName}: ${safeMsg}`, "error");
+    // Ensure apiKey is never logged
+    console.error(`[provider-command] Failed to add provider ${providerName} (apiKey redacted)`);
   }
 }
 

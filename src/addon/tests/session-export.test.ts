@@ -40,7 +40,7 @@ describe('operationExport', () => {
       path: '/custom/path.json',
     });
     expect(result.content.length).toBeGreaterThan(0);
-    expect(result.content[0].text).toContain('Exported session sess1');
+    expect(result.content[0].text).toContain('Session export is not yet fully implemented');
   });
 
   it('exports using active session when sessionId omitted', () => {

@@ -217,7 +217,9 @@ export function createTeamOpsTool(team: AgentTeam): ToolDefinition {
             if (!key || value === undefined) {
               return { content: [{ type: "text" as const, text: "Missing key or value" }], details: undefined, isError: true } as const;
             }
-            await team.workspaceWrite(key, String(value), sessionId);
+            // Preserve value type: store as JSON for non-string values
+            const storedValue = typeof value === "string" ? value : JSON.stringify(value);
+            await team.workspaceWrite(key, storedValue, sessionId);
             return {
               content: [{ type: "text" as const, text: `Wrote to workspace key: ${key}` }],
               details: { key },

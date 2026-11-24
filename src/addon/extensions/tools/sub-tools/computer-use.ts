@@ -84,6 +84,10 @@ export async function executeFind(
 ) {
   const { pattern, path = cwd, maxDepth } = args as { pattern: string; path?: string; maxDepth?: number };
   try {
+    // Validate pattern: reject shell metacharacters and path traversal
+    if (!pattern || /[;&|`$(){}\[\]<>!]/.test(pattern)) {
+      return { content: [{ type: "text", text: `find error: invalid pattern (contains shell metacharacters)` }], details: undefined, isError: true } as const;
+    }
     const findArgs: string[] = [path];
     if (maxDepth) findArgs.push("-maxdepth", String(maxDepth));
     findArgs.push("-name", pattern);

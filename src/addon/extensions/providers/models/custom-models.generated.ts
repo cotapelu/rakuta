@@ -1,6 +1,6 @@
 // THIS FILE IS AUTO-GENERATED
 // Source: https://models.dev/api.json
-// Generated: 2026-11-23T22:41:10.646Z
+// Generated: 2026-11-24T05:16:14.788Z
 // DO NOT EDIT MANUALLY - Run 'npm run generate-custom-models' to update
 
 import type { Model } from "@earendil-works/pi-ai";
@@ -866,7 +866,7 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0434,
+        input: 0.0443,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
@@ -900,9 +900,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.9,
-        output: 1.5,
-        cacheRead: 0.2,
+        input: 1.28,
+        output: 2.56,
+        cacheRead: 0.108,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -917,9 +917,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 1.32,
-        output: 3.96,
-        cacheRead: 0.044,
+        input: 0.111,
+        output: 4.44,
+        cacheRead: 0.097,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -1551,7 +1551,7 @@ export const CUSTOM_MODELS = {
         cacheRead: 0.012,
         cacheWrite: 0,
       },
-      contextWindow: 262144,
+      contextWindow: 131072,
       maxTokens: 32768,
     } satisfies Model<"openai-completions">,
     "inclusionai/ling-3.0-flash-fin": {
@@ -1636,7 +1636,7 @@ export const CUSTOM_MODELS = {
         cacheRead: 0.06,
         cacheWrite: 0,
       },
-      contextWindow: 1000000,
+      contextWindow: 1048576,
       maxTokens: 262144,
     } satisfies Model<"openai-completions">,
     "inclusionai/ling-3.1-flash-1019": {
@@ -1892,7 +1892,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 131072,
-      maxTokens: 16384,
+      maxTokens: 117964,
     } satisfies Model<"openai-completions">,
     "meta-llama/llama-3.3-70b-instruct": {
       id: "meta-llama/llama-3.3-70b-instruct",
@@ -2175,13 +2175,13 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.135,
-        output: 0.54,
-        cacheRead: 0.0135,
+        input: 0.1,
+        output: 0.4,
+        cacheRead: 0.025,
         cacheWrite: 0,
       },
-      contextWindow: 1000000,
-      maxTokens: 512000,
+      contextWindow: 1048576,
+      maxTokens: 943718,
     } satisfies Model<"openai-completions">,
     "mistralai/codestral": {
       id: "mistralai/codestral",
@@ -2623,7 +2623,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 131072,
-      maxTokens: 98304,
+      maxTokens: 131072,
     } satisfies Model<"openai-completions">,
     "moonshotai/kimi-k2-0905": {
       id: "moonshotai/kimi-k2-0905",
@@ -2637,23 +2637,6 @@ export const CUSTOM_MODELS = {
         input: 0.6,
         output: 2.5,
         cacheRead: 0,
-        cacheWrite: 0,
-      },
-      contextWindow: 262144,
-      maxTokens: 98304,
-    } satisfies Model<"openai-completions">,
-    "moonshotai/kimi-k2-thinking": {
-      id: "moonshotai/kimi-k2-thinking",
-      name: "Kimi K2 Thinking",
-      api: "openai-completions",
-      provider: "kilo",
-      baseUrl: "https://api.kilo.ai/api/gateway",
-      reasoning: true,
-      input: ["text"],
-      cost: {
-        input: 0.6,
-        output: 2.5,
-        cacheRead: 0.15,
         cacheWrite: 0,
       },
       contextWindow: 262144,
@@ -5700,7 +5683,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 262144,
-      maxTokens: 235929,
+      maxTokens: 128000,
     } satisfies Model<"openai-completions">,
     "tencent/hy4": {
       id: "tencent/hy4",
@@ -5796,9 +5779,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text", "image"],
       cost: {
-        input: 0.15,
-        output: 0.5,
-        cacheRead: 0.03,
+        input: 0.075,
+        output: 0.25,
+        cacheRead: 0.015,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -6092,23 +6075,6 @@ export const CUSTOM_MODELS = {
       },
       contextWindow: 1000000,
       maxTokens: 65536,
-    } satisfies Model<"openai-completions">,
-    "xiaomi/mimo-v2.5-pro": {
-      id: "xiaomi/mimo-v2.5-pro",
-      name: "MiMo-V2.5-Pro",
-      api: "openai-completions",
-      provider: "kilo",
-      baseUrl: "https://api.kilo.ai/api/gateway",
-      reasoning: true,
-      input: ["text"],
-      cost: {
-        input: 0.48,
-        output: 1.8,
-        cacheRead: 0.096,
-        cacheWrite: 0,
-      },
-      contextWindow: 262144,
-      maxTokens: 235929,
     } satisfies Model<"openai-completions">,
     "xiaomi/mimo-v2.6-flash": {
       id: "xiaomi/mimo-v2.6-flash",
@@ -6431,7 +6397,7 @@ export const CUSTOM_MODELS = {
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 131072,
+      maxTokens: 943718,
     } satisfies Model<"openai-completions">,
     "z-ai/glm-5.3-flashx": {
       id: "z-ai/glm-5.3-flashx",
@@ -6595,9 +6561,9 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 1.32,
-        output: 3.96,
-        cacheRead: 0.044,
+        input: 0.111,
+        output: 4.44,
+        cacheRead: 0.097,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
@@ -6612,13 +6578,13 @@ export const CUSTOM_MODELS = {
       reasoning: true,
       input: ["text"],
       cost: {
-        input: 0.0434,
+        input: 0.0443,
         output: 0.3,
         cacheRead: 0.035,
         cacheWrite: 0,
       },
       contextWindow: 1048576,
-      maxTokens: 943718,
+      maxTokens: 131072,
     } satisfies Model<"openai-completions">,
     "~google/gemini-flash-latest": {
       id: "~google/gemini-flash-latest",

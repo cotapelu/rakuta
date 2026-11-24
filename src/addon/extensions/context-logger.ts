@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, appendFileSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
+import { appendFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { ExtensionAPI, BeforeProviderRequestEvent } from "@earendil-works/pi-coding-agent";
 import { getAgentDir } from "@earendil-works/pi-coding-agent";
@@ -92,7 +93,7 @@ export default function (pi: ExtensionAPI): any {
 				options: payload.options,
 			}) + "\n";
 
-			appendFileSync(effectiveLogFile, logEntry, { mode: 0o600 });
+			await appendFile(effectiveLogFile, logEntry, { mode: 0o600 });
 		} catch (err) {
 			// Log error but don't break the request flow
 			console.error("[ContextLogger] Failed to write log:", err);
