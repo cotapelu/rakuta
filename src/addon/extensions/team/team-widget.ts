@@ -82,9 +82,8 @@ export function refreshWidget(ui: ExtensionUIContext): Promise<void> {
       lines.push(...buildHeaderLines(ui.theme));
 
       if (teams.size === 0) {
-        lines.push(ui.theme.fg("muted", "No active teams"));
-        lines.push(ui.theme.fg("dim", "Use team_run({tasks: [...]}) to create a team"));
-        ui.setWidget("team", lines);
+        // No active teams — hide widget entirely
+        ui.setWidget("team", []);
         resolve();
         return;
       }

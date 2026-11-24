@@ -111,7 +111,7 @@ describe('team-widget', () => {
   });
 
   describe('refreshWidget', () => {
-    it('renders "No active teams" when registry empty', async () => {
+    it('hides widget when registry empty', async () => {
       mockRegistry.getAll.mockReturnValue(new Map());
       const ui: ExtensionUIContext = {
         theme,
@@ -120,10 +120,7 @@ describe('team-widget', () => {
       await refreshWidget(ui);
       const [widgetName, rawLines] = ui.setWidget.mock.calls[0];
       expect(widgetName).toBe('team');
-      const lines = rawLines.map((l: any) => String(l));
-      expect(lines[0]).toContain('👥 Team');
-      expect(lines[1]).toBe('');
-      expect(lines[2]).toContain('No active teams');
+      expect(rawLines).toEqual([]);
     });
 
     it('renders team lines for a single team', async () => {

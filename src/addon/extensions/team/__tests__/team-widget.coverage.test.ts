@@ -70,11 +70,11 @@ describe('team-widget coverage', () => {
   });
 
   describe('refreshWidget', () => {
-    it('shows "No active teams" when registry empty', async () => {
+    it('hides widget when registry empty', async () => {
       await teamWidget.refreshWidget(mockUi);
       const calls = mockUi.setWidget.mock.calls;
       const lastCall = calls[calls.length - 1][1];
-      expect(lastCall).toContain('No active teams');
+      expect(lastCall).toEqual([]);
     });
   });
 
