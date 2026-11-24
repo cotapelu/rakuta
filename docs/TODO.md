@@ -373,7 +373,7 @@ Last update: 2026-07-19 (Post-Audit v2)
 - [x] **[N-1] Remove duplicate built-in tools registration** — `src/addon/extensions/buildin-tools/index.ts` is dead code (disabled in factory.ts). Remove or consolidate with `src/tools/builtin-tools.ts`.
   - Risk: LOW — Dead code, confusion
 
-- [ ] **[N-2] Consolidate duplicate Mutex implementations** — `src/addon/extensions/utils/mutex.ts` (lock/unlock API) and `src/addon/extensions/tools/utils/mutex.ts` (run API) serve similar purpose. Consolidate into one.
+- [x] **[N-2] Consolidate duplicate Mutex implementations** — `src/addon/extensions/utils/mutex.ts` (lock/unlock API) and `src/addon/extensions/tools/utils/mutex.ts` (run API) serve similar purpose. Consolidate into one.
   - Risk: LOW — Maintenance burden
 
 - [x] **[N-3] Remove unused diff.js file** — `src/addon/extensions/capability-system/plugins/git/capabilities/diff.js` is leftover from TS migration.

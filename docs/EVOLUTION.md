@@ -65,3 +65,12 @@
 ---
 
 All existing tests pass. Codebase stable.
+
+## 2026-07-19 — Audit Round 4
+
+- Performed full manual line-by-line audit of all 410 source files.
+- Created AUDIT.md with 62 prior + 10 new findings.
+- Updated TODO.md with N-1..N-10 additional findings.
+- Fixed N-1 (dead code removal), N-3 (unused diff.js), N-4 (temp files).
+- N-2 confirmed non-existent (duplicate already removed).
+- Remaining: N-5..N-10 (quality improvements, tracked).
