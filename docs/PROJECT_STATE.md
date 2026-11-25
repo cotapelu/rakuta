@@ -52,3 +52,12 @@ All checks passing:
 | N-10 | Standardize error handling pattern | Medium | Mix of `throw` vs `isError` returns |
 
 > **Note:** These are quality-of-life improvements, non-blocking. See AUDIT.md for details.
+
+---
+
+## [2026-07-20] Evolution Round — Complexity Reduction
+- Quality Gate: 66 → 76/100
+- Complexity: 10/10 (was 0/10)
+- Changes: split `project-profile.ts` helpers; refactor `multi-agent/router.ts` handler map
+- Tests: 2114 pass
+- Next: function size, duplication, coverage

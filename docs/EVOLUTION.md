@@ -94,3 +94,10 @@
 ---
 
 **All existing tests pass. Codebase stable.**
+
+---
+
+## [2026-07-20] Trajectory Update
+- Complexity resolved (10/10)
+- Remaining: function size (66), duplication (139), coverage (48%)
+- Plan: refactor hotspots and add tests for uncovered branches
