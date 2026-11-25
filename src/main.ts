@@ -1,106 +1,33 @@
 #!/usr/bin/env node
-/**
- * PiClaw Main - ONLY interactive mode, with global runtime for extensions.
- * Minimal implementation.
- */
-
 import { setCurrentRuntime, clearCurrentRuntime } from "./addon/runtime-context.js";
 import registerAllAddon from "./addon/registry.js";
-import { registerAllBuiltinTools } from "./tools/builtin-tools.js";
+import { detectProjectProfile, writeProjectProfile } from "./project-profile.js";
+// @ts-ignore
+import { main as sdkMain } from "./vendor/sdk-main.mjs";
 
-import {
-  createAgentSessionRuntime,
-  createAgentSessionServices,
-  createAgentSessionFromServices,
-  SessionManager,
-  SettingsManager,
-  ModelRuntime,
-  getAgentDir,
-  InteractiveMode,
-  initTheme,
-  parseArgs,
-  VERSION,
-} from "@earendil-works/pi-coding-agent";
+export default async function main(): Promise<void> {
+  const addon = registerAllAddon();
+  const extensionFactories = addon.extensions;
 
-import chalk from "chalk";
-
-export default async function main() {
-  const args = process.argv.slice(2);
-  const parsed = parseArgs(args);
-
-  if (parsed.version) {
-    console.log(VERSION);
-    return;
-  }
-
-  // Load addon extensions
-  const extensionFactories = registerAllAddon().extensions;
-
-  // Services
-  const cwd = process.cwd();
-  const agentDir = getAgentDir();
-
-  const modelRuntime = await ModelRuntime.create();
-  const settingsManager = SettingsManager.create(cwd, agentDir);
-
-  // Session manager (always create new session for simplicity)
-  const sessionManager = SessionManager.create(cwd, undefined, { id: parsed.sessionId });
-
-  // Runtime factory
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const createRuntime = async ({ cwd, sessionManager }: any) => {
-    const services = await createAgentSessionServices({
-      cwd,
-      agentDir,
-      modelRuntime,
-      settingsManager,
-      resourceLoaderOptions: {
-        extensionFactories: extensionFactories,
-      },
-    });
-
-    const sessionResult = await createAgentSessionFromServices({
-      services,
-      sessionManager,
-      customTools: registerAllBuiltinTools(cwd),
-    });
-
-    return {
-      ...sessionResult,
-      services,
-      diagnostics: services.diagnostics,
-    };
+  (globalThis as any).__rakuta_set_runtime = (runtime: any) => { console.error("[RAKUTA] set runtime hook called");
+    setCurrentRuntime(runtime);
   };
 
-  // Create runtime
-  const runtime = await createAgentSessionRuntime(createRuntime, {
-    cwd,
-    agentDir,
-    sessionManager,
-  });
-
-  // SET GLOBAL RUNTIME - this is the whole purpose
-  setCurrentRuntime(runtime);
-
   try {
-    // ONLY interactive mode
-    initTheme(settingsManager.getTheme(), true);
-    const interactive = new InteractiveMode(runtime, {
-      migratedProviders: [],
-      modelFallbackMessage: undefined,
-      autoTrustOnReloadCwd: undefined,
-      initialMessage: undefined,
-      initialImages: [],
-      initialMessages: parsed.messages || [],
-      verbose: parsed.verbose,
+    const profile = await detectProjectProfile(process.cwd());
+    await writeProjectProfile(profile);
+    console.log("[RAKUTA] Project profile detected:", {
+      size: profile.size,
+      risk: profile.risk,
+      deployment: profile.deployment,
+      team: profile.team,
     });
-    await interactive.run();
   } catch (err) {
-    console.error(chalk.red("Fatal error:"), err);
-    process.exit(1);
-  } finally {
-    clearCurrentRuntime();
+    console.warn("[RAKUTA] Project profile detection failed:", err);
   }
+
+  await sdkMain(process.argv.slice(2), { extensionFactories });
+  clearCurrentRuntime();
 }
 
 await main();

@@ -1,11 +1,11 @@
 {
-  "name": "tau",
+  "name": "rakuta",
   "version": "0.0.1",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
-  "description": "Tau Coding Agent CLI - Professional AI coding assistant",
+  "description": "Rakuta Coding Agent CLI - Ultimate combined AI coding assistant",
   "pi": {
     "extensions": [
       "dist/addon/index.js"
@@ -14,13 +14,13 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "tau": "dist/cli.js"
+    "rakuta": "dist/cli.js"
   },
   "scripts": {
     "generate-custom-models": "tsx scripts/generate-custom-models.ts",
     "quality-gate": "tsx scripts/quality-gate.ts",
     "benchmark": "tsx scripts/benchmark-runner.ts",
-    "build": "npm run generate-custom-models && tsc -p tsconfig.build.json && chmod +x dist/cli.js && mkdir -p dist/addon/extensions/capability-system dist/addon/extensions/tools/skill-reader && cp -r src/addon/extensions/tools/skill-reader/skills dist/addon/extensions/tools/skill-reader/ && cp -r src/addon/extensions/capability-system/plugins dist/addon/extensions/capability-system/",
+    "build": "npm run generate-custom-models && tsc -p tsconfig.build.json && chmod +x dist/cli.js && cp dist/cli.js dist/rakuta && chmod +x dist/rakuta && mkdir -p dist/addon/extensions/capability-system dist/addon/extensions/tools/skill-reader && cp -r src/addon/extensions/tools/skill-reader/skills dist/addon/extensions/tools/skill-reader/ && cp -r src/addon/extensions/capability-system/plugins dist/addon/extensions/capability-system/ && mkdir -p dist/vendor && cp src/vendor/sdk-main.mjs dist/vendor/sdk-main.mjs && mkdir -p dist/addon/extensions/providers && cp -r src/addon/extensions/providers/ofm-provider dist/addon/extensions/providers/",
     "start": "node dist/cli.js",
     "dev": "npm run generate-custom-models && tsx src/cli.ts",
     "lint": "eslint src/**/*.ts --fix",
@@ -40,7 +40,10 @@
     "chalk": "^5.6.2",
     "globals": "^17.5.0",
     "minimatch": "^11.0.9",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "limiter": "^2.0.0",
+    "lru-cache": "^10.0.0",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/minimatch": "^5.1.2",
@@ -53,6 +56,8 @@
     "husky": "^9.1.7",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "@types/lru-cache": "^7.0.0",
+    "@types/yaml": "^1.9.6"
   }
 }

@@ -72,11 +72,19 @@ export class TaskManager {
     this.maxRetryDelayMs = options.maxRetryDelayMs ?? MAX_RETRY_DELAY_MS;
   }
 
+  /**
+   * Sets an optional callback for updates.
+   * @param fn - Update callback receiving AgentToolResult.
+   */
   setOnUpdate(fn: ((update: AgentToolResult<unknown>) => void) | undefined): void {
     this.onUpdate = fn;
   }
 
   // Initialize with a list of tasks
+  /**
+   * Initializes the manager with the given task list.
+   * @param tasks - Array of task strings.
+   */
   initialize(tasks: string[]): void {
     this.tasks = tasks;
     this.taskStatuses.clear();
@@ -93,6 +101,11 @@ export class TaskManager {
   }
 
   // Get status for a specific task
+  /**
+   * Gets the status of a specific task.
+   * @param index - Task index.
+   * @returns TaskStatus or undefined if not found.
+   */
   getTaskStatus(index: number): TaskStatus | undefined {
     return this.taskStatuses.get(index);
   }
@@ -104,36 +117,53 @@ export class TaskManager {
 
   // Claim a pending task for an agent (role)
   // Returns task index or null if none available
+  /**
+   * Claims a pending task for the given role.
+   * @param role - Agent role identifier.
+   * @returns Task index if claimed, else null.
+   */
   claimTask(role: string): number | null {
+    const idx = this.findClaimableTask();
+    if (idx === null) return null;
+    this.markTaskClaimed(role, idx);
+    return idx;
+  }
+
+  private findClaimableTask(): number | null {
     for (let i = 0; i < this.pendingIndices.length; i++) {
       const idx = this.pendingIndices[i];
       const task = this.taskStatuses.get(idx);
       if (!task || task.status !== 'pending') continue;
-      // Check backoff
-      if (task.retryAvailableAt && task.retryAvailableAt > Date.now()) {
-        continue; // not yet claimable
-      }
-      // Claim this task
-      task.retryAvailableAt = undefined;
-      task.assignee = role;
-      task.status = 'in_progress';
-      // Efficient removal
-      if (i === 0) {
-        this.pendingIndices.shift();
-      } else {
-        this.pendingIndices.splice(i, 1);
-      }
-      this.notifyUpdate(
-        `🔨 Agent ${role} claimed task ${idx}`,
-        { agent: role, taskIndex: idx, taskPreview: this.tasks[idx].substring(0, 200), retryCount: task.retryCount }
-      );
+      if (task.retryAvailableAt && task.retryAvailableAt > Date.now()) continue;
       return idx;
     }
     return null;
   }
 
+  private markTaskClaimed(role: string, taskIndex: number): void {
+    const task = this.taskStatuses.get(taskIndex)!;
+    task.retryAvailableAt = undefined;
+    task.assignee = role;
+    task.status = 'in_progress';
+    const i = this.pendingIndices.indexOf(taskIndex);
+    if (i !== -1) {
+      if (i === 0) this.pendingIndices.shift();
+      else this.pendingIndices.splice(i, 1);
+    }
+    this.notifyUpdate(
+      `🔨 Agent ${role} claimed task ${taskIndex}`,
+      { agent: role, taskIndex: taskIndex, taskPreview: this.tasks[taskIndex].substring(0, 200), retryCount: task.retryCount }
+    );
+  }
+
   // Release a task (agent gives up without completing)
   // Returns true if successfully released
+  /**
+   * Releases a claimed task back to pending pool.
+   * @param role - Agent role.
+   * @param taskIndex - Task index to release.
+   * @returns True if task was released.
+   */
   releaseTask(role: string, taskIndex: number): boolean {
     const task = this.taskStatuses.get(taskIndex);
     if (!task || task.assignee !== role || task.status === 'completed' || task.status === 'failed') {
@@ -150,32 +180,54 @@ export class TaskManager {
     return true;
   }
 
-  // Complete a task successfully
+  // Complete a task successfully (with role check)
+  /**
+   * Marks a task as completed by the role.
+   * @param role - Agent role.
+   * @param taskIndex - Task index.
+   * @param result - Result string.
+   * @returns True if task was completed.
+   */
   completeTask(role: string, taskIndex: number, result: string): boolean {
     const task = this.taskStatuses.get(taskIndex);
     if (!task || task.assignee !== role) return false;
-    task.status = 'completed';
-    task.result = result;
-    task.assignee = null;
-    this.removePendingIndex(taskIndex);
-    this.notifyUpdate(
-      `✅ Agent ${role} completed task ${taskIndex}`,
-      { agent: role, taskIndex, resultPreview: result.substring(0, 150) }
-    );
+    this.finalizeTaskCompletion(taskIndex, result, true, role);
     return true;
   }
 
   // Report result without role check (for external completion)
+  /**
+   * Reports a task result (by the assignee).
+   * @param taskIndex - Task index.
+   * @param result - Result string.
+   */
   reportResult(taskIndex: number, result: string): void {
+    this.finalizeTaskCompletion(taskIndex, result, false, undefined);
+  }
+
+  private finalizeTaskCompletion(taskIndex: number, result: string, notify: boolean, role?: string): void {
     const task = this.taskStatuses.get(taskIndex);
     if (!task) return;
     task.status = 'completed';
     task.result = result;
     task.assignee = null;
     this.removePendingIndex(taskIndex);
+    if (notify && role) {
+      this.notifyUpdate(
+        `✅ Agent ${role} completed task ${taskIndex}`,
+        { agent: role, taskIndex, resultPreview: result.substring(0, 150) }
+      );
+    }
   }
 
   // Handle agent failure on a task (increment retry or mark failed)
+  /**
+   * Handles task failure by an agent; increments retry count or marks failed.
+   * @param role - Agent role.
+   * @param taskIndex - Task index.
+   * @param error - Optional error object.
+   * @returns True if task state changed (retried or failed).
+   */
   handleAgentFailure(role: string, taskIndex: number, error?: unknown): boolean {
     const task = this.taskStatuses.get(taskIndex);
     if (!task || task.assignee !== role) return false;
@@ -184,32 +236,42 @@ export class TaskManager {
     task.retryCount++;
 
     if (task.retryCount >= this.maxRetries) {
-      // Max retries exceeded - mark as failed
-      task.status = 'failed';
-      task.result = error instanceof Error ? error.message : (error ? String(error) : 'Unknown error');
-      task.retryAvailableAt = undefined;
-      this.removePendingIndex(taskIndex);
-      this.notifyUpdate(
-        `❌ Task ${taskIndex} failed after ${task.retryCount} retries (agent: ${role})`,
-        { agent: role, taskIndex, retryCount: task.retryCount, error: task.result },
-        true
-      );
+      this.handleRetryExceeded(task, role, taskIndex, error);
     } else {
-      // Retry with backoff
-      const delay = calculateRetryDelay(task.retryCount, this.baseRetryDelayMs, this.maxRetryDelayMs);
-      task.status = 'pending';
-      task.retryAvailableAt = Date.now() + delay;
-      this.insertPendingIndexSorted(taskIndex);
-      this.notifyUpdate(
-        `⚠️ Agent ${role} failed task ${taskIndex} (retry ${task.retryCount}/${this.maxRetries}), retry in ${delay}ms`,
-        { agent: role, taskIndex, retryCount: task.retryCount, delay }
-      );
+      this.scheduleRetry(task, role, taskIndex);
     }
 
     return true;
   }
 
+  private handleRetryExceeded(task: TaskStatus, role: string, taskIndex: number, error?: unknown): void {
+    task.status = 'failed';
+    task.result = error instanceof Error ? error.message : (error ? String(error) : 'Unknown error');
+    task.retryAvailableAt = undefined;
+    this.removePendingIndex(taskIndex);
+    this.notifyUpdate(
+      `❌ Task ${taskIndex} failed after ${task.retryCount} retries (agent: ${role})`,
+      { agent: role, taskIndex, retryCount: task.retryCount, error: task.result },
+      true
+    );
+  }
+
+  private scheduleRetry(task: TaskStatus, role: string, taskIndex: number): void {
+    const delay = calculateRetryDelay(task.retryCount, this.baseRetryDelayMs, this.maxRetryDelayMs);
+    task.status = 'pending';
+    task.retryAvailableAt = Date.now() + delay;
+    this.insertPendingIndexSorted(taskIndex);
+    this.notifyUpdate(
+      `⚠️ Agent ${role} failed task ${taskIndex} (retry ${task.retryCount}/${this.maxRetries}), retry in ${delay}ms`,
+      { agent: role, taskIndex, retryCount: task.retryCount, delay }
+    );
+  }
+
   // Get overall team status (tasks completion stats)
+  /**
+   * Gets overall team task status summary.
+   * @returns Omit<TeamStatus, 'agents'> (agents computed separately).
+   */
   getTeamStatus(): Omit<TeamStatus, 'agents'> {
     const tasksArray = Array.from(this.taskStatuses.entries()).map(([idx, status]) => ({ index: idx, ...status }));
     const completed = Array.from(this.taskStatuses.values()).filter(t => t.status === 'completed').length;
@@ -227,6 +289,10 @@ export class TaskManager {
   }
 
   // Get results for all tasks (by index)
+  /**
+   * Returns results for all tasks (empty string for incomplete).
+   * @returns Array of result strings aligned with task order.
+   */
   getResults(): string[] {
     const results: string[] = new Array(this.tasks.length).fill('');
     this.taskStatuses.forEach((task, idx) => {

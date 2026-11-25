@@ -1,0 +1,434 @@
+#!/usr/bin/env node
+
+/**
+ * ╔═══════════════════════════════════════════════════════════════════════════╗
+ * ║                         MASTER TOOL                                      ║
+ * ║              HỆ THỐNG HÀNG TRĂM COMMANDS TRONG 1 TOOL                    ║
+ * ╚═══════════════════════════════════════════════════════════════════════════╝
+ *
+ * Tính năng:
+ * - Auto-discover commands từ thư mục commands/
+ * - Dynamic import + cache (LRU + TTL)
+ * - Validation (TypeBox schema)
+ * - Rate limiting (optional)
+ * - Audit logging
+ * - Security checks (prototype pollution, size limits)
+ * - Per-command custom renderer
+ * - Category organization
+ * - Search & filter
+ * - Metrics & monitoring
+ * - Stateful command support (optional)
+ *
+ * USAGE:
+ *   master_tool({ command: 'git.status', args: {} })
+ *   master_tool({ command: 'dev.test', args: { files: ['src/'] } })
+ */
+
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+  ToolDefinition,
+  Theme,
+  AgentToolResult,
+  AgentToolUpdateCallback
+} from "@earendil-works/pi-coding-agent";
+// import { Type } from "typebox"; // unused removed
+import { Text } from "@earendil-works/pi-tui";
+import { CommandRegistry } from "./command-registry.js";
+import { DEFAULT_MASTER_TOOL_OPTIONS } from "./types/command-module.js";
+
+// ============================================================================
+// 1. GLOBAL REGISTRY (singleton per extension instance)
+// ============================================================================
+
+let globalRegistry: CommandRegistry | null = null;
+
+function getRegistry(options?: any): CommandRegistry {
+  if (!globalRegistry) {
+    globalRegistry = new CommandRegistry(options);
+  }
+  return globalRegistry;
+}
+
+function resetRegistry(): void {
+  globalRegistry = null;
+}
+
+export { getRegistry, resetRegistry };
+
+// ============================================================================
+// Constants (for function length compliance)
+// ============================================================================
+
+const MASTER_TOOL_PROMPT_GUIDELINES: string[] = [
+  "The master tool provides access to many specialized commands.",
+  "",
+  "**Structure**:",
+  "  master_tool({",
+  "    command: 'category.action',  // e.g., 'git.status', 'dev.test'",
+  "    args: { ... }               // command-specific arguments",
+  "  })",
+  "",
+  "**Discover commands**:",
+  "  • List all: master_tool({ command: 'list', args: {} })",
+  "  • By category: master_tool({ command: 'list.grep', args: { category: 'git' } })",
+  "  • Search: master_tool({ command: 'list.grep', args: { query: 'test' } })",
+  "  • Get help: master_tool({ command: 'help', args: { command: 'git.status' } })",
+  "",
+  "**Examples**:",
+  "  • Git status:",
+  "    master_tool({ command: 'git.status', args: {} })",
+  "",
+  "  • Run tests:",
+  "    master_tool({ command: 'dev.test', args: { files: ['src/'], coverage: true } })",
+  "",
+  "  • System info:",
+  "    master_tool({ command: 'system.info', args: { detailed: true } })",
+  "",
+  "**Categories**: git, dev, system, codebase, security, team, etc.",
+  "",
+  "**Features**:",
+  "  • Auto-validation of arguments (TypeBox schemas)",
+  "  • Rate limiting (configurable)",
+  "  • Output size limits (1MB default)",
+  "  • Security checks (prototype pollution, injection)",
+  "  • Audit logging",
+  "  • Command caching (LRU, 5min TTL)",
+  "  • Stateful command support (optional)",
+  "  • Custom renderer per command"
+];
+
+const MASTER_TOOL_PARAMETERS: any = {
+  type: "object",
+  properties: {
+    command: {
+      type: "string",
+      description: "Command name (e.g., 'git.status', 'dev.test'). Use 'list' to see all."
+    },
+    args: {
+      type: "object",
+      description: "Command-specific arguments. See command help for details."
+    }
+  },
+  required: ["command", "args"]
+};
+
+// ============================================================================
+// Extracted functions (for length compliance)
+// ============================================================================
+
+function isMetaCommand(command: string): boolean {
+  return command === "list" || command === "list.grep" || command === "help" || command === "stats" || command === "reload";
+}
+
+async function ensureRegistryInitialized(registry: CommandRegistry): Promise<AgentToolResult<any> | null> {
+  try {
+    await registry.ensureInitialized();
+    return null;
+  } catch (error) {
+    return {
+      content: [{ type: "text", text: `❌ Failed to initialize command registry: ${String(error)}` }],
+      details: { error: "registry_init_failed" },
+      isError: true
+    };
+  }
+}
+
+function validateMasterParams(params: any): { command: string; args: any } | null {
+  if (!params || typeof params !== 'object') return null;
+  const command = params.command;
+  const args = params.args;
+  if (!command || typeof command !== "string") return null;
+  return { command, args: args ?? {} };
+}
+
+async function executeRegularCommand(
+  toolCallId: string,
+  command: string,
+  args: any,
+  signal: AbortSignal | undefined,
+  _onUpdate: AgentToolUpdateCallback<unknown> | undefined,
+  ctx: ExtensionContext,
+  registry: CommandRegistry,
+  options: any
+): Promise<AgentToolResult<any>> {
+  const result = await registry.execute(command, args, {
+    toolCallId,
+    signal,
+    onUpdate: _onUpdate,
+    ctx,
+    maxOutputSize: options.maxOutputSize ?? 1024 * 1024
+  });
+  return {
+    content: result.content,
+    details: result.details,
+    isError: result.isError
+  };
+}
+
+async function executeMaster(
+  toolCallId: string,
+  params: any,
+  signal: AbortSignal | undefined,
+  _onUpdate: AgentToolUpdateCallback<unknown> | undefined,
+  ctx: ExtensionContext,
+  registry: CommandRegistry,
+  options: any
+): Promise<AgentToolResult<any>> {
+  const initResult = await ensureRegistryInitialized(registry);
+  if (initResult) return initResult;
+  const validation = validateMasterParams(params);
+  if (!validation) return {
+    content: [{ type: "text", text: "❌ Missing required parameter: command" }],
+    details: { error: "missing_command" },
+    isError: true
+  };
+  const { command, args } = validation;
+  if (isMetaCommand(command)) return handleMetaCommand(command, args, ctx);
+  return await executeRegularCommand(toolCallId, command, args, signal, _onUpdate, ctx, registry, options);
+}
+
+function renderMasterResultPartial(theme: Theme, command: string): any {
+  return new Text(theme.fg("warning", `⏳ Executing ${command}...`));
+}
+
+function renderMasterResultError(theme: Theme, command: string, details: any): any {
+  const lines = [
+    theme.fg("error", `❌ ${command} failed`),
+    details.error ? theme.fg("muted", details.error) : ""
+  ].filter(Boolean);
+  return new Text(lines.join("\n"));
+}
+
+function formatStdoutPreview(stdoutText: string, maxPreview: number, theme: Theme): string {
+  const linesArr = stdoutText.split('\n');
+  if (linesArr.length > maxPreview) {
+    const preview = linesArr.slice(0, maxPreview).join('\n');
+    return `${preview}\n${theme.fg("dim", `... and ${linesArr.length - maxPreview} more lines`)}`;
+  }
+  return theme.fg("text", stdoutText);
+}
+
+function renderMasterResultSuccess(theme: Theme, command: string, details: any, result: AgentToolResult<any>, expanded: boolean): any {
+  const lines: string[] = [];
+
+  if (details.code !== undefined) {
+    const status = details.code === 0 ? "success" : "warning";
+    lines.push(theme.fg(status, `✓ ${command} completed (exit ${details.code})`));
+  }
+
+  if (details.duration !== undefined) {
+    lines.push(theme.fg("dim", `Duration: ${details.duration}ms`));
+  }
+
+  const stdoutText = result.content
+    .filter((c: any) => c.type === "text")
+    .map((c: any) => c.text)
+    .join("\n")
+    .trim();
+
+  if (stdoutText) {
+    const maxPreview = expanded ? 50 : 10;
+    lines.push(formatStdoutPreview(stdoutText, maxPreview, theme));
+  }
+
+  return new Text(lines.join("\n"));
+}
+
+function renderMasterResult(
+  result: AgentToolResult<any>,
+  options: { expanded: boolean; isPartial: boolean },
+  theme: Theme,
+  _context?: any
+): any {
+  const details = result.details || {};
+  const isError = result.isError;
+  const command = details.command || "unknown";
+
+  if (options.isPartial) {
+    return renderMasterResultPartial(theme, command);
+  }
+
+  if (isError) {
+    return renderMasterResultError(theme, command, details);
+  }
+
+  return renderMasterResultSuccess(theme, command, details, result, options.expanded);
+}
+
+function renderMasterCall(args: any, theme: Theme): any {
+  const command = args.command || "master_tool";
+  const commandPart = theme.fg("accent", command);
+  const argsPreview = Object.keys(args.args ?? {}).length > 0
+    ? theme.fg("dim", `(${Object.keys(args.args).length} args)`)
+    : "";
+
+  return new Text(
+    `${theme.fg("toolTitle", theme.bold("master_tool"))} ${commandPart} ${argsPreview}`,
+    0,
+    0
+  );
+}
+
+// ============================================================================
+// 2. TOOL DEFINITION
+// ============================================================================
+
+export function createMasterTool(options: any = {}): ToolDefinition {
+  const registry = getRegistry(options);
+
+  return {
+    name: "master_tool",
+    label: "Master Tool",
+    description:
+      "Unified access to hundreds of specialized commands. " +
+      "Commands are auto-discovered from the commands/ directory. " +
+      "Supports git operations, dev workflows, system info, and more. " +
+      "Use 'list' command to see all available.",
+    promptSnippet: "master_tool({ command: '<name>', args: {...} })",
+    promptGuidelines: MASTER_TOOL_PROMPT_GUIDELINES,
+    parameters: MASTER_TOOL_PARAMETERS,
+
+    execute: (toolCallId, params, signal, onUpdate, ctx) => executeMaster(toolCallId, params, signal, onUpdate, ctx, registry, options),
+
+
+    renderCall: renderMasterCall,
+
+
+    renderResult: renderMasterResult
+  };
+}
+
+// ============================================================================
+// 3. META-COMMAND HANDLERS
+// ============================================================================
+function handleListCommand(registry: CommandRegistry, _args: any): AgentToolResult<any> {
+  const commands = registry.getCommandList();
+  const categories = registry.getExecutor().listCommandsByCategory();
+  const output = `📋 Available Commands (${commands.length} total)
+
+` +
+    Array.from(categories.entries()).map(([category, cmds]) =>
+      `${category} (${cmds.length}):
+` +
+      cmds.map(cmd => {
+        const cmdInfo = commands.find(c => c.name === cmd);
+        return `  • ${cmd.padEnd(30)} ${cmdInfo?.description || "No description"}`;
+      }).join("\n") + "\n"
+    ).join("\n") +
+    "Usage: master_tool({ command: 'category.action', args: {...} })\n" +
+    "Help: master_tool({ command: 'help', args: { command: 'name' } })";
+  return { content: [{ type: "text", text: output }], details: { commands, categories: Object.fromEntries(categories) }, isError: false };
+}
+
+function matchQuery(cmd: any, query: string): boolean {
+  const q = query.toLowerCase();
+  return cmd.name.toLowerCase().includes(q) || cmd.description.toLowerCase().includes(q);
+}
+
+function buildGrepOutput(filtered: any[], query?: string, category?: string): string {
+  let output = `🔍 Found ${filtered.length} commands`;
+  if (query) output += ` matching "${query}"`;
+  if (category) output += ` in category "${category}"`;
+  output += ":\n\n";
+  for (const cmd of filtered) {
+    output += `  • ${cmd.name}\n    ${cmd.description}\n\n`;
+  }
+  return output;
+}
+
+function handleGrepCommand(registry: CommandRegistry, args: any): AgentToolResult<any> {
+const { query, category } = args;
+  const commands = registry.getCommandList();
+  const filtered = commands.filter(cmd => {
+    const matchesQuery = query ? matchQuery(cmd, query) : true;
+    const matchesCategory = category ? cmd.category === category : true;
+    return matchesQuery && matchesCategory;
+  });
+  const output = buildGrepOutput(filtered, query, category);
+  return {
+    content: [{ type: "text", text: output }],
+    details: { query, category, count: filtered.length, commands: filtered },
+    isError: false
+  };
+}
+function handleHelpCommand(registry: CommandRegistry, args: any): AgentToolResult<any> {
+  const { command } = args;
+  if (!command) return { content: [{ type: "text", text: "❌ Missing command parameter. Usage: master_tool({ command: 'help', args: { command: 'name' } })" }], details: { error: "missing_command" }, isError: true };
+  const helpText = registry.getCommandHelp(command);
+  if (!helpText) return { content: [{ type: "text", text: `❌ Command not found: ${command}` }], details: { error: "command_not_found" }, isError: true };
+  return { content: [{ type: "text", text: helpText }], details: { command }, isError: false };
+}
+
+function handleStatsCommand(registry: CommandRegistry): AgentToolResult<any> {
+  const stats = registry.getStats();
+  const lines = [`📊 Master Tool Statistics`, ``, `Registered commands: ${stats.registeredCommands}`, `Total executions: ${stats.totalExecutions}`, `Success rate: ${stats.successRate}%`, ``, `Cache:`, `  Size: ${stats.cacheStats.size} entries`, `  Entries:`];
+  for (const e of stats.cacheStats.entries.slice(0,5)) lines.push(`    - ${e.name} (hits: ${e.loadCount}, age: ${Math.round(e.ageMs/1000)}s)`);
+  if (stats.recentErrors.length > 0) {
+    lines.push(`⚠️  Recent Errors:`);
+    for (const err of stats.recentErrors.slice(0,5)) lines.push(`  • ${err.command}: ${err.error} (${err.count}x)`);
+  }
+  return { content: [{ type: "text", text: lines.join("\n") }], details: stats, isError: false };
+}
+
+function handleReloadCommand(registry: CommandRegistry): AgentToolResult<any> {
+  registry.clearCache();
+  // Re-scan commands
+  registry.ensureInitialized().then(() => {
+    console.log("[MasterTool] Commands reloaded");
+  });
+
+  return {
+    content: [{ type: "text", text: "✅ Command cache cleared. New commands will be loaded on next execution." }],
+    details: { reloaded: true },
+    isError: false
+  };
+}
+
+function handleMetaCommand(command: string, args: any, _ctx: ExtensionContext): AgentToolResult<any> {
+  const registry = getRegistry();
+  switch (command) {
+    case 'list': return handleListCommand(registry, args);
+    case 'list.grep': return handleGrepCommand(registry, args);
+    case 'help': return handleHelpCommand(registry, args);
+    case 'stats': return handleStatsCommand(registry);
+    case 'reload': return handleReloadCommand(registry);
+    default: return { content: [{ type: 'text', text: `❌ Unknown meta-command: ${command}. Use 'list', 'help', 'stats', 'reload'` }], details: { error: 'unknown_meta_command' }, isError: true };
+  }
+}
+
+// ============================================================================
+// 4. REGISTRATION
+// ============================================================================
+
+export function registerMasterTool(api: ExtensionAPI, customOptions?: any): void {
+  const options = { ...DEFAULT_MASTER_TOOL_OPTIONS, ...customOptions };
+  const tool = createMasterTool(options);
+  api.registerTool(tool);
+}
+
+// ============================================================================
+// 5. EXPORT FOR COMMAND MODULES
+// ============================================================================
+
+// Re-export commonly used types for command developers
+export type {
+  CommandModule,
+  CommandMetadata,
+  CommandResult,
+  CommandLoader,
+  MasterToolOptions
+} from "./types/command-module.js";
+
+// Export createCommandRegistry for external use (if needed)
+export { createCommandRegistry } from "./command-registry.js";
+
+// Export utilities
+export { CommandCache } from "./utils/command-cache.js";
+export { CommandValidator, getValidator } from "./utils/command-validator.js";
+
+export default {
+  registerMasterTool,
+  createMasterTool,
+  getRegistry: () => globalRegistry
+};

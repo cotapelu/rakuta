@@ -1,4 +1,4 @@
-# JFEVOTAU - Ultimate Coding Agent CLI
+# Rakuta - Ultimate Coding Agent CLI
 
 > **J**F + **EVO** + **TAU** = The ultimate combined AI coding agent with the best features from all three codebases.
 
@@ -11,7 +11,7 @@ A production-ready AI coding assistant that combines the strongest features from
 
 ---
 
-## 🌟 Why JFEVOTAU?
+## 🌟 Why Rakuta?
 
 | Codebase | Best Feature | Status |
 |---|---|---|
@@ -27,20 +27,20 @@ A production-ready AI coding assistant that combines the strongest features from
 
 ```bash
 # Install
-npm install -g @cotapelu/jevota
+npm install -g @cotapelu/rakuta
 # OR run directly
-npx @cotapelu/jevota
+npx @cotapelu/rakuta
 
 # Basic usage
-jevota                                    # Interactive mode
-jevota "refactor this file"               # Quick task
-jevota --print "explain this code"        # Non-interactive output
-jevota --list-models                      # List available models
-jevota --version                          # Show version
+rakuta                                    # Interactive mode
+rakuta "refactor this file"               # Quick task
+rakuta --print "explain this code"        # Non-interactive output
+rakuta --list-models                      # List available models
+rakuta --version                          # Show version
 
 # Advanced
-echo "fix bugs" | jevota                  # Stdin piping
-jevota @file1.ts @file2.ts "review"       # File arguments
+echo "fix bugs" | rakuta                  # Stdin piping
+rakuta @file1.ts @file2.ts "review"       # File arguments
 ```
 
 ---
@@ -139,15 +139,15 @@ jevota @file1.ts @file2.ts "review"       # File arguments
 ### Global Install (Recommended)
 
 ```bash
-npm install -g @cotapelu/jevota
-jevota --version
+npm install -g @cotapelu/rakuta
+rakuta --version
 ```
 
 ### Local Development
 
 ```bash
-git clone https://github.com/cotapelu/jevota.git
-cd jevota
+git clone https://github.com/cotapelu/rakuta.git
+cd rakuta
 npm install
 npm run build
 ./dist/cli.js --version
@@ -156,7 +156,7 @@ npm run build
 ### As Pi Extension
 
 ```bash
-pi install https://github.com/cotapelu/jevota
+pi install https://github.com/cotapelu/rakuta
 # Adds capabilities, OFM provider, tools to existing pi installation
 # Note: Loses CLI args, project profile, global runtime hook
 ```
@@ -168,7 +168,7 @@ pi install https://github.com/cotapelu/jevota
 ### Interactive Coding
 
 ```bash
-jevota
+rakuta
 # Opens TUI with full tool access
 ```
 
@@ -176,40 +176,40 @@ jevota
 
 ```bash
 # Print mode (non-interactive)
-jevota --print "write a hello world in rust"
+rakuta --print "write a hello world in rust"
 
 # JSON output for scripting
-jevota --mode json "list files in src"
+rakuta --mode json "list files in src"
 
 # With file context
-jevota @src/main.ts "add error handling"
+rakuta @src/main.ts "add error handling"
 ```
 
 ### Advanced Workflows
 
 ```bash
 # Session management
-jevota --continue                    # Continue last session
-jevota --session abc123              # Resume specific session
-jevota --fork abc123                 # Fork from session
+rakuta --continue                    # Continue last session
+rakuta --session abc123              # Resume specific session
+rakuta --fork abc123                 # Fork from session
 
 # Model selection
-jevota --provider anthropic --model claude-3-opus "complex task"
-jevota --list-models                 # See all available
+rakuta --provider anthropic --model claude-3-opus "complex task"
+rakuta --list-models                 # See all available
 
 # Export session
-jevota --export html session.jsonl
+rakuta --export html session.jsonl
 ```
 
 ### Automation
 
 ```bash
 # CI/CD integration
-echo "review this PR" | jevota --print --mode json > review.json
+echo "review this PR" | rakuta --print --mode json > review.json
 
 # Batch processing
 for f in src/**/*.ts; do
-  jevota --print "@$f add JSDoc" >> docs.md
+  rakuta --print "@$f add JSDoc" >> docs.md
 done
 ```
 
@@ -275,7 +275,7 @@ npm run lint
 ## 📁 Project Structure
 
 ```
-jevota/
+rakuta/
 ├── src/
 │   ├── main.ts                 # Standalone entry: profile → SDK main → runtime hook
 │   ├── cli.ts                  # 3-line entry point
@@ -391,8 +391,8 @@ Combines the best of:
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/cotapelu/jevota/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/cotapelu/jevota/discussions)
+- **Issues**: [GitHub Issues](https://github.com/cotapelu/rakuta/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/cotapelu/rakuta/discussions)
 
 ---
 
