@@ -1,248 +1,399 @@
-# PiClaw
+# JFEVOTAU - Ultimate Coding Agent CLI
 
-PiClaw is a professional AI coding agent built on [pi-coding-agent](https://github.com/mariozechner/pi-coding-agent). It provides a powerful terminal-based interface for AI-assisted development.
+> **J**F + **EVO** + **TAU** = The ultimate combined AI coding agent with the best features from all three codebases.
 
-## Features
+A production-ready AI coding assistant that combines the strongest features from three independent codebases into a single, powerful CLI tool.
 
-- **Rich Extension Ecosystem**: 23+ extensions including tools, commands, renderers, and widgets.
-- **Integrated Tools**: `git` (full git operations), `test` (vitest runner), `formatter` (Prettier), `audit` (npm audit), `build` (npm run build), `metrics` (export stats), `memory` (persistent memories), `todos` (project todo management), `scripts` (npm scripts), `secret-scanner` (detect leaked keys).
-- **Interactive Slash Commands**: `/tree` (session browser), `/settings` (config UI), `/providers` (LLM provider management), `/copy` (clipboard), `/team` (toggle team widget), `/scan-secrets` (security scan), `/scripts` (run npm scripts).
-- **Custom Renderers**: Beautiful output for branch summaries, team ops, compaction summaries.
-- **Session Widgets**: Live team status widget with toggle.
-- **Secure by Default**: SDK factories, validated inputs, no eval; file writes use mutation queue.
-- **Prompt Templates**: Built-in defaults (`default`, `explain`, `refactor`, `test`, `review`).
-- **Highly Configurable**: `~/.piclaw/config.json` or CLI flags; thinking level and model persistence.
-- **Modular Architecture**: Easy to add new extensions; all registered via `factory.ts`.
+[![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](package.json)
+[![Tests](https://img.shields.io/badge/tests-2114%20passing-green.svg)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](tsconfig.json)
+[![License](https://img.shields.io/badge/license-Apache--2.0-orange.svg)](LICENSE)
 
-## Extension System
+---
 
-PiClaw loads extensions from `src/extensions/` automatically. Extensions can register:
-- **Tools**: Callable by the LLM (e.g., `git`, `test`, `formatter`).
-- **Commands**: Slash commands invoked by the user (e.g., `/tree`, `/team`).
-- **Renderers**: Custom UI for tool results and session entries.
-- **Widgets**: TUI components that display live information.
+## 🌟 Why JFEVOTAU?
 
-All extensions follow the SDK patterns for consistency and safety.
+| Codebase | Best Feature | Status |
+|---|---|---|
+| **JF** | Master Tool, Bash Action, Compaction, Codebase Indexer, Session Tool, Skills, Time, Project Profile | ✅ Integrated |
+| **EVO** | Builtin Tools Override, Clean CLI Delegation | ✅ Integrated |
+| **TAU** | OFM Provider (Token Saver), Capability System (16 caps), Tracing, Observability | ✅ Integrated |
 
-## Security Model
+**Result**: A single CLI with **17 custom tools**, **16 capabilities across 5 plugins**, **2 providers (Kilo + OFM)**, **full project intelligence**, and **complete observability**.
 
-- No arbitrary `eval` or unsanitized command execution.
-- Tools that run shell commands use `createBashTool` with safe defaults.
-- File mutation operations use `withFileMutationQueue` to prevent race conditions.
-- Secret scanner helps detect accidental key leaks.
+---
 
-For more details, see [docs/AGENT_PROFILE.md](docs/AGENT_PROFILE.md).
-
-## Installation
+## 🚀 Quick Start
 
 ```bash
-# Clone and install
+# Install
+npm install -g @cotapelu/jevota
+# OR run directly
+npx @cotapelu/jevota
+
+# Basic usage
+jevota                                    # Interactive mode
+jevota "refactor this file"               # Quick task
+jevota --print "explain this code"        # Non-interactive output
+jevota --list-models                      # List available models
+jevota --version                          # Show version
+
+# Advanced
+echo "fix bugs" | jevota                  # Stdin piping
+jevota @file1.ts @file2.ts "review"       # File arguments
+```
+
+---
+
+## ✨ Features
+
+### 🤖 Core Capabilities
+
+| Category | Tools/Capabilities |
+|---|---|
+| **Code Intelligence** | `codebase_index` (AST search), `analyze`, `analyze_ast`, `ast_query`, `call_graph`, `dependency_tree`, `complexity`, `metrics`, `search`, `safe_edit`, `audit`, `benchmark`, `quality_gate` |
+| **Development** | `build`, `format`, `scripts`, `test`, `audit` |
+| **Git Operations** | `git_status`, `git_diff`, `git_log`, `git_commit`, `git_push`, `git_pull`, `git_branch`, `git_checkout`, `git_add` |
+| **Security** | `scan` (secrets, vulnerabilities) |
+| **System** | `metrics`, `health`, `audit` |
+
+### 🛠️ Custom Tools (17)
+
+| Tool | Description | Source |
+|---|---|---|
+| `bash_action` | Shell + glob with cache/rate-limit | JF |
+| `compact_session` | Session history compaction | JF |
+| `codebase_index` | AST-based symbol search | JF |
+| `skills` | Load markdown skill files | JF |
+| `get_time` | Timezone-aware time | JF |
+| `master` | Unified command executor | JF |
+| `session` | Session management (15 ops) | JF |
+| `multi-agent` | Child agent orchestration | TAU/EVO |
+| `todos` | Task tracking | ALL |
+| `memory` | Persistent memory | ALL |
+| `skill-reader` | Skill documentation loader | ALL |
+| `subtool-loader` | Dynamic sub-tool loading | ALL |
+| `tool-template` | Tool creation template | ALL |
+| `find`/`grep`/`ls` | Builtin overrides | EVO |
+
+### 🤖 Providers
+
+| Provider | Features |
+|---|---|
+| **Kilo** | 397+ free models via kilo.ai gateway |
+| **OFM** | **Token saver** (15 filters), **Chains** (fallback), **Lanes** (ofm-kilo, ofm-opencode) |
+
+### 🔍 Project Intelligence
+
+- **Auto-detection**: Project size, risk level, deployment type, team size
+- **Profile-driven**: Adjusts quality gates, security scans, review requirements
+- **Output**: `docs/PROJECT_PROFILE.md` for team alignment
+
+### 📊 Observability
+
+- **OpenTelemetry tracing** with `withSpan()` on all capability executions
+- **Structured logging** with correlation IDs
+- **Health checks** via `system.health` capability
+- **Performance metrics** via `system.metrics`
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      STANDALONE CLI                             │
+│  src/main.ts  →  Project Profile  →  Vendored SDK Main         │
+│                          ↓                                      │
+│              Global Runtime Hook (setCurrentRuntime)           │
+│                          ↓                                      │
+│              Extension Loading (25+ extensions)                │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                     EXTENSION LAYER                             │
+│  • Capability System (16 caps, 5 plugins)                      │
+│  • Providers (Kilo + OFM with token saver)                     │
+│  • Tools (17 custom tools via registerTool)                    │
+│  • Session/Multi-Agent orchestration                           │
+│  • Master Tool (unified command executor)                      │
+│  • Prompt Hooks (auto-continue, auto-compact)                  │
+│  • Renderers (todos, memory, team-ops, branch-summary)         │
+│  • Commands/Keybindings                                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Key Design Decisions
+
+| Component | Location | Why |
+|---|---|---|
+| **CLI Args / Main Lifecycle** | `src/main.ts` (standalone) | Framework constraints - extensions load AFTER runtime creation |
+| **Project Profile** | `src/main.ts` | Must run BEFORE services creation |
+| **Global Runtime Hook** | `src/main.ts` | Extensions cannot create/set runtime |
+| **All Features** | `src/addon/extensions/` | Extension API provides full access post-runtime |
+
+---
+
+## 📦 Installation
+
+### Global Install (Recommended)
+
+```bash
+npm install -g @cotapelu/jevota
+jevota --version
+```
+
+### Local Development
+
+```bash
+git clone https://github.com/cotapelu/jevota.git
+cd jevota
 npm install
 npm run build
-npm link
+./dist/cli.js --version
 ```
 
-## Usage
-
-Start the interactive agent:
+### As Pi Extension
 
 ```bash
-piclaw
+pi install https://github.com/cotapelu/jevota
+# Adds capabilities, OFM provider, tools to existing pi installation
+# Note: Loses CLI args, project profile, global runtime hook
 ```
 
-Or with options:
+---
+
+## 🎯 Usage Examples
+
+### Interactive Coding
 
 ```bash
-piclaw --cwd /path/to/project --model anthropic:claude-opus-4-5 --thinking high --verbose
+jevota
+# Opens TUI with full tool access
 ```
 
-### CLI Options
+### Quick Tasks
 
-- `--cwd <path>` - Working directory (default: current)
-- `--tools <list>` - Comma-separated tool allowlist (overrides config)
-- `--sessionDir <dir>` - Custom session storage directory
-- `--model <id>` - Model to use (e.g., `anthropic:claude-opus-4-5`)
-- `--thinking <level>` - Thinking level: `off|minimal|low|medium|high|xhigh`
-- `--verbose` - Show detailed logs
+```bash
+# Print mode (non-interactive)
+jevota --print "write a hello world in rust"
 
-## Configuration
+# JSON output for scripting
+jevota --mode json "list files in src"
 
-Piclaw stores configuration in `~/.piclaw/config.json`. Example:
+# With file context
+jevota @src/main.ts "add error handling"
+```
+
+### Advanced Workflows
+
+```bash
+# Session management
+jevota --continue                    # Continue last session
+jevota --session abc123              # Resume specific session
+jevota --fork abc123                 # Fork from session
+
+# Model selection
+jevota --provider anthropic --model claude-3-opus "complex task"
+jevota --list-models                 # See all available
+
+# Export session
+jevota --export html session.jsonl
+```
+
+### Automation
+
+```bash
+# CI/CD integration
+echo "review this PR" | jevota --print --mode json > review.json
+
+# Batch processing
+for f in src/**/*.ts; do
+  jevota --print "@$f add JSDoc" >> docs.md
+done
+```
+
+---
+
+## ⚙️ Configuration
+
+### Project Profile (Auto-generated)
+
+```markdown
+# docs/PROJECT_PROFILE.md
+size: large
+risk: high
+deployment: cloud
+team: small
+```
+
+### Settings
 
 ```json
+// ~/.config/pi/settings.json or .pi/settings.json
 {
-  "model": "anthropic:claude-opus-4-5",
-  "thinking": "high",
-  "tools": ["read", "bash", "edit", "write", "grep", "find"],
-  "verbose": false
+  "theme": "dark",
+  "enabledModels": ["anthropic/*", "openai/*"],
+  "capabilities": {
+    "codebase": true,
+    "dev": true,
+    "git": true,
+    "security": true,
+    "system": true
+  }
 }
 ```
 
-You can edit this file manually or use the `/piclaw-set` command inside the agent.
-
-### Supported Config Keys
-
-- `model` - Default model (`provider:modelId`)
-- `thinking` - Default thinking level
-- `tools` - Array of allowed tool names
-- `sessionDir` - Custom session storage path
-- `verbose` - Enable verbose logging
-
-## Slash Commands
-
-PiClaw adds several powerful slash commands to the standard pi set.
-
-### Configuration
-- `/settings` – Open interactive settings panel
-- `/config` – Display current Piclaw configuration
-- `/piclaw-set <key> <value>` – Set a configuration value (e.g., `/piclaw-set model anthropic:claude-opus-4-5`)
-- `/tools` – List the currently allowed tools
-- `/piclaw-status` – Show Piclaw and session status
-
-### Navigation & Inspection
-- `/tree` – Interactive session tree browser with entry details
-- `/session` – Show session information
-
-### Provider & Model Management
-- `/providers` – Manage LLM providers (`list`, `add <name> <baseUrl> <apiKey>`, `remove <name>`, `test <name>`)
-
-### Workspace Utilities
-- `/copy` – Copy the last assistant response to clipboard
-- `/scan-secrets` – Scan the workspace for leaked API keys and tokens
-- `/scripts` – List and run npm scripts (`/scripts` to list, `scripts({ action: 'run', script: 'name' })`)
-
-### Team & Collaboration
-- `/team` – Toggle the team status widget visibility
-
-### Standard pi Commands
-- `/model` – Select model (opens UI)
-- `/thinking` – Change thinking level
-- `/quit` – Exit
-- ... and many more. Press `/` in the app to see all commands.
-
-## Development
+### Environment Variables
 
 ```bash
-# Build
-npm run build
+export PICLAW_PLUGINS_DIR=/custom/plugins
+export PICLAW_DEV=1
+export PI_OFFLINE=1
+```
 
-# Run in dev mode (tsx)
-npm run dev
+---
 
-# Lint
-npm run lint
+## 🧪 Testing
 
-# Type check
-npm run check
-
-# Test
+```bash
+# Run all tests
 npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Type checking
+npm run typecheck
+
+# Linting
+npm run lint
 ```
-
-## How It Works
-
-Piclaw extends pi-coding-agent with:
-
-1. **Config Manager** - Loads/saves user configuration
-2. **CLI Resolution** - Merges CLI options with config file
-3. **Tool Allowlist** - Applies `tools` config to session
-4. **Auto-Loaded Extension** - Registers custom slash commands via global settings
-
-On startup, Piclaw:
-- Loads config from `~/.piclaw/config.json`
-- Merges with CLI overrides
-- Registers the built-in piclaw extension (written in `src/extensions/piclaw-extension.ts`)
-- Creates agent session with allowed tools from config
-- Applies initial model and thinking level
-
-## Extension Architecture
-
-Piclaw's custom extension is automatically registered by writing its path to the global settings file (`~/.piclaw/agent/settings.json`). This happens on every startup (if not already present).
-
-To create your own extension, place a `.ts` or `.js` file in:
-- Global: `~/.pi/agent/extensions/`
-- Project: `<project>/.pi/extensions/`
-
-See examples in `llm-context/packages/coding-agent/examples/extensions/`.
-
-## License
-
-APACHE
 
 ---
 
-## Team Collaboration
+## 📁 Project Structure
 
-PiClaw supports multi-agent team collaboration. Spawn multiple agents to work together on tasks with automatic work distribution, messaging, and conflict resolution.
-
-### Key Features
-
-- **Dynamic task assignment** with work stealing
-- **Message bus** for agent-to-agent communication
-- **Shared workspace** with optimistic locking & conflict resolution
-- **Team context** for shared awareness of progress, blockers, decisions
-- **Auto-continue** across team members
-
-### Usage
-
-Use the `spawn_team` tool to create and manage teams:
-
-```javascript
-spawn_team({ action: "create", tasks: ["Design API", "Implement backend", "Write tests"], size: 3 })
 ```
-
-Child agents can use `team_ops` to coordinate:
-
-```javascript
-team_ops({ action: "claim_task" })  // Get next available task
-team_ops({ action: "workspace_write", key: "design", value: "{}" })  // Share data
-team_ops({ action: "send_message", channel: "team.chat", content: "Done with task 1" })
+jevota/
+├── src/
+│   ├── main.ts                 # Standalone entry: profile → SDK main → runtime hook
+│   ├── cli.ts                  # 3-line entry point
+│   ├── project-profile.ts      # Project intelligence
+│   ├── prompts/                # Custom prompt templates
+│   ├── runtime-context.ts      # Global runtime accessors
+│   ├── tools/                  # Core implementations (canonical)
+│   │   ├── compaction/         # Session compaction algorithm
+│   │   ├── indexer/            # AST-based codebase indexer
+│   │   ├── session/            # Session management (15 ops)
+│   │   ├── multi-agent/        # Child agent orchestration
+│   │   ├── skills/             # Skill loader
+│   │   ├── time/               # Time tool
+│   │   └── utils/              # path-security, circuit-breaker
+│   └── addon/
+│       ├── registry.ts         # Extension registry
+│       ├── extensions/
+│       │   ├── factory.ts      # Unified registration (25+ extensions)
+│       │   ├── capability-system/  # 16 capabilities, 5 plugins
+│       │   ├── providers/      # Kilo + OFM (token saver, chains)
+│       │   ├── master-tool/    # Unified command executor
+│       │   ├── tools/          # 17 tool registrations
+│       │   ├── session-tool/   # Session management
+│       │   ├── team/           # Agent message bus, workspace
+│       │   ├── renderers/      # Custom message renderers
+│       │   ├── hooks/          # auto-continue, auto-compact
+│       │   ├── commands/       # provider, team commands
+│       │   ├── keybinding/     # Custom shortcuts
+│       │   ├── piclaw-header/  # Header display
+│       │   ├── prompt-hooks/   # Prompt injection
+│       │   ├── buildin-tools/  # find/grep/ls override
+│       │   ├── multi-agent-tool/  # Child orchestration
+│       │   └── skill-reader/   # Skill documentation
+│       └── utils/
+│           ├── tracing.ts      # OpenTelemetry withSpan
+│           └── icons.ts        # Icon constants
+├── dist/                       # Built output
+└── package.json
 ```
-
-Events emitted: `team_created`, `team_progress`, `team_completed`, `team_disposed`.
 
 ---
 
-## Custom Tools & Extensions
+## 🔧 Development
 
-PiClaw includes several built-in custom tools extending the base pi-coding-agent:
+### Adding a New Capability
 
-- **todos** - Full-featured todo management with phases & tasks (persists to `.piclaw/agent/todos.json`)
-- **memory** - Store and retrieve arbitrary text snippets with tags (persists in session)
-- **echo** - Simple demonstration tool for custom tool registration
-- **system_info** - Get system diagnostics (OS, memory, CPU, uptime)
-- **team** / **team_ops** - Team collaboration tools
+```typescript
+// src/addon/extensions/capability-system/plugins/codebase/capabilities/my-cap.ts
+import { Capability } from "../../../types.js";
 
-Additionally, custom provider support allows adding new LLM providers (e.g., Kilo Gateway).
-
----
-
-## Metrics & Observability
-
-Team collaboration includes optional metrics collection to monitor performance and diagnose issues.
-
-### Enabled Metrics
-
-- Task completion times & distribution
-- Agent workload & efficiency
-- Workspace conflicts & lock wait times
-- Message traffic & channel usage
-- Work stealing frequency & success rate
-- Help requests & assistance provided
-
-### Accessing Metrics
-
-```javascript
-// After team completion, get metrics summary
-const summary = teamMetrics.getSummary();
-console.log(summary);
-
-// Export to JSON for analysis
-await exportMetricsToFile(team, "./metrics.json");
+export const myCapability: Capability = {
+  id: "codebase.my_cap",
+  name: "My Capability",
+  description: "Does something useful",
+  pluginId: "codebase",
+  tags: ["codebase", "analysis"],
+  parameters: { type: "object", properties: {} },
+  async execute(toolCallId, params, signal, onUpdate, ctx) {
+    return { content: [{ type: "text", text: "Done!" }] };
+  }
+};
 ```
 
-Metrics are collected via `src/team/team-metrics.ts` and integrated via `src/team/team-metrics-integration.ts`. See [CONTRIBUTING.md](CONTRIBUTING.md) for integration details.
+### Adding a New Tool
+
+```typescript
+// src/addon/extensions/tools/my-tool.ts
+import { ToolDefinition } from "@earendil-works/pi-coding-agent";
+
+export const myTool: ToolDefinition = {
+  name: "my_tool",
+  label: "My Tool",
+  description: "Does something",
+  parameters: { type: "object", properties: {} },
+  async execute(toolCallId, params, signal, onUpdate, ctx) {
+    return { content: [{ type: "text", text: "Result" }] };
+  }
+};
+
+// Register in factory.ts
+import { myTool } from "./tools/my-tool.js";
+api.registerTool(myTool);
+```
 
 ---
 
-## Development
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing`
+3. Run tests: `npm test`
+4. Type check: `npm run typecheck`
+5. Submit PR
+
+---
+
+## 📄 License
+
+Apache-2.0 © 2024
+
+---
+
+## 🙏 Acknowledgments
+
+Built on top of the excellent [Pi Coding Agent SDK](https://github.com/earendil-works/pi-coding-agent) by @earendil-works.
+
+Combines the best of:
+- **JF** (autonomous protocol, master tool, project intelligence)
+- **EVO** (clean delegation, builtin overrides)
+- **TAU** (OFM provider, capability system, observability)
+
+---
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/cotapelu/jevota/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/cotapelu/jevota/discussions)
+
+---
+
+**Made with ❤️ by combining the best of three worlds.**
