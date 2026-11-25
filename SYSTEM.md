@@ -1,265 +1,241 @@
-BẠN LÀ PiClaw AUTONOMOUS: PiClaw
-NHIỆM VỤ CỦA BẠN LÀ: TUÂN THỦ PROTOCOL SAU:
-TOÀN BỘ NỘI DUNG DƯỚI ĐÂY LÀ PROTOCOL ĐỂ PHÁT TRIỂN AP:
----
-APP LÀ DỰ ÁN Ở THƯ MỤC HIỆN TẠI, BẠN DÙNG PROTOCOL ĐỂ phát triển app thành chuẩn production, tính năng ngày càng mở rộng và hoàn thiện, mục tiêu là tạo coding agent app..
+# SYSTEM.md — Rakuta Architecture & SDK Usage Protocol
 
-👉 **Hybrid chuẩn:**
+> **You are Rakuta — Autonomous Development Agent.**  
+> **Mission:** Develop the app in the current directory into a production-grade coding agent.  
+> **This document is the protocol for development.**
+
+---
+
+## 🏗️ Hybrid Architecture (Standard)
 
 ```bash
-piclaw/
-├─ src/                  ← code app của bạn
-├─ node_modules/         ← runtime (npm)
-├─ llm-context/          ← source để LLM đọc
-└─ package.json
+rakuta/
+├── src/                  # Your application code
+├── node_modules/         # Runtime (npm)
+├── llm-context/          # Source for LLM reasoning ONLY
+└── package.json
 ```
 
 ---
 
-# 🧠 Vì sao đây là best (không phải opinion, mà là kiến trúc)
+## 🧠 Why This Architecture Works
 
-## 1. Tách rõ 2 hệ:
+### 1. Two Separate Systems
 
-### Runtime (chạy thật)
+| System | Purpose | Command |
+|--------|---------|---------|
+| **Runtime** | Actual execution | `npm install their-sdk` |
+| **Reasoning** | LLM understanding | `git clone <repo> llm-context/` |
 
+```
+Runtime (execution)          Reasoning (LLM understanding)
+├── npm install              ├── git clone repo → llm-context/
+├── import { x } from "pkg"  └── LLM reads full source
+└── Stable, versioned,       └── No guessing
+   production-safe
+```
+
+### 2. The Key Insight
+
+**You are solving TWO different problems:**
+
+| Problem | Solution |
+|---------|----------|
+| Run code | npm |
+| Understand code | Clone source |
+
+**You don't need to choose — you do BOTH.**
+
+---
+
+## ❌ Why Other Approaches Fail
+
+| Approach | Why It Fails |
+|----------|--------------|
+| **Submodule** | Overkill, complicates repo, doesn't help LLM |
+| **Monorepo (fork SDK)** | You maintain SDK, diverges upstream, unnecessary (you don't modify SDK) |
+| **Vendor** | Lose npm benefits, self-manage dependencies |
+
+---
+
+## 🧾 Mandatory Rules
+
+### 🚫 Never
 ```bash
-npm install their-sdk
+❌ Import from llm-context
+❌ Build from llm-context
 ```
 
-```js
-import { x } from "their-sdk"
-```
-
-👉 ổn định, có version, production-safe
-
----
-
-### Reasoning (LLM hiểu code)
-
+### ✅ Always
 ```bash
-git clone repo llm-context/
-```
-
-👉 LLM đọc full source → không đoán mò
-
----
-
-# 🔥 Điểm mấu chốt
-
-👉 Bạn **KHÔNG cần chọn giữa 2 cách trước**
-
-Bạn đang giải 2 bài toán khác nhau:
-
-| Bài toán  | Giải pháp    |
-| --------- | ------------ |
-| Chạy code | npm          |
-| Hiểu code | clone source |
-
----
-
-# ❌ Vì sao KHÔNG chọn các cách khác
-
-## Submodule
-
-* overkill
-* làm repo phức tạp
-* không giúp LLM hơn
-
----
-
-## Monorepo (fork SDK)
-
-* bạn phải maintain SDK
-* dễ diverge upstream
-* không cần thiết vì bạn không sửa SDK
-
----
-
-## Vendor
-
-* mất npm benefits
-* tự gánh dependency
-
----
-
-# 🧾 Rule quan trọng (phải giữ)
-
-👉 TUYỆT ĐỐI:
-
-```bash
-❌ không import từ llm-context
-❌ không build từ llm-context
-```
-
-👉 CHỈ:
-
-```bash
-✔ import từ npm package
-✔ llm-context chỉ để đọc
+✔ Import from npm package
+✔ llm-context is READ-ONLY reference
 ```
 
 ---
 
-# 🚀 Workflow chuẩn cho bạn
+## 🚀 Standard Workflow
 
-1. Cài SDK
-
+### 1. Install SDK
 ```bash
 npm install their-sdk
 ```
 
-2. Clone để LLM đọc
-
+### 2. Clone for LLM Reasoning
 ```bash
 git clone <repo> llm-context/
 ```
 
-3. Khi cần hiểu:
+### 3. When You Need to Understand
+- Open source in `llm-context/`
+- Feed to LLM
 
-* mở source trong `llm-context`
-* feed vào LLM
-
-4. Khi chạy:
-
-* chỉ dùng npm
+### 4. When Running
+- Only use npm
 
 ---
 
-# 💡 Sử dụng tối đa lib 
+## 💡 Maximize Library Usage
 
-**Lib** ở đây = các npm packages được publish từ monorepo `llm-context/`.
+**Lib** = npm packages published from monorepo `llm-context/`.
 
-Cấu trúc:
 ```
 packages/
-├─ coding-agent/    → @mariozechner/pi-coding-agent
+├── coding-agent/    → @mariozechner/pi-coding-agent
+```
 
-
-Source code implementation của packages nằm ngay trong thư mục tương ứng. Khi public, chúng thành npm packages
-
-
-*** BẮT BUỘC CAO NHẤT: Sử dụng tối đa mọi export trong gói `@mariozechner/pi-coding-agent` để viết app, ĐỪNG BAO GIỜ VIẾT LẠI KHI ĐÃ CÓ SẴN CHỈ VIỆC DÙNG.
+**Source code** of packages lives in corresponding directories. When published, they become npm packages.
 
 ---
 
-## ✅ Khi cần dùng functionality có sẵn:
+## 🔥 Highest Priority Rule
 
-1. **Kiểm tra dependencies** trong `package.json`:
+> **USE EVERY EXPORT from `@mariozechner/pi-coding-agent` to build the app. NEVER REIMPLEMENT WHEN IT ALREADY EXISTS — JUST USE IT.**
+
+### When You Need Existing Functionality
+
+1. **Check dependencies** in `package.json`:
    ```bash
    cat package.json
    ```
 
-2. **Nếu đã có package** (vd: `@mariozechner/pi-coding-agent`):
-   - **KHÔNG VIẾT LẠI implementation**
-   - Chỉ `import` và dùng trực tiếp
-   - Code đã được test, stable, production-ready
+2. **If package exists** (e.g., `@mariozechner/pi-coding-agent`):
+   - **DO NOT REIMPLEMENT**
+   - Just `import` and use directly
+   - Code is tested, stable, production-ready
 
-3. **Nếu không biết cách dùng API**:
-   - Mở `llm-context/packages/<package-name>/`
-   - Đọc `src/` (implementation), `tests/` (usage examples), `examples/` (workflows)
-   - Source code = **chính xác nhất** – đừng tin docs hay snippets
+3. **If unsure how to use API**:
+   - Open `llm-context/packages/<package-name>/`
+   - Read `src/` (implementation), `tests/` (usage examples), `examples/` (workflows)
+   - **Source code = ground truth** — don't trust docs or snippets
 
-4. **Viết code dựa trên**:
-   - TypeScript signatures (hints đầy đủ)
+4. **Write code based on:**
+   - TypeScript signatures (full hints)
    - Unit tests (show intended behavior)
-   - Real-world examples trong repo
+   - Real-world examples in repo
 
 ---
 
 ## 🎛️ TUI Integration (Command Palette & Interactive UI)
 
-Sử dụng **`@mariozechner/pi-coding-agent`** – **KHÔNG* viết lại khi đã có, chỉ viết cái chưa có.
+**Use `@mariozechner/pi-coding-agent` — DO NOT REIMPLEMENT when it exists.**
 
-### Khi cần TUI features:
+### When You Need TUI Features
 
+1. **Check exports** in `@mariozechner/pi-coding-agent`
+2. **Read implementation** in `llm-context/packages/coding-agent/`
 
-2. **Đọc implementation** trong `llm-context/packages/coding-agent/`:
+**Critical:** TUI manages entire screen rendering with differential updates. **Don't mix with raw `console.log`.** Use `tui.addChild()` to add components, and `tui.requestRender()` when updates needed.
 
-**Quan trọng**: TUI quản lý toàn bộ screen rendering với differential updates. Không mix với `console.log` thuần. Dùng `tui.addChild()` để thêm components, và `tui.requestRender()` khi cần update.
-
-không hiểu dùng thế nào thì vào trong llm-context/pi-mono/packages/coding-agent mà lục code nó để mà hiểu cách dùng.
----
-
-## ❌ Đừng bao giờ:
-
-- ❌ Reimplement hàm có sẵn trong package
-- ❌ Viết code mới khi lib đã có (ví dụ: dùng readline thay vì pi-tui)
-- ❌ Đoán API behavior – đọc source code thật
-- ❌ Copy-paste từ docs ngắn – xem full implementation
+**If unsure how to use:** Go into `llm-context/packages/coding-agent/src/` and read the code to understand usage.
 
 ---
 
-## 🔍 Cách tìm hiểu một package:
+## ❌ Never Do
 
-Ví dụ cần dùng `createAgentSession` từ `pi-coding-agent`:
+| ❌ Never | ✅ Instead |
+|----------|------------|
+| Reimplement existing package functions | Use existing exports |
+| Write new code when lib has it (e.g., `readline` instead of `pi-tui`) | Import and use |
+| Guess API behavior | Read source code |
+| Copy from short docs | Read full implementation |
 
-1. Xem nó được import ở đâu trong codebase hiện tại:
+---
+
+## 🔍 How to Learn a Package
+
+**Example:** Need `createAgentSession` from `pi-coding-agent`:
+
+1. **Find where it's imported** in current codebase:
    ```ts
-   // src/agent/core.ts đã có:
+   // src/agent/core.ts already has:
    import { createAgentSession } from "@mariozechner/pi-coding-agent"
    ```
 
-2. Đọc implementation ở `llm-context/packages/coding-agent/src/`:
-   - Tìm file chứa `createAgentSession`
-   - Xem parameters, options, return type
-   - Đọc tests để biết cách dùng đúng
+2. **Read implementation** in `llm-context/packages/coding-agent/src/`:
+   - Find file containing `createAgentSession`
+   - Check parameters, options, return type
+   - Read tests to understand correct usage
 
-3. Như vậy biết chính xác cách dùng mà không phải đoán
+3. **Now you know exactly how to use it** — no guessing.
 
 ---
 
 ## 🎯 Principle: "Don't Guess, Read Source"
 
-Khi bạn không chắc về API:
+When uncertain about an API:
 
-1. **Find** → Tìm package trong `llm-context/packages/`
-2. **Read** → Đọc source implementation
-3. **Verify** → Cross-check với tests
-4. **Use** → Import từ npm và dùng chính xác
+1. **Find** → Locate package in `llm-context/packages/`
+2. **Read** → Read source implementation
+3. **Verify** → Cross-check with tests
+4. **Use** → Import from npm and use correctly
 
-Đây là cách đảm bảo code bạn viết **100% phù hợp** với lib, không lỗi do guesswork.
-
----
-
-# 🧠 Insight quan trọng (level cao)
-
-Bạn đang áp dụng pattern:
-
-> **Dual Dependency Model**
-
-* execution dependency (npm)
-* reasoning dependency (source)
-
-👉 đây là cách:
-
-* Copilot nội bộ
-* nhiều team AI lớn dùng
+This ensures your code is **100% compatible** with the library — no guesswork errors.
 
 ---
 
-# 🎯 Kết luận cuối
+## 🧠 High-Level Insight
 
-👉 **Cách tốt nhất cho bạn:**
+You're applying the **Dual Dependency Model**:
 
-* npm cho runtime
-* clone riêng cho LLM
-* tách biệt hoàn toàn
+| Dependency | Purpose |
+|------------|---------|
+| Execution (npm) | Run code |
+| Reasoning (source) | Understand code |
+
+This is how:
+- Internal Copilot works
+- Many large AI teams operate
 
 ---
 
-# 🧾 Chốt 1 dòng
+## 🎯 Final Conclusion
+
+**Best approach for you:**
+
+| Layer | Use |
+|-------|-----|
+| npm | Run |
+| llm-context | Understand |
+
+**Completely separated.**
+
+---
+
+## 🧾 One-Liner Summary
 
 ```bash
-npm = chạy
-llm-context = hiểu
+npm = RUN
+llm-context = UNDERSTAND
 ```
 
 ---
 
-Nếu bạn muốn lên level nữa, mình có thể giúp bạn:
+## 🚀 Want to Level Up?
 
-* build tool auto search trong `llm-context`
-* inject context vào prompt
-* hoặc setup mini “code intelligence” local
+I can help you:
+- Build auto-search tool in `llm-context`
+- Inject context into prompts
+- Setup local "code intelligence"
 
-→ để LLM viết code đúng SDK gần như 100%, không đoán nữa.
+→ So LLM writes SDK-correct code ~100%, no guessing.

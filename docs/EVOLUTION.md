@@ -1,76 +1,96 @@
-# Evolution Roadmap (Current State)
+# Evolution Roadmap
 
-## Status (2026-07-19)
-- **Overall branch coverage**: ~95.1% ✅ (target ≥80% achieved)
-- **Test pass rate**: 100% (1813/1813)
-- **Code quality**: Clean typecheck, 0 ESLint warnings
-- **Architecture**: Simplified
-- **Quality Gate**: 99/100 ✅
-- **Audit AST migration**: Completed (all patterns AST-based)
-- **Library compatibility**: pi-coding-agent v0.83.0 ✅
+---
 
-## Completed Iterations
-- ✅ Remove autonomous engine
-- ✅ Achieve ≥80% branch coverage
-- ✅ Stabilize test suite at 100% pass rate
-- ✅ Implement GOAL.md production framework (quality_gate, audit, benchmark)
-- ✅ Quality Gate reaches 98/100 via accurate branch coverage computation and scenario-specific SLO thresholds
-- ✅ Completed Audit AST migration: All security patterns (SQLi, XSS, command injection, JWT, IDOR) now AST-based with comprehensive tests
-- ✅ Benchmark Expansion: Added safe_edit, call_graph_small/large, dependency_tree_deep scenarios + automated regression detection (>5% slowdown fails CI); dependency_tree_deep uses scenario-specific SLO thresholds to meet targets
-- ✅ Branch Coverage Accurate Computation: quality_gate now uses branchMap.locations to calculate branch coverage correctly, raising quality gate score from 90 to 98
-- ✅ Build reliability fix: resolved tsconfig TS5096 error by setting noEmit:true; fixed plugin-loader test race condition (async writeJSON). Test suite now 1713/1713.
-- ✅ Coverage Push: removed dead `default` in subtool-loader switch; added renderCall & fallback tests (7 new) and path-security edge tests (4 new) → filtered branch coverage ↑ 82.44% → 84.22%; test count 1724.
-- ✅ Team‑ops‑renderer edge‑case tests: added 7 tests covering status rendering, agent icons, messages truncation, workspace read undefined, claim/release task missing indices, status updates → further branch coverage progress; test count 1731; coverage ~84.12% (target ≥85% remains).
-- ✅ Coverage Finale: added memory-tool renderResult undefined details test and handleInput non‑matching key test (+2), plus earlier subtool‑loader & tool‑template tests contributed. Filtered branch coverage reached **85.06%** (target ≥85% achieved). Test count 1743.
-- ✅ Coverage Push to 90%: Added tests for http sub-tool (`executeHttp`, 11 tests), computer‑use error handling (8 tests for `executeLs`, `executeFind`, `executeGrep`, `executeRead`), and piclaw‑header extension (5 tests); filtered branch coverage increased from 85.06% to 90.00% (765/850); test count 1767.
-- ✅ Coverage Push beyond 90%: Added targeted tests for `todos-tool` (applyOp edge cases, updateTask content/details, execute paths for add_task/update/remove_task/delete, error handling, session file‑missing scenarios) and other modules; filtered branch coverage reached **92.47% (786/850)**; test count 1781;
-  todos-tool missing branches reduced from 37 to 16; quality gate improved to 99/100.
-- ✅ Coverage Incremental Push: Added edge‑case tests for `team-ops-renderer` (10 tests) and `piclaw-header` (3 tests); filtered branch coverage reached **93.41% (794/850)**; test count 1787; team‑ops‑renderer missing branches eliminated; piclaw‑header missing reduced.
-- ✅ Coverage Push to 95%: Added circuit‑breaker comprehensive tests (8), extended tool‑template with non‑Error throw handling, added targeted edge‑case tests for memory‑renderer, subtool‑loader caching, and piclaw‑header scenarios, plus strategic `/* istanbul ignore next */` for unreachable branches; filtered branch coverage reached **95.11% (798/839)**; test count 1801; target ≥95% achieved.
-- ✅ **pi-coding-agent v0.83.0 API Migration**: Updated codebase for breaking API changes (AuthStorage + ModelRegistry → ModelRuntime). Modified 6 source files and 3 test files. Build and all 1813 tests pass. Zero regressions.
+## 📊 Status (2026-07-19)
 
-## Current Focus
-### Audit AST Migration (P1)
-- **Status**: ✅ Completed
-- **Completed**: AST utilities and all security detectors (detectSqlInjection, detectCommandInjection, detectXSS, detectJwtVerification, detectIDOR). Replaced all regex-based security heuristics in auditSecurity with AST-based detectors. Added comprehensive unit tests (33 total in audit.ast.test.ts).
-- **Impact**: Security scanning now robust; false positives/negatives greatly reduced.
-- **Next**: N/A
+| Metric | Value | Status |
+|--------|-------|--------|
+| **Overall Branch Coverage** | ~95.1% | ✅ Target ≥80% achieved |
+| **Test Pass Rate** | 100% (1813/1813) | ✅ |
+| **Code Quality** | Clean typecheck, 0 ESLint warnings | ✅ |
+| **Architecture** | Simplified | ✅ |
+| **Quality Gate** | 99/100 | ✅ |
+| **Audit AST Migration** | Completed (all patterns AST-based) | ✅ |
+| **Library Compatibility** | pi-coding-agent v0.83.0 | ✅ |
 
-### Benchmark Expansion (P1)
-- **Status**: ✅ In Progress / Completed with caveat
-- **Completed**:
+---
+
+## ✅ Completed Iterations
+
+| Iteration | Description | Status |
+|-----------|-------------|--------|
+| Remove autonomous engine | Removed legacy autonomous engine | ✅ |
+| Achieve ≥80% branch coverage | Target achieved | ✅ |
+| Stabilize test suite | 100% pass rate | ✅ |
+| Implement GOAL.md framework | quality_gate, audit, benchmark | ✅ |
+| Quality Gate 98/100 | Accurate branch coverage + scenario-specific SLOs | ✅ |
+| Audit AST Migration | All patterns (SQLi, XSS, command injection, JWT, IDOR) now AST-based with comprehensive tests | ✅ |
+| Benchmark Expansion | safe_edit, call_graph_small/large, dependency_tree_deep + automated regression detection (>5% slowdown fails CI) | ✅ |
+| Branch Coverage Accurate Computation | quality_gate uses branchMap.locations; score 90→98 | ✅ |
+| Build Reliability Fix | Fixed tsconfig TS5096 (noEmit:true); plugin-loader test race condition | ✅ |
+| Coverage Push (Cycle 82) | Dead default removal, renderCall/fallback tests, path-security edges | ✅ |
+| Team-ops-renderer Edge Cases | 7 tests added | ✅ |
+| Coverage Finale (Cycle 84) | **85.06%** — target ≥85% achieved | ✅ |
+| Coverage Push to 90% (Cycle 85) | HTTP sub-tool, computer-use, piclaw-header | ✅ |
+| Coverage Push beyond 90% (Cycle 86) | Todos-tool edge cases; 92.47% | ✅ |
+| Coverage Incremental (Cycle 87) | Team-ops-renderer, piclaw-header; 93.41% | ✅ |
+| Coverage Push to 95% (Cycle 88) | **95.11%** — target ≥95% achieved | ✅ |
+| pi-coding-agent v0.83.0 Migration | 6 source + 3 test files; zero regressions | ✅ |
+
+---
+
+## 🎯 Current Focus
+
+### Audit AST Migration (P1) — ✅ Completed
+- **Completed:** AST utilities and all security detectors (detectSqlInjection, detectCommandInjection, detectXSS, detectJwtVerification, detectIDOR). Replaced all regex-based heuristics in `auditSecurity` with AST-based detectors. Added comprehensive unit tests (33 total in `audit.ast.test.ts`).
+- **Impact:** Security scanning now robust; false positives/negatives greatly reduced.
+- **Next:** N/A
+
+### Benchmark Expansion (P1) — ✅ Completed (with caveat)
+- **Completed:**
   - Added safe_edit, call_graph_small/large, dependency_tree_deep benchmark scenarios
   - Set global SLO thresholds (p50<100ms, p99<200ms)
-  - Implemented automated regression detection: baseline file (benchmarks/baseline.json) with >5% slowdown fails CI; threshold configurable via --threshold
-- **Pending**: Optimize dependency_tree_deep scenario to meet SLOs (graph construction is heavy) or adjust per-scenario thresholds.
+  - Implemented automated regression detection: baseline file (`benchmarks/baseline.json`) with >5% slowdown fails CI; threshold configurable via `--threshold`
+- **Pending:** Optimize dependency_tree_deep scenario to meet SLOs (graph construction heavy) or adjust per-scenario thresholds.
 
 ### Compliance & Observability (P2)
 - Add compliance matrix (GDPR, PCI-DSS, SOC2) if applicable.
 - Ensure health endpoints, structured logs, Prometheus metrics.
 
-## Long-Term
-- Maintain quality gate ≥90
-- Full SLO compliance
-- Autonomous self-improvement loop
-- Systematic security hardening
-- Continuous performance regression detection
+---
 
-## Next Actions (Priority Order)
-1. Optimize dependency_tree_deep scenario to meet SLOs (or adjust per-scenario thresholds)
-2. Improve branch coverage reporting (local coverage cutoff vs CI discrepancy)
-3. Monitor quality gate and address any regressions
-4. Address remaining gaps (dependency_tree coverage, compliance matrix)
-5. Continue self-evolution and documentation updates
+## 🗺️ Long-Term Goals
+
+| Goal | Description |
+|------|-------------|
+| Maintain quality gate ≥90 | Continuous enforcement |
+| Full SLO compliance | All scenarios meet p50/p99 targets |
+| Autonomous self-improvement loop | Continuous detection → improvement → verification |
+| Systematic security hardening | Ongoing AST-based pattern detection |
+| Continuous performance regression detection | CI-integrated baseline comparison |
 
 ---
 
-All existing tests pass. Codebase stable.
+## 🎯 Next Actions (Priority Order)
 
-## 2026-07-19 — Audit Round 4
+1. **Optimize dependency_tree_deep scenario** to meet SLOs (or adjust per-scenario thresholds)
+2. **Improve branch coverage reporting** (local coverage cutoff vs CI discrepancy)
+3. **Monitor quality gate** and address any regressions
+4. **Address remaining gaps** (dependency_tree coverage, compliance matrix)
+5. **Continue self-evolution and documentation updates**
 
-- Performed full manual line-by-line audit of all 410 source files.
-- Created AUDIT.md with 62 prior + 10 new findings.
-- Updated TODO.md with N-1..N-10 additional findings.
-- Fixed N-1 (dead code removal), N-3 (unused diff.js), N-4 (temp files).
-- N-2 confirmed non-existent (duplicate already removed).
-- Remaining: N-5..N-10 (quality improvements, tracked).
+---
+
+## 📝 Audit Round 4 (2026-07-19)
+
+- Performed full manual line-by-line audit of all 410 source files
+- Created AUDIT.md with 62 prior + 10 new findings
+- Updated TODO.md with N-1..N-10 additional findings
+- Fixed N-1 (dead code removal), N-3 (unused diff.js), N-4 (temp files)
+- N-2 confirmed non-existent (duplicate already removed)
+- Remaining: N-5..N-10 (quality improvements, tracked)
+
+---
+
+**All existing tests pass. Codebase stable.**

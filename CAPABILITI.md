@@ -1,14 +1,14 @@
-# CAPABILITI.md — Pi-Coding-Agent Capabilities Not Yet Used
+# CAPABILITI.md — Rakuta Capability Gap Analysis
 
-**Date:** 2026-07-19
-**Scope:** Comparison of `@earendil-works/pi-coding-agent` (v1.5.0) exports vs. actual imports in `src/`
+**Date:** 2026-07-19  
+**Scope:** Comparison of `@earendil-works/pi-coding-agent` (v1.5.0) exports vs. actual imports in `src/`  
 **Method:** Full scan of `index.d.ts` (500+ exports) + `src/` import grep + manual review
 
 ---
 
-## Currently Used (15 exports)
+## ✅ Currently Used (~20 exports)
 
-| Export | Source file(s) |
+| Export | Source File(s) |
 |--------|----------------|
 | `ExtensionAPI` | factory.ts, all extensions |
 | `ExtensionContext` | team-widget, session-tool, etc. |
@@ -27,8 +27,8 @@
 | `PromptTemplate` | prompt-hooks |
 | `ProviderConfig` | provider-command |
 | `ProviderModelConfig` | provider-command |
-| `getAgentDir` | (unused, imported) |
-| `VERSION` | (unused, imported) |
+| `getAgentDir` | (imported, unused) |
+| `VERSION` | (imported, unused) |
 | `withFileMutationQueue` | todos-tool |
 | `ToolResult` | session-tool router |
 
@@ -37,7 +37,7 @@
 ## 🔴 High Value — Should Integrate
 
 | Capability | Module | Description | Current App Approach |
-|---|---|---|---|
+|------------|--------|-------------|----------------------|
 | `EventBus` (`createEventBus`) | `core/event-bus.ts` | Pub/sub between extensions | Custom `message-bus.ts` |
 | `KeybindingsManager` | `core/keybindings.ts` | Keybinding management | Custom `keybinding-extension.ts` |
 | `DefaultPackageManager` | `core/package-manager.ts` | Install extensions from npm | Manual extension loading |
@@ -47,11 +47,13 @@
 | `discoverAndLoadExtensions` | `core/extensions/index.ts` | Auto-discover extensions | Manual registration in factory.ts |
 | `ProjectTrustStore` / `ProjectTrustManager` | `core/trust-manager.ts` | Trust management for project resources | Not implemented |
 
+---
+
 ## 🟡 Medium Value — Could Be Useful
 
 | Capability | Module | Description |
-|---|---|---|
-| `VirtualModelDefinition` / `VIRTUAL_MODEL_STATE_ENTRY` | `core/virtual-models.ts` | Virtual models (router between providers) — could replace ofm-provider chains |
+|------------|--------|-------------|
+| `VirtualModelDefinition` / `VIRTUAL_MODEL_STATE_ENTRY` | `core/virtual-models.ts` | Virtual models (router between providers) — could replace OFM-provider chains |
 | `Compaction` (`compact`, `shouldCompact`, `findCutPoint`, `generateSummary`) | `core/compaction/` | Compaction utilities — improve auto-compact |
 | `ContextEvent` / `ContextEditEntry` | `core/extensions/` | Context editing events |
 | `SessionBoundaryDraft` | `core/session-manager.ts` | Session boundary management for handoff |
@@ -71,10 +73,12 @@
 | `BugReport` / `BugReportUpload` | `core/bug-report*.ts` | Bug reporting |
 | `Diagnostics` | `core/diagnostics.ts` | Diagnostics |
 
+---
+
 ## 🟢 Low Value / Niche
 
 | Capability | Module | Description |
-|---|---|---|
+|------------|--------|-------------|
 | `ArminComponent`, `BorderedLoader`, `DynamicBorder` | `modes/interactive/components/` | TUI components available |
 | `ModelSelectorComponent`, `SessionSelectorComponent` | `modes/interactive/components/` | Selector components |
 | `OAuthSelectorComponent`, `LoginDialogComponent` | `modes/interactive/components/` | Auth UI |
@@ -89,10 +93,12 @@
 | `formatReadLineRange` | `core/tools/render-utils.ts` | Read line range formatting |
 | `hasTrustRequiringProjectResources` | `core/trust-manager.ts` | Trust check |
 
+---
+
 ## ❌ Not Used and Not Needed
 
 | Capability | Reason |
-|---|---|
+|------------|--------|
 | `RpcClient`, `runRpcMode`, `runPrintMode` | App is TUI, not RPC |
 | `InteractiveMode`, `JsonAgentSessionEvent` | App manages its own UI |
 | `PowerShellToolDefinition`, `createPowerShellTool` | Linux-only app |
@@ -103,21 +109,24 @@
 | `main()` / `MainOptions` | App has its own cli.ts |
 | `RpcExtensionUIRequest/Response` | RPC mode, not used |
 
-## Summary
+---
+
+## 📊 Summary
 
 | Category | Count | Status |
-|---|---|---|
+|----------|-------|--------|
 | Already used | ~20 exports | ✅ |
 | Not used (high value) | 8 features | 🔴 Should integrate |
 | Not used (medium value) | ~18 features | 🟡 Could be useful |
 | Not used (low/niche) | ~15 utilities | 🟢 Not urgent |
 | Not needed | ~9 features | ❌ Not applicable |
 
-## Top 3 Recommendations
+---
+
+## 🎯 Top 3 Recommendations
 
 1. **`EventBus`** (`createEventBus`) — Replace custom `message-bus.ts`, reduce complexity, use built-in pub/sub
 2. **`DefaultResourceLoader`** (`loadProjectContextFiles`) — Auto-load AGENTS.md/context files instead of manual reading
 3. **Tool factories** (`createBashTool`, `createReadTool`, etc.) — Replace custom sub-tools with SDK-standard implementations, reduce maintenance burden
 
 Additionally, `ProjectTrustStore` and `VirtualModelDefinition` are worth considering for security and provider routing respectively.
-CAPABILITI.md

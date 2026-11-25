@@ -148,7 +148,7 @@ function createCapabilityRouterTool(api: any) {
   };
 
   // Constants for display
-  const CAPABILITY_PREVIEW_LINES = 5;
+  const CAPABILITY_PREVIEW_LINES = 10;
 
   function formatDuration(ms: number): string {
     return `${(ms / 1000).toFixed(1)}s`;
@@ -183,10 +183,19 @@ function createCapabilityRouterTool(api: any) {
         .trim();
     }
 
+    const isError = Boolean(result?.isError) || output.includes('❌');
+    const statusLine = isError
+      ? theme.fg("error", "❌ Failed")
+      : theme.fg("success", "✅ Completed");
+    component.addChild(new Text(`\n${statusLine}`, 0, 0));
+
+    // Separator for readability
+    component.addChild(new Text(theme.fg("muted", "─".repeat(40)), 0, 0));
+
     if (output) {
       const styledOutput = output
         .split("\n")
-        .map((line: string) => theme.fg("toolOutput", line))
+        .map((line: string) => isError ? theme.fg("error", line) : theme.fg("toolOutput", line))
         .join("\n");
 
       if (options.expanded) {
@@ -202,8 +211,9 @@ function createCapabilityRouterTool(api: any) {
             }
             if (state.cachedSkipped && state.cachedSkipped > 0) {
               const hint =
-                theme.fg("muted", `... (${state.cachedSkipped} earlier lines,`) +
-                ` ${keyHint("app.tools.expand", "to expand")}${theme.fg("muted", ")")}`;
+                theme.fg("muted", `… (${state.cachedSkipped} more lines, `) +
+                `${keyHint("app.tools.expand", "expand to see all")}` +
+                theme.fg("muted", ")");
               return ["", truncateToWidth(hint, width, "..."), ...(state.cachedLines ?? [])];
             }
             return ["", ...(state.cachedLines ?? [])];
@@ -215,6 +225,8 @@ function createCapabilityRouterTool(api: any) {
           },
         });
       }
+    } else {
+      component.addChild(new Text(theme.fg("muted", "(no output)"), 0, 0));
     }
 
     // Loading spinner for in-progress operations
@@ -395,8 +407,9 @@ function createCapabilityRouterTool(api: any) {
           if (typeof value === 'object' && value !== null) {
             return `${key}: ${JSON.stringify(value)}`;
           }
-          // Simple value (use String() to handle unknown)
-          return `${key}: ${String(value)}`;
+          // Simple value (truncate long strings for readability)
+          const str = String(value);
+          return `${key}: ${str.length > 60 ? str.slice(0, 57) + '...' : str}`;
         });
         command += ' (' + paramParts.join(', ') + ')';
       }

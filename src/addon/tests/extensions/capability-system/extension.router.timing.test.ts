@@ -50,7 +50,7 @@ describe('Capability Router Tool (timing & cache)', () => {
 
     // First render returns component with its own state
     const component1 = tool.renderResult(result, { expanded: false }, { fg: (s: string) => s }, context);
-    const child1 = (component1 as any).children?.[0];
+    const child1 = (component1 as any).children?.at(-1);
     // Simulate TUI render with width 40 to trigger caching
     child1?.render?.(40);
     const state1 = component1.state as any;
@@ -59,7 +59,7 @@ describe('Capability Router Tool (timing & cache)', () => {
 
     // Change width: simulate resize by rendering with different width
     const component2 = tool.renderResult(result, { expanded: false }, { fg: (s: string) => s }, context);
-    const child2 = (component2 as any).children?.[0];
+    const child2 = (component2 as any).children?.at(-1);
     child2?.render?.(50);
     const state2 = component2.state as any;
     // Should have recomputed for new width
