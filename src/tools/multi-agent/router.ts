@@ -41,6 +41,53 @@ function ensureParentConfig(): void {
 	}
 }
 
+type MultiAgentParams = {
+	operation: string;
+	type?: 'llm' | 'executor' | 'test-runner' | 'custom';
+	mission?: string;
+	context?: Record<string, unknown>;
+	tools?: string[];
+	childId?: string;
+	message?: { type: string; payload?: unknown };
+	timeoutMs?: number;
+	status?: string;
+	force?: boolean;
+};
+
+const multiAgentHandlers: Record<string, (p: MultiAgentParams) => Promise<unknown>> = {
+	spawn_child: async (p) => {
+		if (!p.mission) throw new Error('mission is required for spawn_child');
+		return spawnChild({
+			type: p.type ?? 'llm',
+			mission: p.mission,
+			context: p.context,
+			tools: p.tools,
+		});
+	},
+	send_message: async (p) => {
+		if (!p.childId) throw new Error('childId is required for send_message');
+		if (!p.message) throw new Error('message is required for send_message');
+		return sendMessage({ childId: p.childId, message: p.message as any });
+	},
+	await_result: async (p) => {
+		if (!p.childId) throw new Error('childId is required for await_result');
+		return awaitResult({ childId: p.childId, timeoutMs: p.timeoutMs });
+	},
+	list_children: async (p) => listChildren({ status: p.status as any }),
+	terminate_child: async (p) => {
+		if (!p.childId) throw new Error('childId is required for terminate_child');
+		return terminateChild({ childId: p.childId, force: p.force });
+	},
+};
+
+async function dispatchMultiAgentOperation(p: MultiAgentParams): Promise<unknown> {
+	const handler = multiAgentHandlers[p.operation];
+	if (!handler) {
+		throw new Error(`Unknown operation: ${p.operation}`);
+	}
+	return handler(p);
+}
+
 export function createMultiAgentTool(): ToolDefinition {
 	return {
 		name: 'multi-agent',
@@ -71,37 +118,8 @@ export function createMultiAgentTool(): ToolDefinition {
 			};
 
 			try {
-				switch (p.operation) {
-					case 'spawn_child': {
-						if (!p.mission) throw new Error('mission is required for spawn_child');
-						return toResult(
-							await spawnChild({
-								type: p.type ?? 'llm',
-								mission: p.mission,
-								context: p.context,
-								tools: p.tools,
-							})
-						);
-					}
-					case 'send_message': {
-						if (!p.childId) throw new Error('childId is required for send_message');
-						if (!p.message) throw new Error('message is required for send_message');
-						return toResult(await sendMessage({ childId: p.childId, message: p.message as any }));
-					}
-					case 'await_result': {
-						if (!p.childId) throw new Error('childId is required for await_result');
-						return toResult(await awaitResult({ childId: p.childId, timeoutMs: p.timeoutMs }));
-					}
-					case 'list_children': {
-						return toResult(await listChildren({ status: p.status as any }));
-					}
-					case 'terminate_child': {
-						if (!p.childId) throw new Error('childId is required for terminate_child');
-						return toResult(await terminateChild({ childId: p.childId, force: p.force }));
-					}
-					default:
-						throw new Error(`Unknown operation: ${p.operation}`);
-				}
+				const result = await dispatchMultiAgentOperation(p);
+				return toResult(result as any);
 			} catch (error) {
 				const message = error instanceof Error ? error.message : String(error);
 				return toResult({

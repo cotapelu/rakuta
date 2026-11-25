@@ -3,32 +3,37 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Fix code issues",
+      "name": "Production Readiness - Batch 1",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Fix vi.mock not at top-level warnings",
-          "status": "completed"
+          "content": "Fix quality gate failures: function size/complexity in project-profile.ts and master-tool",
+          "status": "in_progress"
         },
         {
           "id": "task-2",
-          "content": "Resolve TODO in prompts/index.ts",
-          "status": "completed"
+          "content": "Reduce duplicated 8-line blocks (top hotspots)",
+          "status": "pending"
         },
         {
           "id": "task-3",
-          "content": "Review and clean up unnecessary @ts-ignore",
-          "status": "completed"
+          "content": "Increase branch coverage from 48% to >=80% for core modules",
+          "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Verify typecheck and tests still pass after fixes",
-          "status": "completed"
+          "content": "Address P0 security findings (command injection/IDOR hotspots)",
+          "status": "pending"
+        },
+        {
+          "id": "task-5",
+          "content": "Re-run quality gate and system audit; update docs metrics",
+          "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 5,
+  "nextTaskId": 6,
   "nextPhaseId": 2,
-  "updatedAt": "2026-11-22T22:25:42.715Z"
+  "updatedAt": "2026-11-25T14:38:26.396Z"
 }

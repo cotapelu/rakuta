@@ -54,51 +54,63 @@ export async function detectProjectProfile(cwd: string): Promise<ProjectProfile>
 /**
  * Size detection: LOC, files, tests, dependencies
  */
+async function countSourceFilesAndLoc(cwd: string, evidence: Record<string, any>): Promise<{ fileCount: number; loc: number }> {
+  const { stdout: fileCountStr } = await execAsync(
+    'find src -type f \\( -name "*.ts" -o -name "*.js" \\) 2>/dev/null | wc -l',
+    { cwd }
+  );
+  const fileCount = parseInt(fileCountStr.trim(), 10) || 0;
+  evidence.fileCount = fileCount;
+
+  const { stdout: locStr } = await execAsync(
+    'find src -type f \\( -name "*.ts" -o -name "*.js" \\) -exec cat {} + 2>/dev/null | wc -l',
+    { cwd }
+  );
+  const loc = parseInt(locStr.trim(), 10) || 0;
+  evidence.loc = loc;
+  return { fileCount, loc };
+}
+
+async function countTestFiles(cwd: string, evidence: Record<string, any>): Promise<number> {
+  const { stdout: testCountStr } = await execAsync(
+    'find src -type f \\( -name "*.test.*" -o -name "*.spec.*" \\) 2>/dev/null | wc -l',
+    { cwd }
+  );
+  const testCount = parseInt(testCountStr.trim(), 10) || 0;
+  evidence.testCount = testCount;
+  return testCount;
+}
+
+async function countDependencies(cwd: string, evidence: Record<string, any>): Promise<number> {
+  try {
+    const pkgPath = path.join(cwd, 'package.json');
+    const pkgContent = await fs.readFile(pkgPath, 'utf-8');
+    const pkg = JSON.parse(pkgContent);
+    const deps = Object.keys(pkg.dependencies || {}).length + Object.keys(pkg.devDependencies || {}).length;
+    evidence.dependencyCount = deps;
+    return deps;
+  } catch {
+    evidence.dependencyCount = 0;
+    return 0;
+  }
+}
+
+function classifySize(fileCount: number, loc: number, testCount: number, deps: number): 'small' | 'medium' | 'large' {
+  if (loc < 10_000 && fileCount < 100 && testCount < 50 && deps < 20) {
+    return 'small';
+  }
+  if (loc > 100_000 || fileCount > 500 || testCount > 200 || deps > 50) {
+    return 'large';
+  }
+  return 'medium';
+}
+
 async function detectSize(cwd: string, evidence: Record<string, any>): Promise<'small' | 'medium' | 'large'> {
   try {
-    // Count TypeScript/JavaScript files and lines
-    const { stdout: fileCountStr } = await execAsync(
-      'find src -type f \\( -name "*.ts" -o -name "*.js" \\) 2>/dev/null | wc -l',
-      { cwd }
-    );
-    const fileCount = parseInt(fileCountStr.trim(), 10) || 0;
-    evidence.fileCount = fileCount;
-
-    const { stdout: locStr } = await execAsync(
-      'find src -type f \\( -name "*.ts" -o -name "*.js" \\) -exec cat {} + 2>/dev/null | wc -l',
-      { cwd }
-    );
-    const loc = parseInt(locStr.trim(), 10) || 0;
-    evidence.loc = loc;
-
-    // Count test files
-    const { stdout: testCountStr } = await execAsync(
-      'find src -type f \\( -name "*.test.*" -o -name "*.spec.*" \\) 2>/dev/null | wc -l',
-      { cwd }
-    );
-    const testCount = parseInt(testCountStr.trim(), 10) || 0;
-    evidence.testCount = testCount;
-
-    // Count dependencies (top-level in package.json)
-    let deps = 0;
-    try {
-      const pkgPath = path.join(cwd, 'package.json');
-      const pkgContent = await fs.readFile(pkgPath, 'utf-8');
-      const pkg = JSON.parse(pkgContent);
-      deps = Object.keys(pkg.dependencies || {}).length + Object.keys(pkg.devDependencies || {}).length;
-    } catch {
-      // ignore
-    }
-    evidence.dependencyCount = deps;
-
-    // Classify
-    if (loc < 10_000 && fileCount < 100 && testCount < 50 && deps < 20) {
-      return 'small';
-    } else if (loc > 100_000 || fileCount > 500 || testCount > 200 || deps > 50) {
-      return 'large';
-    } else {
-      return 'medium';
-    }
+    const { fileCount, loc } = await countSourceFilesAndLoc(cwd, evidence);
+    const testCount = await countTestFiles(cwd, evidence);
+    const deps = await countDependencies(cwd, evidence);
+    return classifySize(fileCount, loc, testCount, deps);
   } catch (error) {
     console.warn('[ProjectProfile] Size detection failed:', error);
     return 'medium'; // default
@@ -165,6 +177,15 @@ async function detectRisk(cwd: string, evidence: Record<string, any>): Promise<'
   }
 }
 
+function findIndicator(indicators: Record<string, RegExp>, primary: string, secondary?: string): string | null {
+  for (const [key, regex] of Object.entries(indicators)) {
+    if (regex.test(primary) || (secondary && regex.test(secondary))) {
+      return key;
+    }
+  }
+  return null;
+}
+
 /**
  * Deployment detection: cloud providers, serverless, edge
  */
@@ -195,26 +216,24 @@ async function detectDeployment(cwd: string, evidence: Record<string, any>): Pro
 
     // Scan deps for patterns
     const depString = Object.keys(deps).join(' ').toLowerCase();
+    const scriptsString = JSON.stringify(pkg.scripts || {});
 
-    for (const [provider, regex] of Object.entries(cloudIndicators)) {
-      if (regex.test(depString)) {
-        evidence.cloudProvider = provider;
-        return 'cloud';
-      }
+    const cloudMatch = findIndicator(cloudIndicators, depString);
+    if (cloudMatch) {
+      evidence.cloudProvider = cloudMatch;
+      return 'cloud';
     }
 
-    for (const [type, regex] of Object.entries(serverlessIndicators)) {
-      if (regex.test(depString) || regex.test(JSON.stringify(pkg.scripts || {}))) {
-        evidence.serverlessPlatform = type;
-        return 'serverless';
-      }
+    const serverlessMatch = findIndicator(serverlessIndicators, depString, scriptsString);
+    if (serverlessMatch) {
+      evidence.serverlessPlatform = serverlessMatch;
+      return 'serverless';
     }
 
-    for (const [type, regex] of Object.entries(edgeIndicators)) {
-      if (regex.test(depString)) {
-        evidence.edgePlatform = type;
-        return 'edge';
-      }
+    const edgeMatch = findIndicator(edgeIndicators, depString);
+    if (edgeMatch) {
+      evidence.edgePlatform = edgeMatch;
+      return 'edge';
     }
 
     // Check for on-prem specific: docker compose with host networking, internal IPs
@@ -249,48 +268,64 @@ async function detectDeployment(cwd: string, evidence: Record<string, any>): Pro
 /**
  * Team detection: git history, CODEOWNERS, PR volume
  */
+async function countAuthors(cwd: string): Promise<number> {
+  const { stdout: authorsStr } = await execAsync(
+    'git shortlog -sne --all --since="30 days ago" 2>/dev/null | wc -l',
+    { cwd }
+  );
+  return parseInt(authorsStr.trim(), 10) || 1;
+}
+
+async function countCommits(cwd: string): Promise<number> {
+  const { stdout: commitsStr } = await execAsync(
+    'git log --oneline --since="30 days ago" 2>/dev/null | wc -l',
+    { cwd }
+  );
+  return parseInt(commitsStr.trim(), 10) || 0;
+}
+
+async function countPullRequests(cwd: string): Promise<number> {
+  const { stdout: branchesStr } = await execAsync(
+    'git branch -r 2>/dev/null | grep -E "(origin/PR-|origin/pull/)" | wc -l',
+    { cwd }
+  );
+  return parseInt(branchesStr.trim(), 10) || 0;
+}
+
+async function hasCodeowners(cwd: string): Promise<boolean> {
+  try {
+    await fs.access(path.join(cwd, 'CODEOWNERS'), fs.constants.F_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function classifyTeam(authorCount: number, commitCount: number, prCount: number, codeowners: boolean): 'solo' | 'small' | 'large-org' {
+  if (authorCount === 1 && commitCount < 100) {
+    return 'solo';
+  }
+  if (authorCount > 10 || prCount > 20 || codeowners) {
+    return 'large-org';
+  }
+  return 'small';
+}
+
 async function detectTeam(cwd: string, evidence: Record<string, any>): Promise<'solo' | 'small' | 'large-org'> {
   try {
-    // Unique authors (last 30 days)
-    const { stdout: authorsStr } = await execAsync(
-      'git shortlog -sne --all --since="30 days ago" 2>/dev/null | wc -l',
-      { cwd }
-    );
-    const authorCount = parseInt(authorsStr.trim(), 10) || 1;
+    const authorCount = await countAuthors(cwd);
     evidence.authorCount30d = authorCount;
 
-    // Commits last 30 days
-    const { stdout: commitsStr } = await execAsync(
-      'git log --oneline --since="30 days ago" 2>/dev/null | wc -l',
-      { cwd }
-    );
-    const commitCount = parseInt(commitsStr.trim(), 10) || 0;
+    const commitCount = await countCommits(cwd);
     evidence.commits30d = commitCount;
 
-    // PRs per week estimate (using git branch -r as proxy)
-    const { stdout: branchesStr } = await execAsync(
-      'git branch -r 2>/dev/null | grep -E "(origin/PR-|origin/pull/)" | wc -l',
-      { cwd }
-    );
-    const prCount = parseInt(branchesStr.trim(), 10) || 0;
+    const prCount = await countPullRequests(cwd);
     evidence.prCountEstimate = prCount;
 
-    // Check for CODEOWNERS
-    try {
-      await fs.access(path.join(cwd, 'CODEOWNERS'), fs.constants.F_OK);
-      evidence.hasCODEOWNERS = true;
-    } catch {
-      evidence.hasCODEOWNERS = false;
-    }
+    const codeowners = await hasCodeowners(cwd);
+    evidence.hasCODEOWNERS = codeowners;
 
-    // Classify
-    if (authorCount === 1 && commitCount < 100) {
-      return 'solo';
-    } else if (authorCount > 10 || prCount > 20 || evidence.hasCODEOWNERS) {
-      return 'large-org';
-    } else {
-      return 'small';
-    }
+    return classifyTeam(authorCount, commitCount, prCount, codeowners);
   } catch (error) {
     console.warn('[ProjectProfile] Team detection failed:', error);
     return 'small';
@@ -379,9 +414,59 @@ export async function writeProjectProfile(profile: ProjectProfile): Promise<void
 /**
  * Generate markdown report
  */
+function sizeSection(profile: ProjectProfile): string {
+  const { size, evidence } = profile;
+  return `## Size
+- Category: **${size.toUpperCase()}**
+- Evidence:
+  - LOC: ${evidence.loc ?? 'N/A'}
+  - Files: ${evidence.fileCount ?? 'N/A'}
+  - Tests: ${evidence.testCount ?? 'N/A'}
+  - Dependencies: ${evidence.dependencyCount ?? 'N/A'}
+`;
+}
+
+function riskSection(profile: ProjectProfile): string {
+  const { risk, evidence } = profile;
+  const warning = risk === 'high' ? '- ⚠️ High-risk keywords detected – full compliance scanning enabled\n' : '';
+  return `## Risk
+- Category: **${risk.toUpperCase()}**
+- Evidence:
+  - High-risk keywords: ${evidence.riskKeywordCounts?.high ?? 0}
+  - Medium-risk keywords: ${evidence.riskKeywordCounts?.medium ?? 0}
+  - Low-risk keywords: ${evidence.riskKeywordCounts?.low ?? 0}
+${warning}`;
+}
+
+function deploymentSection(profile: ProjectProfile): string {
+  const { deployment, evidence } = profile;
+  const provider = deployment === 'cloud' ? `- Cloud provider: ${evidence.cloudProvider ?? 'detected'}\n` : '';
+  const platform = deployment === 'serverless' ? `- Platform: ${evidence.serverlessPlatform ?? 'detected'}\n` : '';
+  const edge = deployment === 'edge' ? `- Platform: ${evidence.edgePlatform ?? 'detected'}\n` : '';
+  const cost = deployment === 'cloud' ? 'Required' : 'Not applicable';
+  return `## Deployment
+- Category: **${deployment.toUpperCase()}**
+${provider}${platform}${edge}- Cost Optimization: ${cost}
+`;
+}
+
+function teamSection(profile: ProjectProfile): string {
+  const { team, evidence } = profile;
+  const process = team === 'solo' ? 'Self-merge allowed' : team === 'large-org' ? '2 reviews required' : '1 review required';
+  return `## Team
+- Category: **${team.toUpperCase()}**
+- Evidence:
+  - Authors (30d): ${evidence.authorCount30d ?? 'N/A'}
+  - Commits (30d): ${evidence.commits30d ?? 'N/A'}
+  - PR estimate: ${evidence.prCountEstimate ?? 'N/A'}
+  - CODEOWNERS: ${evidence.hasCODEOWNERS ? 'Yes' : 'No'}
+- Process: ${process}
+`;
+}
+
 function generateMarkdown(profile: ProjectProfile): string {
   const now = new Date().toISOString();
-  const { size, risk, deployment, team, evidence } = profile;
+  const { size, risk, team } = profile;
   const qualityConfig = adaptQualityConfig(profile);
 
   return `# Project Profile
@@ -389,37 +474,10 @@ function generateMarkdown(profile: ProjectProfile): string {
 **Generated**: ${now}
 **Source**: Auto-detected at startup
 
-## Size
-- Category: **${size.toUpperCase()}**
-- Evidence:
-  - LOC: ${evidence.loc ?? 'N/A'}
-  - Files: ${evidence.fileCount ?? 'N/A'}
-  - Tests: ${evidence.testCount ?? 'N/A'}
-  - Dependencies: ${evidence.dependencyCount ?? 'N/A'}
-
-## Risk
-- Category: **${risk.toUpperCase()}**
-- Evidence:
-  - High-risk keywords: ${evidence.riskKeywordCounts?.high ?? 0}
-  - Medium-risk keywords: ${evidence.riskKeywordCounts?.medium ?? 0}
-  - Low-risk keywords: ${evidence.riskKeywordCounts?.low ?? 0}
-${risk === 'high' ? '- ⚠️ High-risk keywords detected – full compliance scanning enabled\n' : ''}
-
-## Deployment
-- Category: **${deployment.toUpperCase()}**
-${deployment === 'cloud' ? `- Cloud provider: ${evidence.cloudProvider ?? 'detected'}\n` : ''}
-${deployment === 'serverless' ? `- Platform: ${evidence.serverlessPlatform ?? 'detected'}\n` : ''}
-${deployment === 'edge' ? `- Platform: ${evidence.edgePlatform ?? 'detected'}\n` : ''}
-- Cost Optimization: ${deployment === 'cloud' ? 'Required' : 'Not applicable'}
-
-## Team
-- Category: **${team.toUpperCase()}**
-- Evidence:
-  - Authors (30d): ${evidence.authorCount30d ?? 'N/A'}
-  - Commits (30d): ${evidence.commits30d ?? 'N/A'}
-  - PR estimate: ${evidence.prCountEstimate ?? 'N/A'}
-  - CODEOWNERS: ${evidence.hasCODEOWNERS ? 'Yes' : 'No'}
-- Process: ${team === 'solo' ? 'Self-merge allowed' : team === 'large-org' ? '2 reviews required' : '1 review required'}
+${sizeSection(profile)}
+${riskSection(profile)}
+${deploymentSection(profile)}
+${teamSection(profile)}
 
 ## Applied Thresholds
 
