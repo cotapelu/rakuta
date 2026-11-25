@@ -256,3 +256,20 @@
 - **Security:** Path traversal, command injection, XSS, PII redaction, prompt injection, JWT none, secret entropy all addressed
 - **Remaining 14 tasks:** Feature additions (health checks, metrics, tracing, connection pooling, structured logging, loading states UI)
 - **Notes:** Core security and reliability issues resolved. Codebase is production-ready.
+
+---
+
+### [2026-07-20] Evolution Round — Complexity Reduction
+- **Type:** Refactor
+- **Priority:** MEDIUM
+- **Duration:** ~15 min
+- **Status:** ✅ Success
+- **Test Delta:** 2114 tests pass (100%)
+- **Coverage Delta:** Branch 48% (unchanged)
+- **Quality Gate:** 66 → 76/100
+- **Changes:**
+  - Split `detectSize`, `detectRisk`, `detectDeployment`, `detectTeam`, `generateMarkdown` in `project-profile.ts`
+  - Extracted `findIndicator`, helper counters, section builders
+  - Refactored `createMultiAgentTool` switch into handler map in `multi-agent/router.ts`
+- **Complexity:** 6 → 0 functions exceeding CC≤10
+- **Notes:** Function size and duplication remain; next iteration should target hotspots and coverage.
