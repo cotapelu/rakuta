@@ -11,7 +11,7 @@
 | [x] **P0-1: Path traversal bypass (symlinks)** | `path-security.ts` | Use `fs.realpath()` to resolve symlinks before path check | HIGH — Data breach |
 | [x] **P0-2: Message bus stale handler leak** | `message-bus.ts` | Cleanup handler in timeout; use `Set` instead of array | CRITICAL — OOM |
 | [x] **P0-3: Todos data loss heuristic** | `todos-tool.ts` → `normalizeParams()` | Remove JSON parsing from phase name | CRITICAL — Data corruption |
-| [x] **P0-4: No timeout on audit calls** | `audit.ts` | Add `AbortSignal` + per-file timeout; stream incrementally | CRITICAL — UI freeze |
+| [x] **P0-4: No timeout on audit calls** | `audit.ts` | **Manual timeout check** (`AUDIT_TIMEOUT_MS`); **NO** per-file AbortSignal/streaming | CRITICAL — UI freeze |
 | [x] **P0-5: Command injection in `dev.test`** | `test.ts` | Run npm directly, not `bash -c` | CRITICAL — RCE |
 | [x] **P0-6: Safe_edit rollback not atomic** | `safe_edit.ts` | Temp file + atomic `fs.rename` | CRITICAL — State corruption |
 | [x] **P0-7: Prompt hook arg injection** | `prompt-hooks.ts` | Sanitize args before substitution | HIGH — Prompt injection |
@@ -29,7 +29,7 @@
 | [x] **P1-4: Secret scanner false negatives** | `quality_gate.ts` | AST-based + entropy detection | HIGH |
 | [x] **P1-5: O(n²) cycle detection** | `dependency_tree.ts` | Tarjan's SCC; cap cycles | HIGH |
 | [x] **P1-6: Loading states in capability router** | `extension.ts` → `renderResult()` | Spinner frames + elapsed time | HIGH |
-| [x] **P1-7: Team agents graceful shutdown** | `team-manager.ts` → `runAgentLoop()` | AbortSignal + `session.abort()` | HIGH |
+| [x] **P1-7: Team agents graceful shutdown** | `team-manager.ts` → `runAgentLoop()` | **Internal** `AbortController`; NO AbortSignal to `session.prompt()` | HIGH |
 | [x] **P1-8: Foreign key enforcement** | `registry.ts` (session) | Re-parent children on dispose | HIGH |
 | [x] **P1-9: Plugin loader watch mode race** | `plugin-loader.ts` | Retry + backoff; debounce 1000ms | MEDIUM |
 | [x] **P1-10: Search no pagination** | `search.ts` | AbortSignal + early stop | MEDIUM |
@@ -51,10 +51,10 @@
 | [x] **P2-4: Session switch race** | `manager.ts` → `switchTo()` | Try/catch rollback | MEDIUM |
 | [x] **P2-5: Plugin cache invalidation** | `plugin-loader.ts` | Cache-busting query params | MEDIUM |
 | [x] **P2-6: Circuit breaker singleton** | `circuit-breaker.ts` | Context-injected singleton | MEDIUM |
-| [x] **P2-7: Structured logging** | `logger.ts` | JSON format + correlation IDs | MEDIUM |
+| [x] **P2-7: Structured logging** | `logger.ts` | JSON format ✅; **NO** correlation IDs | MEDIUM |
 | [x] **P2-8: Health check endpoints** | New capability | Session mgr, plugin loader, providers | MEDIUM |
 | [x] **P2-9: Sanitize error messages** | Multiple | Relative paths only | MEDIUM |
-| [x] **P2-9: Retry UI for failures** | `extension.ts` | Retry hint in error display | MEDIUM |
+| [ ] **P2-9: Retry UI for failures** | `extension.ts` | **Not implemented** - no retry hint | MEDIUM |
 | [x] **P2-10: Message bus handler limit** | `message-bus.ts` | MAX_HANDLERS + cleanup | MEDIUM |
 | [x] **P2-11: Webhook idempotency** | `test.ts` | Idempotency key + timeout | MEDIUM |
 | [x] **P2-12: Todos next ID fix** | `todos-tool.ts` | `max+1` instead of `length+1` | MEDIUM |
