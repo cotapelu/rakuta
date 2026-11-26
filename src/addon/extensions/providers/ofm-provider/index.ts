@@ -396,3 +396,12 @@ export default async function (pi: any) {
 
 /** Exported for the chain tests, which drive the same routing decision. */
 export const internals = { registerChain, clampLevel, intersectCapabilities, normalizeChains }
+
+// ============================================================================
+// TOKEN-SAVER LAYER (re-exported so the whole ofm stack is reachable from here)
+// ============================================================================
+export { compressText, compressRequest, describeSavings, resolveFilter, allFilters, autoDetectFilter, FILTERS } from './token-saver/index.js'
+export { activePrompts, CAVEMAN_LEVELS, PONYTAIL_LEVELS, OFF } from './token-saver/prompts.js'
+export { kiloProvider, kiloModels, PROVIDER_ID as KILO_PROVIDER_ID } from './kilo.js'
+export { opencodeProvider, opencodeModels, PROVIDER_ID as OPENCODE_PROVIDER_ID } from './opencode.js'
+export type { RtkFilter, RtkHit, RtkStats, RtkResult } from './token-saver/index.js'

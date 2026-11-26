@@ -7,3 +7,13 @@ export default promptHookExtension;
 // Re-export for programmatic access if needed
 export { promptHookExtension };
 
+// Prompt registry layer (built-in templates)
+export {
+  getBuiltinPrompt,
+  getAllBuiltinPrompts,
+  registerBuiltinPrompt,
+  hasBuiltinPrompt,
+  defaultAssistantPrompt,
+  codeReviewPrompt,
+} from './prompts/index.js';
+

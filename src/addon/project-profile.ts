@@ -139,21 +139,24 @@ async function detectRisk(cwd: string, evidence: Record<string, any>): Promise<'
   };
 
   try {
-    // Use git grep to count matches efficiently without reading all file contents
-    const counts: Record<string, number> = {};
-    for (const [level, words] of Object.entries(keywords)) {
-      const pattern = words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'); // escape regex
-      try {
-        const { stdout } = await execAsync(
-          `git grep -i -E '${pattern}' -- . ':!node_modules' ':!dist' ':!.git' 2>/dev/null || true`,
-          { cwd, shell: '/bin/bash' }
-        );
-        const lines = stdout.split('\n').filter(l => l.trim().length > 0);
-        counts[level] = lines.length;
-      } catch {
-        counts[level] = 0;
-      }
-    }
+    // Use git grep to count matches efficiently without reading all file contents.
+    // Levels are independent, so the greps run in parallel (no await-in-loop).
+    const countEntries = await Promise.all(
+      Object.entries(keywords).map(async ([level, words]) => {
+        const pattern = words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'); // escape regex
+        try {
+          const { stdout } = await execAsync(
+            `git grep -i -E '${pattern}' -- . ':!node_modules' ':!dist' ':!.git' 2>/dev/null || true`,
+            { cwd, shell: '/bin/bash' }
+          );
+          const lines = stdout.split('\n').filter(l => l.trim().length > 0);
+          return [level, lines.length] as const;
+        } catch {
+          return [level, 0] as const;
+        }
+      })
+    );
+    const counts: Record<string, number> = Object.fromEntries(countEntries);
 
     evidence.riskKeywordCounts = counts;
 
@@ -161,9 +164,9 @@ async function detectRisk(cwd: string, evidence: Record<string, any>): Promise<'
       return 'high';
     } else if (counts.medium > 0) {
       return 'medium';
-    } else {
+    } 
       return 'low';
-    }
+    
   } catch (error) {
     console.warn('[ProjectProfile] Risk detection failed:', error);
     // Check for explicit compliance docs as fallback
@@ -247,18 +250,22 @@ async function detectDeployment(cwd: string, evidence: Record<string, any>): Pro
       // ignore
     }
 
-    // Default: assume cloud if any infrastructure dir exists
+    // Default: assume cloud if any infrastructure dir exists.
+    // Checks are independent -> probe in parallel (no await-in-loop); the
+    // first existing dir decides.
     const infraDirs = ['infra', 'terraform', 'kubernetes', 'k8s', 'helm'];
-    for (const dir of infraDirs) {
-      try {
-        await fs.access(path.join(cwd, dir));
-        return 'cloud';
-      } catch {
-        continue;
-      }
-    }
+    const exists = await Promise.all(
+      infraDirs.map(async (dir) => {
+        try {
+          await fs.access(path.join(cwd, dir));
+          return true;
+        } catch {
+          return false;
+        }
+      })
+    );
 
-    return 'cloud'; // default conservative
+    return 'cloud'; // any infra dir (or none found) -> conservative default
   } catch (error) {
     console.warn('[ProjectProfile] Deployment detection failed:', error);
     return 'cloud';

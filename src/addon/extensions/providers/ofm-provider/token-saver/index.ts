@@ -271,3 +271,14 @@ function resolveEnabled(options: boolean | { enabled?: boolean } | undefined | n
   if (typeof options === 'object') return options.enabled !== false
   return options !== false
 }
+
+// ============================================================================
+// FILTER REGISTRY LAYER (name/alias -> filter)
+// ============================================================================
+// Token-saver has two entry points: autoDetectFilter (shape-based guessing)
+// and resolveFilter (explicit name/alias lookup). Both are re-exported here so
+// callers import the whole layer from one place.
+export { resolveFilter, allFilters } from './registry.js'
+export { autoDetectFilter } from './autodetect.js'
+export { FILTERS, RAW_CAP, MIN_COMPRESS_SIZE, DETECT_WINDOW } from './constants.js'
+export type { RtkFilter } from './applyFilter.js'

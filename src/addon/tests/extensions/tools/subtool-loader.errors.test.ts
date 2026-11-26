@@ -27,7 +27,8 @@ import type { ExtensionContext } from '@earendil-works/pi-coding-agent';
 
 const CWD = '/test';
 function makeCtx(cwd = CWD): ExtensionContext {
-  return { cwd } as any;
+  // The http sub-tool shells out via ctx.exec; simulate a transport failure
+  return { cwd, exec: vi.fn().mockRejectedValue(new Error('network down')) } as any;
 }
 
 describe('subtool-loader error handling', () => {
@@ -37,9 +38,9 @@ describe('subtool-loader error handling', () => {
     tool = createSubLoaderToolDefinition();
   });
 
-  it('returns error if underlying bash tool throws', async () => {
+  it('returns error if the http sub-tool transport throws', async () => {
     const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com' } }, null, () => {}, makeCtx());
     expect(result.isError).toBe(true);
-    expect(result.content[0].text).toContain('bash failed');
+    expect(result.content[0].text).toContain('network down');
   });
 });

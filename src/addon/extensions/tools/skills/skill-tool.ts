@@ -8,15 +8,15 @@
  */
 
 import { ToolDefinition } from '@earendil-works/pi-coding-agent';
-import { getCurrentCwd, getCurrentResourceLoader } from '../../addon/runtime-context.js';
+import { getCurrentCwd, getCurrentResourceLoader } from '../../../runtime-context.js';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
 function getSkillPaths(cwd: string, skill: string): string[] {
   return [
-    join(cwd, 'src', 'addon', 'tools', 'skills', 'skills-md', `${skill}.md`),
-    join(cwd, 'dist', 'tools', 'skills', 'skills-md', `${skill}.md`),
-    join(cwd, 'tools', 'skills', 'skills-md', `${skill}.md`),
+    join(cwd, 'src', 'addon', 'extensions', 'tools', 'skills', 'skills-md', `${skill}.md`),
+    join(cwd, 'dist', 'addon', 'extensions', 'tools', 'skills', 'skills-md', `${skill}.md`),
+    join(cwd, 'addon', 'extensions', 'tools', 'skills', 'skills-md', `${skill}.md`),
   ];
 }
 
@@ -59,7 +59,7 @@ You have access to skill definitions stored as markdown files. When a user asks 
 2. READ the returned skill documentation carefully
 3. FOLLOW the instructions precisely to complete the task
 
-Available skills (auto-discovered from tools/skills/):
+Available skills (auto-discovered from extensions/tools/skills/skills-md/):
 - analyze-code: Code analysis and review (bugs, security, performance)
 - refactor-extract: Extract function/method improvements
 - generate-tests: Unit test generation (Jest/Vitest)
@@ -119,7 +119,7 @@ You: (follow instructions and analyze code)
  * Called during runtime initialization to populate skill list
  */
 export async function listAvailableSkills(cwd: string): Promise<Array<{ name: string; description: string }>> {
-  const skillsDir = join(cwd, 'src', 'addon', 'tools', 'skills', 'skills-md');
+  const skillsDir = join(cwd, 'src', 'addon', 'extensions', 'tools', 'skills', 'skills-md');
   const skills: Array<{ name: string; description: string }> = [];
 
   try {

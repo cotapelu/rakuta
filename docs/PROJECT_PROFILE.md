@@ -1,12 +1,12 @@
 # Project Profile
 
-**Generated**: 2026-11-25T14:34:51.118Z
+**Generated**: 2026-11-26T11:17:53.613Z
 **Source**: Auto-detected at startup
 
 ## Size
 - Category: **LARGE**
 - Evidence:
-  - LOC: 71905
+  - LOC: 71913
   - Files: 496
   - Tests: 238
   - Dependencies: 27
@@ -14,28 +14,25 @@
 ## Risk
 - Category: **HIGH**
 - Evidence:
-  - High-risk keywords: 679
-  - Medium-risk keywords: 2022
+  - High-risk keywords: 680
+  - Medium-risk keywords: 2015
   - Low-risk keywords: 105
 - ⚠️ High-risk keywords detected – full compliance scanning enabled
-
 
 ## Deployment
 - Category: **CLOUD**
 - Cloud provider: detected
-
-
-
 - Cost Optimization: Required
 
 ## Team
 - Category: **SMALL**
 - Evidence:
-  - Authors (30d): 3
-  - Commits (30d): 47
+  - Authors (30d): 2
+  - Commits (30d): 49
   - PR estimate: 0
   - CODEOWNERS: No
 - Process: 1 review required
+
 
 ## Applied Thresholds
 

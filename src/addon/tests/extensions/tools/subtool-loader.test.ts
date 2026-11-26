@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mutable capture variables for args passed to tool executes
-let capturedBashArgs: any = undefined;
 let capturedReadArgs: any = undefined;
 let capturedLsArgs: any = undefined;
 let capturedFindArgs: any = undefined;
@@ -33,12 +32,6 @@ vi.mock('@earendil-works/pi-coding-agent', () => ({
       return { content: [{ type: 'text', text: 'grep result' }] };
     })
   })),
-  createBashToolDefinition: vi.fn(() => ({
-    execute: vi.fn().mockImplementation(async (id: string, args: any) => {
-      capturedBashArgs = args;
-      return { content: [{ type: 'text', text: 'bash result' }] };
-    })
-  })),
   Text: class Text { constructor(public text: string) {} },
 }));
 
@@ -50,19 +43,18 @@ import {
   createLsToolDefinition,
   createFindToolDefinition,
   createGrepToolDefinition,
-  createBashToolDefinition,
 } from '@earendil-works/pi-coding-agent';
 import type { ExtensionContext } from '@earendil-works/pi-coding-agent';
 
 const CWD = '/test';
 
 function makeCtx(cwd = CWD): ExtensionContext {
-  return { cwd } as any;
+  // exec is the runtime shell used by the http sub-tool (curl argv)
+  return { cwd, exec: vi.fn().mockResolvedValue({ code: 0, stdout: 'ok', stderr: '' }) } as any;
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
-  capturedBashArgs = undefined;
   capturedReadArgs = undefined;
   capturedLsArgs = undefined;
   capturedFindArgs = undefined;
@@ -102,43 +94,49 @@ describe('subtool-loader', () => {
       expect(result.content[0].text).toContain('Invalid URL');
     });
 
-    it('success for valid http url, builds curl command with GET', async () => {
-      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com' } }, null, () => {}, makeCtx());
+    it('success for valid http url, delegates to http sub-tool (GET argv)', async () => {
+      const ctx = makeCtx();
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com' } }, null, () => {}, ctx);
       expect(result.isError).toBe(false);
-      expect(capturedBashArgs).toBeDefined();
-      expect(capturedBashArgs.command).toContain('curl');
-      expect(capturedBashArgs.command).toContain('https://example.com');
-      // Should include fail flag
-      expect(capturedBashArgs.command).toContain('--fail');
+      const [cmd, argv] = (ctx as any).exec.mock.calls[0];
+      expect(cmd).toBe('curl');
+      expect(argv).toContain('https://example.com');
+      expect(argv).toContain('--max-time');
     });
 
     it('includes -X method when not GET', async () => {
-      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', method: 'POST' } }, null, () => {}, makeCtx());
+      const ctx = makeCtx();
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', method: 'POST' } }, null, () => {}, ctx);
       expect(result.isError).toBe(false);
-      // Command includes both '-X' and 'POST' as separate quoted args
-      expect(capturedBashArgs.command).toContain('-X');
-      expect(capturedBashArgs.command).toContain('POST');
+      const [, argv] = (ctx as any).exec.mock.calls[0];
+      expect(argv).toContain('-X');
+      expect(argv).toContain('POST');
     });
 
     it('includes -H headers when provided', async () => {
-      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', headers: { 'Content-Type': 'application/json', 'X-Api-Key': '123' } } }, null, () => {}, makeCtx());
+      const ctx = makeCtx();
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', headers: { 'Content-Type': 'application/json', 'X-Api-Key': '123' } } }, null, () => {}, ctx);
       expect(result.isError).toBe(false);
-      expect(capturedBashArgs.command).toContain('-H');
-      expect(capturedBashArgs.command).toContain('Content-Type: application/json');
-      expect(capturedBashArgs.command).toContain('X-Api-Key: 123');
+      const [, argv] = (ctx as any).exec.mock.calls[0];
+      expect(argv).toContain('-H');
+      expect(argv).toContain('Content-Type: application/json');
+      expect(argv).toContain('X-Api-Key: 123');
     });
 
-    it('includes -d body when provided', async () => {
-      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', body: 'hello world' } }, null, () => {}, makeCtx());
+    it('sends POST body via temp file (--data @file)', async () => {
+      const ctx = makeCtx();
+      const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', method: 'POST', body: 'hello world' } }, null, () => {}, ctx);
       expect(result.isError).toBe(false);
-      expect(capturedBashArgs.command).toContain('-d');
-      expect(capturedBashArgs.command).toContain('hello world');
+      const [, argv] = (ctx as any).exec.mock.calls[0];
+      expect(argv).toContain('--data');
+      expect(argv.some((a: string) => a.startsWith('@'))).toBe(true);
     });
 
-    it('http result details contain url, method, headers', async () => {
+    it('http result details contain url, method, headers (plus sub-tool exit info)', async () => {
       const result = await tool.execute('call1', { subtool: 'http', args: { url: 'https://example.com', method: 'POST', headers: { 'X-Test': 'yes' } } }, null, () => {}, makeCtx());
       expect(result.isError).toBe(false);
       expect(result.details).toEqual({
+        exitCode: 0,
         url: 'https://example.com',
         method: 'POST',
         headers: { 'X-Test': 'yes' },
@@ -187,14 +185,12 @@ describe('subtool-loader', () => {
   });
 
   it('caches tool definitions in the same context (factory called once for multiple uses)', async () => {
-    // Spy on the factory mocks
-    const createHttpSpy = createBashToolDefinition as any;
     // Execute same subtool twice
     const ctx = makeCtx();
     const tool1 = createSubLoaderToolDefinition();
-    await tool1.execute('id1', { subtool: 'http', args: { url: 'https://first' } }, null, () => {}, ctx);
-    await tool1.execute('id2', { subtool: 'http', args: { url: 'https://second' } }, null, () => {}, ctx);
+    await tool1.execute('id1', { subtool: 'read', args: { path: '/first' } }, null, () => {}, ctx);
+    await tool1.execute('id2', { subtool: 'read', args: { path: '/second' } }, null, () => {}, ctx);
     // Factory should have been called only once (the second call used cached tool)
-    expect(createHttpSpy).toHaveBeenCalledTimes(1);
+    expect(createReadToolDefinition).toHaveBeenCalledTimes(1);
   });
 });

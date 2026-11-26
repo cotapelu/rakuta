@@ -54,7 +54,11 @@ import type { ExtensionContext } from '@earendil-works/pi-coding-agent';
 
 const CWD = '/test';
 function makeCtx(cwd = CWD): ExtensionContext {
-  return { cwd } as any;
+  // ctx.exec backs the http sub-tool (curl); default: success, no output
+  return {
+    cwd,
+    exec: vi.fn().mockResolvedValue({ code: 0, stdout: '', stderr: '', killed: false })
+  } as any;
 }
 
 describe('subtool-loader fallback handling', () => {
@@ -71,33 +75,27 @@ describe('subtool-loader fallback handling', () => {
     tool = createSubLoaderToolDefinition();
   });
 
-  it('http fallback when result.content is undefined uses result.output or "No output"', async () => {
-    (createBashToolDefinition as any).mockImplementation(() => ({
-      execute: vi.fn().mockResolvedValue({ isError: false, details: { url: 'https://test' } }) // no content, no output
-    }));
-    const result: any = await tool.execute('call1', { subtool: 'http', args: { url: 'https://test' } }, null, () => {}, makeCtx());
+  it('http returns the sub-tool stdout as content', async () => {
+    const ctx = makeCtx();
+    (ctx as any).exec.mockResolvedValue({ code: 0, stdout: 'sub-tool output', stderr: '', killed: false });
+    const result: any = await tool.execute('call1', { subtool: 'http', args: { url: 'https://test' } }, null, () => {}, ctx);
     expect(result.isError).toBe(false);
-    expect(result.content).toEqual([{ type: 'text', text: 'No output' }]);
+    expect(result.content).toEqual([{ type: 'text', text: 'sub-tool output' }]);
     expect(result.details).toMatchObject({ url: 'https://test' });
   });
 
-  it('http preserves details and adds url/method/headers', async () => {
-    (createBashToolDefinition as any).mockImplementation(() => ({
-      execute: vi.fn().mockResolvedValue({
-        isError: false,
-        content: [{ type: 'text', text: 'ok' }],
-        details: { original: true },
-        output: 'raw'
-      })
-    }));
+  it('http preserves sub-tool details and adds url/method/headers', async () => {
+    const ctx = makeCtx();
+    (ctx as any).exec.mockResolvedValue({ code: 0, stdout: 'ok', stderr: '', killed: false });
     const result: any = await tool.execute('call1', {
       subtool: 'http',
       args: { url: 'https://test', method: 'POST', headers: { X: 'y' } }
-    }, null, () => {}, makeCtx());
+    }, null, () => {}, ctx);
     expect(result.isError).toBe(false);
     expect(result.content).toEqual([{ type: 'text', text: 'ok' }]);
     expect(result.details).toEqual({
-      original: true,
+      exitCode: 0,
+      killed: false,
       url: 'https://test',
       method: 'POST',
       headers: { X: 'y' }

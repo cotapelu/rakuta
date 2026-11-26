@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { setCurrentRuntime, clearCurrentRuntime } from "./addon/runtime-context.js";
 import registerAllAddon from "./addon/registry.js";
-import { detectProjectProfile, writeProjectProfile } from "./project-profile.js";
+import { detectProjectProfile, writeProjectProfile } from "./addon/project-profile.js";
 // @ts-ignore
 import { main as sdkMain } from "./vendor/sdk-main.mjs";
 

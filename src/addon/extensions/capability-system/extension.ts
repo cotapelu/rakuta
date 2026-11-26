@@ -14,28 +14,10 @@ import type { CapabilityContext } from "./types.js";
 import type { AgentToolResult } from "@earendil-works/pi-coding-agent";
 import { createCapabilityDiscoveryCapability } from "./prompt-integration.js";
 import { withSpan } from "../utils/tracing.js";
-
-// Simple truncateToVisualLines implementation (matches pi-tui internal)
-function truncateToVisualLines(text: string, maxLines: number, width: number): { visualLines: string[]; skippedCount: number } {
-  const lines: string[] = [];
-  let skipped = 0;
-  for (const line of text.split('\n')) {
-    if (lines.length >= maxLines) {
-      skipped++;
-      continue;
-    }
-    let pos = 0;
-    while (pos < line.length) {
-      if (lines.length >= maxLines) {
-        skipped++;
-        break;
-      }
-      lines.push(line.slice(pos, pos + width));
-      pos += width;
-    }
-  }
-  return { visualLines: lines, skippedCount: skipped };
-}
+// truncateToVisualLines lives in the renderer module (single source of truth);
+// re-exported here for backwards compatibility with existing importers.
+import { truncateToVisualLines } from "./capability-renderer.js";
+export { truncateToVisualLines };
 
 // Simple keyHint implementation
 function keyHint(action: string, fallback: string): string {
@@ -476,4 +458,4 @@ function isDevMode(): boolean {
 }
 
 // Export for unit testing
-export { createCapabilityRouterTool, truncateToVisualLines, keyHint, getPluginsPath, isDevMode };
+export { createCapabilityRouterTool, keyHint, getPluginsPath, isDevMode };

@@ -10,17 +10,19 @@
  * - createLsToolDefinition
  * - createFindToolDefinition
  * - createGrepToolDefinition
- * - createBashToolDefinition (for HTTP via curl)
+ * - http sub-tool (structured HTTP; see sub-tools/http.ts)
  */
 
-import type { ExtensionAPI, ToolDefinition, ExtensionContext } from "@earendil-works/pi-coding-agent"; // AgentToolResult unused
+import type { ExtensionAPI, ToolDefinition, ExtensionContext, AgentToolResult } from "@earendil-works/pi-coding-agent";
 import {
   createReadToolDefinition,
   createLsToolDefinition,
   createFindToolDefinition,
   createGrepToolDefinition,
-  createBashToolDefinition,
 } from "@earendil-works/pi-coding-agent";
+// Registered sub-tools: the http sub-tool lives in ./sub-tools (this module's own
+// layer) and is the single implementation behind the `http` subtool route.
+import { executeHttp, httpSchema } from "./sub-tools/index.js";
 import { Text } from "@earendil-works/pi-tui";
 
 // Cache for per-context tool instances
@@ -53,9 +55,18 @@ function getOrCreateTool(
 // ==================== FACTORIES ====================
 
 function createHttpTool(cwd: string): ToolDefinition {
-  return createBashToolDefinition(cwd, {
-    commandPrefix: ""
-  }) as ToolDefinition;
+  // Delegates to the structured http sub-tool (sub-tools/http.ts) instead of
+  // shelling out through a hand-built curl command string.
+  return {
+    name: "http",
+    label: "HTTP Request",
+    description: "Structured HTTP request (method, headers, body, timeout) via the http sub-tool.",
+    parameters: httpSchema as unknown as ToolDefinition["parameters"],
+    async execute(toolCallId: string, params: any, signal?: AbortSignal, _onUpdate?: any, ctx?: any) {
+      const result = await executeHttp(params, ctx?.cwd ?? cwd, signal, ctx);
+      return result as unknown as AgentToolResult;
+    },
+  } as unknown as ToolDefinition;
 }
 
 function createLsToolWrapper(cwd: string): ToolDefinition {
@@ -116,13 +127,12 @@ async function executeSubtool(
       }
     });
 
-    // HTTP needs special handling to build curl command
+    // HTTP: validate then delegate to the http sub-tool implementation
     if (subtool === "http") {
-      const { url, method = "GET", headers, body } = args as {
+      const { url, method = "GET", headers } = args as {
         url: string;
         method?: string;
         headers?: Record<string, string>;
-        body?: string;
       };
 
       if (!url) {
@@ -133,21 +143,12 @@ async function executeSubtool(
         return { isError: true, content: [{ type: "text", text: `Invalid URL: ${url}` }], details: undefined };
       }
 
-      const curlArgs: string[] = ["-sS", "--fail"];
-      if (method && method !== "GET") curlArgs.push("-X", method);
-      if (headers && typeof headers === "object") {
-        for (const [k, v] of Object.entries(headers)) curlArgs.push("-H", `${k}: ${v}`);
-      }
-      if (body) curlArgs.push("-d", body);
-      curlArgs.push(url);
-
-      const command = `curl ${curlArgs.map(a => JSON.stringify(a)).join(' ')}`;
       // @ts-ignore
-      const result: any = await tool.execute(toolCallId, { command }, signal, onUpdate, ctx);
+      const result: any = await tool.execute(toolCallId, args, signal, onUpdate, ctx);
 
       return {
         isError: result?.isError ?? false,
-        content: result?.content ?? [{ type: "text", text: result?.output ?? "No output" }],
+        content: result?.content ?? [{ type: "text", text: "No output" }],
         details: { ...result?.details, url, method, headers },
       };
     }

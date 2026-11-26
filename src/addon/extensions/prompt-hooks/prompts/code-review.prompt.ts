@@ -19,7 +19,7 @@ export const codeReviewPrompt: PromptTemplate = {
   description: 'Review code for issues (optional: specify focus areas like "security", "performance")',
   filePath: '<inline:code-review>',
   sourceInfo: {
-    path: 'src/buildin/extensions/prompts/code-review.prompt.ts',
+    path: 'src/addon/extensions/prompt-hooks/prompts/code-review.prompt.ts',
     source: 'builtin',
     scope: 'project',
     origin: 'top-level',

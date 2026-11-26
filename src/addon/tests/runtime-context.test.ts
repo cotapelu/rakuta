@@ -319,10 +319,10 @@ describe('runtime-context', () => {
   });
 
   describe('getCurrentAuthStorage', () => {
-    it('should return modelRuntime from services', () => {
+    it('should return authStorage from services', () => {
       const runtime = createMockRuntime();
       setCurrentRuntime(runtime);
-      expect(getCurrentAuthStorage()).toBe(runtime.services.modelRuntime);
+      expect(getCurrentAuthStorage()).toBe(runtime.services.authStorage);
     });
   });
 
@@ -335,10 +335,10 @@ describe('runtime-context', () => {
   });
 
   describe('getCurrentModelRegistry', () => {
-    it('should return modelRuntime from services', () => {
+    it('should return modelRegistry from services', () => {
       const runtime = createMockRuntime();
       setCurrentRuntime(runtime);
-      expect(getCurrentModelRegistry()).toBe(runtime.services.modelRuntime);
+      expect(getCurrentModelRegistry()).toBe(runtime.services.modelRegistry);
     });
   });
 

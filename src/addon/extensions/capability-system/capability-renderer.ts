@@ -18,7 +18,11 @@ function formatDuration(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
-function truncateToVisualLines(text: string, maxLines: number, width: number): { visualLines: string[]; skippedCount: number } {
+/**
+ * Wrap a string into at most `maxLines` visual lines of `width` columns.
+ * Extracted so capability rendering logic lives in one place (used by extension.ts).
+ */
+export function truncateToVisualLines(text: string, maxLines: number, width: number): { visualLines: string[]; skippedCount: number } {
   const lines: string[] = [];
   let skipped = 0;
   for (const line of text.split('\n')) {

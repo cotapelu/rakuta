@@ -9,8 +9,7 @@
  * - evo: buildin-tools override, provider-command
  */
 
-import { registerKiloProvider } from "./providers/kilo-provider.js";
-import { registerOfmProvider } from "./providers/ofm-provider-provider.js";
+import { registerKiloProvider, registerOfmProvider } from "./providers/index.js";
 import {
   registerTodosTool,
   registerMemoryTool,
@@ -24,29 +23,22 @@ import {
   registerTimeTool,
   registerJFSessionTool,
 } from "./tools/index.js";
-import { registerTeamTool } from "./team/index.js";
-import capabilitySystemExtension from "./capability-system/extension.js";
-import autoContinueExtension from "./hooks/auto-continue.js";
-import autoCompact85Extension from "./hooks/auto-compact-85.js";
+import { registerTeamTool, registerTeamWidget } from "./team/index.js";
+import { capabilitySystemExtension } from "./capability-system/index.js";
+import { autoContinueExtension, autoCompact85Extension } from "./hooks/index.js";
 import contextLoggerExtension from "./context-logger.js";
 import registerBuiltinsExtension from "./buildin-tools/index.js";
 import multiAgentToolExtension from "./multi-agent-tool/index.js";
-import sessionToolExtension from "./session-tool/index.js";
 import promptHookExtension from "./prompt-hooks/index.js";
 
 import piclawHeader from "./piclaw-header.js";
-import { registerTodosRenderer } from "./renderers/todos-renderer.js";
-import { registerTeamWidget } from "./team/team-widget.js";
-import { registerMemoryRenderer } from "./renderers/memory-renderer.js";
-import { registerBranchSummaryRenderer } from "./renderers/branch-summary-renderer.js";
-import { registerTeamOpsRenderer } from "./renderers/team-ops-renderer.js";
-import { registerProviderCommand } from "./commands/provider-command.js";
-import { registerTeamCommand } from "./commands/team-command.js";
+import { registerTodosRenderer, registerMemoryRenderer, registerBranchSummaryRenderer, registerTeamOpsRenderer } from "./renderers/index.js";
+import { registerProviderCommand, registerTeamCommand } from "./commands/index.js";
 // Removed conflicting built-in command registrations:
 // - registerSessionTreeCommand (conflicts with built-in /tree)
 // - registerSettingsCommand (conflicts with built-in /settings)
 // - registerCopyCommand (conflicts with built-in /copy)
-import { registerKeybindingExtension } from "./keybinding/keybinding-extension.js";
+import { registerKeybindingExtension } from "./keybinding/index.js";
 import { registerMasterTool } from "./master-tool/index.js";
 
 /**
@@ -99,8 +91,7 @@ export default async function extensionsAggregator(api: import("@earendil-works/
   // Multi-agent tool (tau/evo version)
   try { multiAgentToolExtension(api); } catch (e) { console.error('[Factory] multi-agent failed:', e); }
 
-  // Session tools - tau/evo version AND jf comprehensive version
-  try { sessionToolExtension(api); } catch (e) { console.error('[Factory] session tool failed:', e); }
+  // Session tool - JF comprehensive version (replaces tau/evo session-tool)
   try { registerJFSessionTool(api); } catch (e) { console.error('[Factory] jf session tool failed:', e); }
 
   // Prompt hooks extension

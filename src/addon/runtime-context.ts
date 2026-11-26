@@ -5,66 +5,66 @@
  *
  * The Pi SDK creates a hierarchy of objects:
  *
- *   createAgentSessionServices() → AgentSessionServices
- *     ├─ cwd: string
- *     ├─ agentDir: string
- *     ├─ authStorage: AuthStorage
- *     ├─ settingsManager: SettingsManager
- *     ├─ modelRegistry: ModelRegistry
- *     ├─ resourceLoader: ResourceLoader
- *     └─ diagnostics: RuntimeDiagnostics[]
+ * createAgentSessionServices() → AgentSessionServices
+ * ├─ cwd: string
+ * ├─ agentDir: string
+ * ├─ authStorage: AuthStorage
+ * ├─ settingsManager: SettingsManager
+ * ├─ modelRegistry: ModelRegistry
+ * ├─ resourceLoader: ResourceLoader
+ * └─ diagnostics: RuntimeDiagnostics[]
  *
- *   createAgentSessionFromServices() → AgentSession (in CreateAgentSessionResult)
- *     ├─ messages: Message[]
- *     ├─ sessionFile: string
- *     └─ ... (other session state)
+ * createAgentSessionFromServices() → AgentSession (in CreateAgentSessionResult)
+ * ├─ messages: Message[]
+ * ├─ sessionFile: string
+ * └─ ... (other session state)
  *
- *   createAgentSessionRuntime() → AgentSessionRuntime (combines both)
- *     ├─ session: AgentSession (from above)
- *     ├─ services: AgentSessionServices (from above)
- *     ├─ cwd: string
- *     ├─ diagnostics: RuntimeDiagnostics[]
- *     └─ modelFallbackMessage?: string
+ * createAgentSessionRuntime() → AgentSessionRuntime (combines both)
+ * ├─ session: AgentSession (from above)
+ * ├─ services: AgentSessionServices (from above)
+ * ├─ cwd: string
+ * ├─ diagnostics: Diagnostics[]
+ * └─ modelFallbackMessage?: string
  *
  * ==================== HOW TO ACCESS ====================
  *
  * 1️⃣ Get the FULL runtime object (everything):
- *    const runtime = getCurrentRuntime();
- *    → runtime.session (AgentSession)
- *    → runtime.services (AgentSessionServices)
- *    → runtime.cwd (string)
- *    → runtime.diagnostics (Diagnostics[])
- *    → runtime.modelFallbackMessage (string | undefined)
+ * const runtime = getCurrentRuntime();
+ * → runtime.session (AgentSession)
+ * → runtime.services (AgentSessionServices)
+ * → runtime.cwd (string)
+ * → runtime.diagnostics (Diagnostics[])
+ * → runtime.modelFallbackMessage (string | undefined)
  *
  * 2️⃣ Get SPECIFIC parts via convenience getters (recommended):
- *    const session = getCurrentSession();              // Same as runtime.session
- *    const services = getCurrentServices();            // Same as runtime.services
- *    const cwd = getCurrentCwd();                      // Same as runtime.cwd
- *    const auth = getCurrentAuthStorage();             // Same as runtime.services.authStorage
- *    const settings = getCurrentSettingsManager();    // Same as runtime.services.settingsManager
- *    const models = getCurrentModelRegistry();        // Same as runtime.services.modelRegistry
- *    const loader = getCurrentResourceLoader();       // Same as runtime.services.resourceLoader
+ * const session = getCurrentSession(); // Same as runtime.session
+ * const services = getCurrentServices(); // Same as runtime.services
+ * const cwd = getCurrentCwd(); // Same as runtime.cwd
+ * const auth = getCurrentAuthStorage(); // Same as runtime.services.authStorage
+ * const settings = getCurrentSettingsManager(); // Same as runtime.services.settingsManager
+ * const models = getCurrentModelRegistry(); // Same as runtime.services.modelRegistry
+ * const loader = getCurrentResourceLoader(); // Same as runtime.services.resourceLoader
  *
  * ==================== DECISION TREE ====================
  *
- * Need the entire runtime object?     → getCurrentRuntime()
- * Need only the session?              → getCurrentSession()
- * Need only services?                 → getCurrentServices()
- * Need only auth storage?             → getCurrentAuthStorage()
- * Need only settings manager?         → getCurrentSettingsManager()
- * Need only model registry?           → getCurrentModelRegistry()
- * Need only resource loader?          → getCurrentResourceLoader()
- * Need only cwd?                      → getCurrentCwd()
- * Need only agent dir?                → getCurrentAgentDir()
- * Need only current model?            → getCurrentModel()
- * Need extension runner?              → getCurrentExtensionRunner()
- * Need session manager?              → getCurrentSessionManager()
- * Need session file?                  → getCurrentSessionFile()
- * Need session ID?                    → getCurrentSessionId()
- * Need active tool names?             → getCurrentActiveToolNames()
- * Need all tools?                     → getCurrentAllTools()
- * Need tool definition by name?       → getCurrentToolDefinition(name)
- * Need all messages?                  → getCurrentMessages()
+ * Need the entire runtime object? → getCurrentRuntime()
+ * Need only the session? → getCurrentSession()
+ * Need only services? → getCurrentServices()
+ * Need only auth storage? → getCurrentAuthStorage()
+ * Need only settings manager? → getCurrentSettingsManager()
+ * Need only model registry? → getCurrentModelRegistry()
+ * Need only resource loader? → getCurrentResourceLoader()
+ * Need only cwd? → getCurrentCwd()
+ * Need only agent dir? → getCurrentAgentDir()
+ * Need only current model? → getCurrentModel()
+ * Need extension runner? → getCurrentExtensionRunner()
+ * Need session manager? → getCurrentSessionManager()
+ * Need session file? → getCurrentSessionFile()
+ * Need session ID? → getCurrentSessionId()
+ * Need active tool names? → getCurrentActiveToolNames()
+ * Need all tools? → getCurrentAllTools()
+ * Need tool definition by name? → getCurrentToolDefinition(name)
+ * Need all messages? → getCurrentMessages()
  *
  * RULE OF THUMB: Use the most specific getter available. Only use
  * getCurrentRuntime() if you need 2+ properties from it.
@@ -85,8 +85,8 @@
  * When the runtime is created, call setCurrentRuntime(runtime).
  * Tools can then call getCurrentRuntime() to access it.
  */
-
 import type { AgentSessionRuntime, AgentSession, AgentSessionServices, AgentSessionRuntimeDiagnostic, ToolDefinition, ExtensionRunner, SessionManager, ToolInfo } from '@earendil-works/pi-coding-agent';
+import type { Model } from '@earendil-works/pi-ai';
 
 let currentRuntime: AgentSessionRuntime | null = null;
 
@@ -104,8 +104,8 @@ export function setCurrentRuntime(runtime: AgentSessionRuntime | null): void {
 export function getCurrentRuntime(): AgentSessionRuntime {
   if (!currentRuntime) {
     throw new Error(
-      'Runtime not set. This tool requires an active runtime context. ' +
-        'Make sure to call setCurrentRuntime() after creating the runtime.'
+      'Runtime not set. This tool requires an active runtime context. '
+        + 'Make sure to call setCurrentRuntime() after creating the runtime.'
     );
   }
   return currentRuntime;
@@ -149,14 +149,14 @@ export function getCurrentAgentDir(): string {
 /**
  * Get current model from session (may be undefined if not selected yet).
  */
-export function getCurrentModel(): AgentSession['model'] {
+export function getCurrentModel(): Model<any> | undefined {
   return getCurrentSession().model;
 }
 
 /**
  * Get the current model's API type (for provider selection).
  */
-export function getCurrentModelApi(): unknown {
+export function getCurrentModelApi(): any {
   return getCurrentModel()?.api;
 }
 
@@ -220,7 +220,7 @@ export function getCurrentToolDefinition(name: string): ToolDefinition | undefin
 /**
  * Get all messages from current session.
  */
-export function getCurrentMessages(): AgentSession['messages'] {
+export function getCurrentMessages(): any[] {
   return getCurrentSession().messages;
 }
 
@@ -234,28 +234,28 @@ export function getCurrentModelFallbackMessage(): string | undefined {
 /**
  * Get auth storage from services.
  */
-export function getCurrentAuthStorage(): AgentSessionServices['modelRuntime'] {
-  return getCurrentServices().modelRuntime;
+export function getCurrentAuthStorage(): any {
+  return (getCurrentServices() as any).authStorage;
 }
 
 /**
  * Get the settings manager from the current runtime's services.
  */
-export function getCurrentSettingsManager(): AgentSessionServices['settingsManager'] {
+export function getCurrentSettingsManager(): any {
   return getCurrentServices().settingsManager;
 }
 
 /**
  * Get the model registry from the current runtime's services.
  */
-export function getCurrentModelRegistry(): AgentSessionServices['modelRuntime'] {
-  return getCurrentServices().modelRuntime;
+export function getCurrentModelRegistry(): any {
+  return (getCurrentServices() as any).modelRegistry;
 }
 
 /**
  * Get the resource loader from the current runtime's services.
  */
-export function getCurrentResourceLoader(): AgentSessionServices['resourceLoader'] {
+export function getCurrentResourceLoader(): any {
   return getCurrentServices().resourceLoader;
 }
 

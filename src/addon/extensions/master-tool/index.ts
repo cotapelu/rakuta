@@ -22,3 +22,7 @@ export type {
 export { CommandCache } from "./utils/command-cache.js";
 export { CommandValidator, getValidator } from "./utils/command-validator.js";
 export { createCommandRegistry } from "./command-registry.js";
+
+// Execution + state layers (used by the tool and command modules)
+export { CommandExecutor, type ExecutionContext, type AuditLog } from "./command-executor.js";
+export { StateManager, getStateManager, resetStateManager, type CommandState } from "./state-manager.js";

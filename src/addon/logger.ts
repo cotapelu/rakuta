@@ -1,70 +1,46 @@
 const logLevel = process.env.PI_LOG_LEVEL as 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | undefined;
 const logFormat = process.env.PI_LOG_FORMAT as 'pretty' | 'json' | undefined;
 
-type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+const enabledLevels = logLevel ? new Set([logLevel]) : null;
 
-const enabledLevels: Set<LogLevel> | null = logLevel ? new Set<LogLevel>([logLevel]) : null;
 
-/* istanbul ignore next */
-function isEnabled(level: LogLevel): boolean {
-  return enabledLevels?.has(level) ?? false;
+function isEnabled(level: string): boolean {
+  if (!enabledLevels) return false;
+  return enabledLevels.has(level as any);
 }
 
-function makePrettyLogger(level: LogLevel) {
-  return (...args: unknown[]): void => {
+function makePrettyLogger(level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal') {
+  return (...args: any[]) => {
     if (isEnabled(level)) {
-      switch (level) {
-        case 'trace':
-          console.trace(`[${level.toUpperCase()}]`, ...args);
-          break;
-        case 'debug':
-          console.debug(`[${level.toUpperCase()}]`, ...args);
-          break;
-        case 'info':
-          console.info(`[${level.toUpperCase()}]`, ...args);
-          break;
-        case 'warn':
-          console.warn(`[${level.toUpperCase()}]`, ...args);
-          break;
-        case 'error':
-          console.error(`[${level.toUpperCase()}]`, ...args);
-          break;
-        case 'fatal':
-          console.error(`[${level.toUpperCase()}]`, ...args);
-          break;
-        /* istanbul ignore next */
-        default:
-          // This should never happen if all cases are exhaustive
-          throw new Error(`Unhandled log level: ${level}`);
-      }
+      const method = level === 'fatal' ? 'error' : level;
+      // @ts-ignore
+      console[method](`[${level.toUpperCase()}]`, ...args);
     }
   };
 }
 
-function makeJsonLogger(level: LogLevel) {
-  return (...args: unknown[]): void => {
+function makeJsonLogger(level: 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal') {
+  return (...args: any[]) => {
     if (isEnabled(level)) {
       const msg = args.length > 0 ? args[0] : undefined;
       const rest = args.slice(1);
-      const entry: { timestamp: string; level: LogLevel; message?: unknown; meta?: unknown } = {
+      const entry: any = {
         timestamp: new Date().toISOString(),
         level,
         message: msg,
+        ...(rest.length > 0 ? { meta: rest } : {}),
       };
-      if (rest.length > 0) {
-        entry.meta = rest;
-      }
       console.log(JSON.stringify(entry));
     }
   };
 }
 
-const noop = (): void => undefined;
+const noop = () => {};
 
 const createLogger =
   logFormat === 'json'
-    ? (level: string) => makeJsonLogger(level as LogLevel)
-    : (level: string) => makePrettyLogger(level as LogLevel);
+    ? (level: string) => makeJsonLogger(level as any)
+    : (level: string) => makePrettyLogger(level as any);
 
 const logger = {
   trace: logLevel ? createLogger('trace') : noop,
@@ -76,3 +52,5 @@ const logger = {
 };
 
 export { logger };
+
+

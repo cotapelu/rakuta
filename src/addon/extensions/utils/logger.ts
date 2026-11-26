@@ -9,7 +9,7 @@
 
 // type LogLevel = 'log' | 'error' | 'warn' | 'info' | 'debug'; // unused
 
-interface Logger {
+export interface Logger {
   log: (...args: any[]) => void;
   error: (...args: any[]) => void;
   warn: (...args: any[]) => void;

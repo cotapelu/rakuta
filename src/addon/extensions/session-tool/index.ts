@@ -42,3 +42,44 @@ export default function sessionToolExtension(api: ExtensionAPI) {
     api.registerTool(createSessionTool());
   });
 }
+
+// ============================================================================
+// Sub-layers (registered here so the whole session-tool tree is reachable)
+// ============================================================================
+
+// Registry: session metadata / state / history
+export {
+  SessionRegistry,
+  SessionState,
+  type SessionMetadata,
+  type SessionOperation,
+  type SessionHistoryEntry,
+  type SessionTreeNode,
+} from './registry.js';
+
+// Tool definition fragments
+export {
+  SESSION_TOOL_DESCRIPTION,
+  SESSION_TOOL_PROMPT_SNIPPET,
+  SESSION_TOOL_PROMPT_GUIDELINES,
+  SESSION_TOOL_PARAMETERS,
+  buildSessionToolDefinition,
+} from './definition.js';
+
+// Handoff filesystem contract helpers
+export {
+  DEFAULT_HANDOFF_DIR,
+  DEFAULT_CONTRACT_FILE,
+  DEFAULT_BUS_FILE,
+  extractSessionIdFromPath,
+  buildHandoffBusPaths,
+} from './handoff.js';
+
+// Concurrency primitive used by the manager
+export { Mutex } from './concurrency.js';
+
+// Formatting / rendering helpers
+export { formatSession, countNodes, formatListOutput, renderTree } from './utils.js';
+
+// Operation handlers (create/switch/list/... one folder per layer)
+export * from './operations/index.js';

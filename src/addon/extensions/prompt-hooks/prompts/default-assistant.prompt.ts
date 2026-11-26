@@ -12,7 +12,7 @@ export const defaultAssistantPrompt: PromptTemplate = {
   description: 'JF coding guidelines and best practices',
   filePath: '<inline:jf-prompts>',
   sourceInfo: {
-    path: 'src/prompts/default-assistant.prompt.ts',
+    path: 'src/addon/prompts/default-assistant.prompt.ts',
     source: 'jf-prompts',
     scope: 'project',
     origin: 'top-level',

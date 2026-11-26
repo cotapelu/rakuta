@@ -3,37 +3,52 @@
   "phases": [
     {
       "id": "phase-1",
-      "name": "Production Readiness - Batch 1",
+      "name": "Hierarchical registration",
       "tasks": [
         {
           "id": "task-1",
-          "content": "Fix quality gate failures: function size/complexity in project-profile.ts and master-tool",
-          "status": "in_progress"
+          "content": "capability-system index + renderer wiring",
+          "status": "completed"
         },
         {
           "id": "task-2",
-          "content": "Reduce duplicated 8-line blocks (top hotspots)",
-          "status": "pending"
+          "content": "providers index + token-saver registry + ofm re-exports",
+          "status": "in_progress"
         },
         {
           "id": "task-3",
-          "content": "Increase branch coverage from 48% to >=80% for core modules",
+          "content": "tools: sub-tools wiring, utils barrel, tools index",
           "status": "pending"
         },
         {
           "id": "task-4",
-          "content": "Address P0 security findings (command injection/IDOR hotspots)",
+          "content": "team index full exports",
           "status": "pending"
         },
         {
           "id": "task-5",
-          "content": "Re-run quality gate and system audit; update docs metrics",
+          "content": "master-tool/multi-agent/session/prompt-hooks index",
+          "status": "pending"
+        },
+        {
+          "id": "task-6",
+          "content": "hooks/commands/renderers/keybinding/utils barrels + factory imports",
+          "status": "pending"
+        },
+        {
+          "id": "task-7",
+          "content": "addon/index + types barrel + registry facade",
+          "status": "pending"
+        },
+        {
+          "id": "task-8",
+          "content": "Verify tsc + vitest + build",
           "status": "pending"
         }
       ]
     }
   ],
-  "nextTaskId": 6,
+  "nextTaskId": 9,
   "nextPhaseId": 2,
-  "updatedAt": "2026-11-25T14:38:26.396Z"
+  "updatedAt": "2026-11-26T13:43:46.236Z"
 }
